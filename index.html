@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./styles/styles.css"/>
+    <script src="./bower_components/jQuery/dist/jquery.min.js"></script>
+    <script src="./bower_components/knockout/dist/knockout.js"></script>
+    <script src="./bower_components/q/q.js"></script>
+    <script src="./scripts/js/StringFormat.js"></script>
+    <script data-main="./scripts/js/vso" src="./bower_components/requirejs/require.js"></script>
+    <title>VSO Pull Request Dashboard</title>
+  </head>
+  <body>
+    <div>
+      <div id="menu">
+        <h3 style="margin: 20px;color: #61AFEF;">VSO Pull Request Dashboard</h3>
+        <ul class="menu">
+          <li class="top clickable" id="signOutButton">
+            <p>Sign out<p>
+          </li>
+          <li class="clickable" id="repoSearchListItem">
+            <p style="display: inline-block;">Add Repository</p><p id="repoSearchCloseButton" style="display: none; margin-left: 10px;" class="clickable clickable-color">(Close)</p>
+            <div style="display: none; font-weight: normal;" id="repoSearchContainer">
+              <input type="search" value="Search by repo name..." id="repoSearchBox"><button type="button" id="repoSearchButton">Search</button>
+            </div>
+          </li>
+        </ul>
+        <div style="position: absolute; bottom: 0; left: 10px;">
+          Refresh Interval (min):
+          <ul id="refreshPeriodList">
+            <li class="clickable">1</li>
+            <li class="selected clickable">5</li>
+            <li class="clickable">10</li>
+          </ul>
+        </div>
+      </div>
+      <div id="wrapper">
+        <div id="content">
+        </div>
+        <div id="bottom">
+          <footer>
+            <p style="margin: 0; position: relative; top: 50%; transform: translate(0, -50%);">
+              Created by <a href="mailto:stevhob@microsoft.com">Steven Hobson-Campbell</a>
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,170 @@
+body {
+  color: white;
+  background: #555555;
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+}
+
+a {
+  color: white;
+  font-weight: bold;
+}
+
+#menu {
+  position: fixed;
+  float: left;
+  width: 300px;
+  height: 100%;
+  background: #333333;
+  border-right: 2px solid #888888;
+  overflow-y: auto;
+}
+
+ul.menu {
+     list-style-type: none;
+     margin: 20px 0 0 0;
+     padding: 0;
+}
+
+ul.menu > li {
+  min-height: 40px;
+  border-top: 1px solid #888888;
+  border-bottom: 1px solid #888888;
+  padding: 10px 5px 10px 5px;
+}
+
+ul.menu > li:not(.top) {
+  margin-top: -1px;
+}
+
+ul.menu > li:not(.open):hover {
+  background: #61AFEF;
+}
+
+#refreshPeriodList {
+  display: inline-block;
+  list-style-type: none;
+  padding-left: 10px;
+}
+
+#refreshPeriodList > li {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+}
+
+#refreshPeriodList > li.selected {
+  background: #61AFEF;
+}
+
+#wrapper {
+  margin-left: 302px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  padding: 5px;
+}
+
+.container {
+  border-radius: 5px;
+  background: #7F7F7F;
+  padding: 10px;
+}
+
+.container-header {
+  position: relative;
+  top: -10px;
+  left: -10px;
+  padding: 10px;
+  width: calc(100%);
+  background: #696969;
+  border-bottom: 1px solid #888888;
+  border-radius: 5px 5px 0 0;
+}
+
+.container > div > * {
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+  border-top: 1px solid #555555;
+}
+
+td, th {
+  padding: 5px;
+}
+
+tr.header {
+  border: 0;
+}
+
+tr:not(.header):hover {
+  background: #61AFEF;
+}
+
+#bottom {
+  flex: 1;
+  position: relative;
+  min-height: 50px;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  height: 50px;
+  width: 100%;
+  text-align: center;
+}
+
+.clickable {
+  font-weight: bold;
+}
+
+.clickable-color {
+  color: #61AFEF;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.noResponse {
+  background: rgba(153, 214, 255, 0.3);
+}
+
+.approved {
+  background: rgba(153, 255, 153, 0.3);
+}
+
+.waiting {
+  background: rgba(255, 214, 153, 0.3);
+}
+
+.rejected {
+  background: rgba(255, 128, 128, 0.3);
+}
+
+.noResponse-noAlpha {
+  background: rgb(153, 214, 255);
+}
+
+.approved-noAlpha {
+  background: rgb(153, 255, 153);
+}
+
+.waiting-noAlpha {
+  background: rgb(255, 214, 153);
+}
+
+.rejected-noAlpha {
+  background: rgb(255, 128, 128);
+}

@@ -1,0 +1,20 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+  border-top: 1px solid #555555;
+}
+
+td, th {
+  padding: 5px;
+}
+
+tr.header {
+  border: 0;
+}
+
+tr:not(.header):hover {
+  background: #61AFEF;
+}
