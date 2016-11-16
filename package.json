@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "tsc",
+    "install": "./node_modules/.bin/tsc",
     "postinstall": "bower install"
   },
   "author": "stevhob@microsoft.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.0.10"
+  }
 }
