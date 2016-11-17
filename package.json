@@ -9,7 +9,7 @@
   },
   "author": "stevhob@microsoft.com",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "typescript": "^2.0.10"
   }
 }
