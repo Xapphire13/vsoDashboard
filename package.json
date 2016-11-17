@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": ".\\node_modules\\.bin\\tsc.cmd",
-    "postinstall": "bower install"
+    "postinstall": "bower install && node ./node_modules/typescript/bin/tsc"
   },
   "author": "stevhob@microsoft.com",
   "license": "MIT",
