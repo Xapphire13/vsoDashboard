@@ -12,7 +12,7 @@ export class Panel {
   private static _panelCount = 0;
 
   private _initialized: boolean = false;
-  private _domTemplate: string = "<div data-bind=\"template: { name: 'panel-template' }\"></div>";
+  private _domTemplate: string = "<div class='panel' data-bind=\"template: { name: 'panel-template' }\"></div>";
   private _childContainer: JQuery;
 
   constructor(title: string) {

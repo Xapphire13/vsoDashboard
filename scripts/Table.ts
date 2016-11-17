@@ -30,7 +30,7 @@ export class Table<T> {
   public dom: JQuery;
 
   private _headerRow: JQuery;
-  private _domTemplate: string = "<div data-bind=\"template: { name: 'table-template' }\"></div>";
+  private _domTemplate: string = "<div class='table' data-bind=\"template: { name: 'table-template' }\"></div>";
   private static _tableCount = 0;
   private _getRowCssClasses: (item: T) => string[];
 

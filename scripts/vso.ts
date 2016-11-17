@@ -202,7 +202,7 @@ function setupRepoSearch(): void {
       })
       resultsTable.items(repositories);
 
-      repoSearchContainer.children().remove("table");
+      repoSearchContainer.children(".table").remove();
       repoSearchContainer.append(resultsTable.dom);
       resultsTable.init();
     });
