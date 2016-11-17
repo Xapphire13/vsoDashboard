@@ -13,8 +13,7 @@
         "removeComments": true,
         "noLib": false,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "outDir": "scripts/js"
+        "suppressImplicitAnyIndexErrors": true
     },
     "exclude": [
         "node_modules",

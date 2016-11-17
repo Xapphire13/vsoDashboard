@@ -30,7 +30,7 @@ export class Table<T> {
   public dom: JQuery;
 
   private _headerRow: JQuery;
-  private _domTemplate: string = "<div data-bind=\"template: { name: 'table-template', data: context }\"></div>";
+  private _domTemplate: string = "<div data-bind=\"template: { name: 'table-template' }\"></div>";
   private static _tableCount = 0;
   private _getRowCssClasses: (item: T) => string[];
 
@@ -57,9 +57,7 @@ export class Table<T> {
   public init(): Q.Promise<any> {
     ContentLoader.loadStylesheets(["table"]);
     return ContentLoader.loadHtmlTemplates(["table"]).then(() => {
-      ko.applyBindings({
-        context: this
-      }, document.getElementById(this.id));
+      ko.applyBindings(this, document.getElementById(this.id));
     });
   }
 
