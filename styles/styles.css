@@ -69,27 +69,6 @@ ul.menu > li:not(.open):hover {
   padding: 5px;
 }
 
-.container {
-  border-radius: 5px;
-  background: #7F7F7F;
-  padding: 10px;
-}
-
-.container-header {
-  position: relative;
-  top: -10px;
-  left: -10px;
-  padding: 10px;
-  width: calc(100%);
-  background: #696969;
-  border-bottom: 1px solid #888888;
-  border-radius: 5px 5px 0 0;
-}
-
-.container > div > * {
-  margin: 0;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;

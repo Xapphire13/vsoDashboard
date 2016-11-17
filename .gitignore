@@ -2,3 +2,4 @@ images/
 node_modules/
 bower_components/
 *.js
+favicon.ico

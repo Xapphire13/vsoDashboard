@@ -126,15 +126,18 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
     }
   });
 
-  let panel = new Panel(title);
-  panel.onRemove = () => {
-    delete tableMap[repoId];
+  let panel = new Panel({
+    title: title,
+    loadContent: () => table.init(),
+    onRemove: () => {
+      delete tableMap[repoId];
 
-    let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
-    localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
-  };
+      let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
+      localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
+    }
+  });
   panel.child(table.dom);
-  panel.init().then(() => table.init());
+  panel.init();
 
   if($("#content").children(".container").length > 0) {
     panel.dom.css("margin-top", "25px");
