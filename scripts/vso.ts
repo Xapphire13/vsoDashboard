@@ -3,6 +3,7 @@
 
 import {IPullRequest} from "./IPullRequest";
 import {IColumn, Table, FormatType} from "./Table";
+import {Panel} from "./Panel";
 import {IRepository} from "./IRepository";
 import {IProject} from "./IProject";
 
@@ -101,24 +102,6 @@ function loadPullRequests(repositoryId: string, table: Table<IPullRequest>) {
   })
 }
 
-function createContainer(title?: string): JQuery {
-  let container = $("<div class='container'></div>");
-
-  let header = $("<div class='container-header'></div>");
-
-  if(title != undefined) {
-    header.append($(`<h3 style='display: inline-block; margin-right: 10px;'>${title}</h3>`));
-  }
-
-  let removeLink = $("<p style='display: inline-block; font-weight: bold;' class='clickable clickable-color'>(Remove)</p>");
-  removeLink.on("click", () => container.remove());
-  header.append(removeLink);
-
-  container.append(header);
-
-  return container;
-}
-
 function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
   let table = new Table<IPullRequest>(null, {
     columns: columns,
@@ -142,20 +125,21 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
       return [];
     }
   });
-  let tableContainer = createContainer(title);
-  tableContainer.append(table.dom);
-  table.init();
-  tableContainer.children(".container-header").children("p.clickable").on("click", () => {
+
+  let panel = new Panel(title);
+  panel.onRemove = () => {
     delete tableMap[repoId];
 
     let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
     localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
-  });
+  };
+  panel.child(table.dom);
+  panel.init().then(() => table.init());
 
   if($("#content").children(".container").length > 0) {
-    tableContainer.css("margin-top", "25px");
+    panel.dom.css("margin-top", "25px");
   }
-  $("#content").append(tableContainer);
+  $("#content").append(panel.dom);
 
   tableMap[repoId] = table;
 
