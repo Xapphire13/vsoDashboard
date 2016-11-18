@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "amd",
+        "module": "commonjs",
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",
@@ -16,8 +16,8 @@
         "suppressImplicitAnyIndexErrors": true
     },
     "exclude": [
-        "node_modules",
-        "typings"
+        "../node_modules",
+        "../typings"
     ],
     "compileOnSave": true,
     "buildOnSave": false,

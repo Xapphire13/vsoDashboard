@@ -1,4 +1,4 @@
-/// <reference path="../typings/index.d.ts" />
+/// <reference path="../../typings/index.d.ts" />
 
 String.prototype.format = function(...args: any[]) {
   let output = this as string;

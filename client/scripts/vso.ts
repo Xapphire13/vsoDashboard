@@ -1,5 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-/// <reference path="../typings/StringFormat.d.ts"/>
+/// <reference path="../../typings/index.d.ts" />
+/// <reference path="../../typings/StringFormat.d.ts"/>
 
 import {IPullRequest} from "./IPullRequest";
 import {IColumn, Table, FormatType} from "./Table";
