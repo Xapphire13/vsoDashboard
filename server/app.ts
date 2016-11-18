@@ -7,7 +7,7 @@ let app = express();
 
 // Static files
 app.use(express.static("client"));
-app.use("/bower_components", express.static("bower_components"));
+app.use("/libs", express.static("bower_components"));
 
 // Start server
 app.listen(port, () => {
