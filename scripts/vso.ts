@@ -87,7 +87,7 @@ let columns = <IColumn<IPullRequest>[]>[
   }
 ];
 
-function loadPullRequests(repositoryId: string, table: Table<IPullRequest>): Q.Promise<any> {
+function loadPullRequests(repositoryId: string, table: Table<IPullRequest>, userEmail?: string): Q.Promise<any> {
   let uri = `${apiUri}/repositories/${repositoryId}/pullRequests?api-version=2.0`
 
   return Q($.ajax({
@@ -97,7 +97,12 @@ function loadPullRequests(repositoryId: string, table: Table<IPullRequest>): Q.P
     }
   }).then(result => {
     let pullRequests = result.value as IPullRequest[];
-    table.items(pullRequests);
+
+    if(userEmail != undefined) {
+      table.items(pullRequests.filter(pr => pr.reviewers.filter(reviewer => reviewer.uniqueName === userEmail).length > 0));
+    } else {
+      table.items(pullRequests);
+    }
   }));
 }
 
@@ -125,20 +130,44 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
     }
   });
 
+  let loadData = () => {
+    return loadPullRequests(repoId, table);
+  }
+
   let panel = new Panel({
     title: title,
     loadContent: () => table.init().then(() => {
-      return loadPullRequests(repoId, table);
+      return loadData();
     }),
     onRemove: () => {
       let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
       localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
     },
     refresh: () => {
-      return loadPullRequests(repoId, table);
+      return loadData();
     },
     refreshInterval: refreshIntervalMin
   });
+  panel.commands([
+    {
+      label: "Mine",
+      onClick: () => {
+        loadData = () => {
+          return loadPullRequests(repoId, table, upn);
+        }
+        return loadData();
+      }
+    },
+    {
+      label: "Everyones",
+      onClick: () => {
+        loadData = () => {
+          return loadPullRequests(repoId, table);
+        }
+        return loadData();
+      }
+    }
+  ]);
   panel.child(table.dom);
   panel.init();
 

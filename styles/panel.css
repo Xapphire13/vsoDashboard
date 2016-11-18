@@ -18,3 +18,22 @@
 .panel > div > * {
   margin: 0;
 }
+
+.panel-commands-wrapper {
+  margin-top: 5px;
+  position: relative;
+}
+
+.panel-commands {
+  position: absolute;
+  right: 0;
+}
+
+.panel-command {
+  height: 25px;
+  padding: 5px;
+  background: #9e9e9e;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 5px;
+}

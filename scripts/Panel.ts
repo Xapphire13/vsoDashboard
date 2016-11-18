@@ -1,6 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 
 import {ContentLoader} from "./ContentLoader";
+import {ICommand} from "./ICommand";
 
 export interface IPanelOptions {
   title: string,
@@ -16,6 +17,7 @@ export class Panel {
   public title: KnockoutObservable<string> = ko.observable("");
   public child: KnockoutObservable<JQuery> = ko.observable<JQuery>();
   public onRemove: () => void;
+  public commands: KnockoutObservableArray<ICommand<any>> = ko.observableArray<ICommand<any>>([]);
 
   private static _panelCount = 0;
 
@@ -62,7 +64,7 @@ export class Panel {
 
           if(newValue > 0) {
             this._refresh();
-            this._timeout = setTimeout(this._refresh, newValue * 60 * 1000);  
+            this._timeout = setTimeout(this._refresh, newValue * 60 * 1000);
           }
         });
 
