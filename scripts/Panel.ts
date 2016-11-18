@@ -7,7 +7,7 @@ export interface IPanelOptions {
   loadContent: () => Q.Promise<any>,
   onRemove?: () => void,
   refresh?: () => Q.Promise<any>,
-  refreshInterval?: number
+  refreshInterval?: KnockoutObservable<number>
 }
 
 export class Panel {
@@ -24,7 +24,8 @@ export class Panel {
   private _childContainer: JQuery;
   private _loadContent: () => Q.Promise<any>;
   private _refresh: () => Q.Promise<any>;
-  private _refreshInterval: number;
+  private _refreshInterval: KnockoutObservable<number>;
+  private _timeout = null;
 
   constructor(options: IPanelOptions) {
     this.title(options.title);
@@ -33,7 +34,7 @@ export class Panel {
 
     this.onRemove = null || options.onRemove;
     this._refresh = null || options.refresh;
-    this._refreshInterval = options.refreshInterval || 0;
+    this._refreshInterval = options.refreshInterval || ko.observable(0);
 
     // Init dom
     this.dom = $(this._domTemplate);
@@ -52,6 +53,19 @@ export class Panel {
         this.child.subscribe(newValue => this._setChild());
 
         this._loadContent();
+
+        if(this._refreshInterval() > 0) {
+          this._timeout = setTimeout(() => this._refresh, this._refreshInterval() * 60 * 1000);
+        }
+        this._refreshInterval.subscribe(newValue => {
+          clearTimeout(this._timeout);
+
+          if(newValue > 0) {
+            this._refresh();
+            this._timeout = setTimeout(this._refresh, newValue * 60 * 1000);  
+          }
+        });
+
         this._initialized = true;
       });
     }

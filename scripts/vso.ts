@@ -12,7 +12,7 @@ let projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
 let apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis/git";
 let key: string;
 let upn: string;
-let loadTimeout = null;
+let refreshIntervalMin = ko.observable(0);
 let columns = <IColumn<IPullRequest>[]>[
   {
     name: "",
@@ -86,12 +86,11 @@ let columns = <IColumn<IPullRequest>[]>[
     width: 5
   }
 ];
-let tableMap = {};
 
-function loadPullRequests(repositoryId: string, table: Table<IPullRequest>) {
+function loadPullRequests(repositoryId: string, table: Table<IPullRequest>): Q.Promise<any> {
   let uri = `${apiUri}/repositories/${repositoryId}/pullRequests?api-version=2.0`
 
-  $.ajax({
+  return Q($.ajax({
     url: uri,
     headers: {
       "Authorization": `Basic ${key}`
@@ -99,7 +98,7 @@ function loadPullRequests(repositoryId: string, table: Table<IPullRequest>) {
   }).then(result => {
     let pullRequests = result.value as IPullRequest[];
     table.items(pullRequests);
-  })
+  }));
 }
 
 function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
@@ -128,23 +127,25 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
 
   let panel = new Panel({
     title: title,
-    loadContent: () => table.init(),
+    loadContent: () => table.init().then(() => {
+      return loadPullRequests(repoId, table);
+    }),
     onRemove: () => {
-      delete tableMap[repoId];
-
       let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
       localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
-    }
+    },
+    refresh: () => {
+      return loadPullRequests(repoId, table);
+    },
+    refreshInterval: refreshIntervalMin
   });
   panel.child(table.dom);
   panel.init();
 
-  if($("#content").children(".container").length > 0) {
+  if($("#content").find(".panel-wrapper").length > 0) {
     panel.dom.css("margin-top", "25px");
   }
   $("#content").append(panel.dom);
-
-  tableMap[repoId] = table;
 
   let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
   if(trackedRepos.filter(repo => repo == repoId).length == 0) {
@@ -198,7 +199,6 @@ function setupRepoSearch(): void {
             itemKey: "name",
             onClick: item => {
               let table = addRepoTable(item.name, item.id);
-              loadPullRequests(item.id, table);
             }
           }
         ]
@@ -213,7 +213,7 @@ function setupRepoSearch(): void {
 }
 
 $(document).ready(() => {
-  let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
+  refreshIntervalMin(Number(localStorage.getItem("refreshIntervalMin") || 5));
 
   key = localStorage.getItem("accessKey");
   upn = localStorage.getItem("upn");
@@ -246,17 +246,15 @@ $(document).ready(() => {
   }
 
   $("#refreshPeriodList").children("li").removeClass("selected");
-  $("#refreshPeriodList").children("li").filter((index, element) => $(element).html() == refreshIntervalMin.toString()).addClass("selected");
+  $("#refreshPeriodList").children("li").filter((index, element) => $(element).html() == refreshIntervalMin().toString()).addClass("selected");
 
   $("#refreshPeriodList").children("li").on("click", event => {
     $("#refreshPeriodList").children("li").removeClass("selected");
     let source = $(event.target);
     source.addClass("selected");
 
-    refreshIntervalMin = Number(source.html());
+    refreshIntervalMin(Number(source.html()));
     localStorage.setItem("refreshIntervalMin", source.html());
-    clearTimeout(loadTimeout);
-    setTimeout(load, refreshIntervalMin * 60 * 1000);
   });
 
   setupRepoSearch();
@@ -280,20 +278,6 @@ $(document).ready(() => {
   Q.all(repoFetches).then(repos => {
     repos.forEach(repo => {
       let table = addRepoTable(repo.name, repo.id);
-      tableMap[repo.id] = table;
-      loadPullRequests(repo.id, table);
     })
   });
-
-  let load = () => {
-    Object.keys(tableMap).forEach(repoId => {
-      let table = tableMap[repoId] as Table<IPullRequest>;
-
-      loadPullRequests(repoId, table);
-    });
-
-    loadTimeout = setTimeout(load, refreshIntervalMin * 60 * 1000)
-  };
-
-  load();
 })
