@@ -131,7 +131,7 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
   });
 
   let loadData = () => {
-    return loadPullRequests(repoId, table);
+    return loadPullRequests(repoId, table, upn);
   }
 
   let panel = new Panel({
