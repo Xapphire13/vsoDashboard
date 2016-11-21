@@ -99,7 +99,9 @@ function loadPullRequests(repositoryId: string, table: Table<IPullRequest>, user
     let pullRequests = result.value as IPullRequest[];
 
     if(userEmail != undefined) {
-      table.items(pullRequests.filter(pr => pr.reviewers.filter(reviewer => reviewer.uniqueName === userEmail).length > 0));
+      table.items(pullRequests.filter(pr =>
+        pr.reviewers.filter(reviewer => reviewer.uniqueName === userEmail).length > 0 ||
+        pr.createdBy.uniqueName == upn));
     } else {
       table.items(pullRequests);
     }
