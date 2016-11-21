@@ -130,9 +130,14 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
     }
   });
 
+  let justMine = ko.observable(true);
   let loadData = () => {
-    return loadPullRequests(repoId, table, upn);
-  }
+    if(justMine()) {
+      return loadPullRequests(repoId, table, upn);
+    }
+
+    return loadPullRequests(repoId, table);
+  };
 
   let panel = new Panel({
     title: title,
@@ -152,18 +157,14 @@ function addRepoTable(title: string, repoId: string): Table<IPullRequest> {
     {
       label: "Mine",
       onClick: () => {
-        loadData = () => {
-          return loadPullRequests(repoId, table, upn);
-        }
+        justMine(true);
         return loadData();
       }
     },
     {
       label: "Everyones",
       onClick: () => {
-        loadData = () => {
-          return loadPullRequests(repoId, table);
-        }
+        justMine(false);
         return loadData();
       }
     }
