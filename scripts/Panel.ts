@@ -56,15 +56,25 @@ export class Panel {
 
         this._loadContent();
 
-        if(this._refreshInterval() > 0) {
-          this._timeout = setTimeout(() => this._refresh, this._refreshInterval() * 60 * 1000);
+        let queueRefresh = () => {
+          clearTimeout(this._timeout);
+
+          this._timeout = setTimeout(() => {
+            this._refresh();
+            queueRefresh();
+          }, this._refreshInterval() * 60 * 1000);
         }
+
+        if(this._refreshInterval() > 0) {
+          queueRefresh();
+        }
+
         this._refreshInterval.subscribe(newValue => {
           clearTimeout(this._timeout);
 
           if(newValue > 0) {
             this._refresh();
-            this._timeout = setTimeout(this._refresh, newValue * 60 * 1000);
+            queueRefresh();
           }
         });
 
