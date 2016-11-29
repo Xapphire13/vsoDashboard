@@ -6,11 +6,13 @@ import {IColumn, Table, FormatType} from "./Table";
 import {Panel} from "./Panel";
 import {IRepository} from "./IRepository";
 import {IProject} from "./IProject";
+import {ClientOAuthHelper} from "./ClientOAuthHelper";
+import {IUser} from "./IUser";
 
 let prUrlTemplate = "https://msazure.visualstudio.com/One/_git/{0}/pullrequest/{1}"
 let projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
 let apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis/git";
-let key: string;
+let accessToken: string;
 let upn: string;
 let refreshIntervalMin = ko.observable(0);
 let columns = <IColumn<IPullRequest>[]>[
@@ -93,7 +95,7 @@ function loadPullRequests(repositoryId: string, table: Table<IPullRequest>, user
   return Q($.ajax({
     url: uri,
     headers: {
-      "Authorization": `Basic ${key}`
+      "Authorization": `Bearer ${accessToken}`
     }
   }).then(result => {
     let pullRequests = result.value as IPullRequest[];
@@ -218,7 +220,7 @@ function setupRepoSearch(): void {
     $.ajax({
       url: uri,
       headers: {
-        "Authorization": `Basic ${key}`
+        "Authorization": `Bearer ${accessToken}`
       }
     }).then((results: {value: IRepository[]}) => {
       let searchString = (repoSearchBox.val() as string).toLowerCase();
@@ -246,70 +248,87 @@ function setupRepoSearch(): void {
 
 $(document).ready(() => {
   refreshIntervalMin(Number(localStorage.getItem("refreshIntervalMin") || 5));
+  accessToken = localStorage.getItem("accessToken");
 
-  key = localStorage.getItem("accessKey");
-  upn = localStorage.getItem("upn");
+  let authPromise = Q();
 
-  if(key == undefined) {
-    // Get users name
-    let result = prompt("What is your first name?");
-    while (result == undefined || result == "") {
-      result = prompt("Name cannot be empty! What is your first name?");
-    }
-    let name = result;
-
-    // Get VSO access token
-    result = prompt("Enter access token");
-    while (result == undefined || result == "") {
-      result = prompt("Access token cannot be empty! Enter access token");
-    }
-    let token = result;
-
-    key = btoa(`${name}:${token}`);
-    localStorage.setItem("accessKey", key);
-
-    // Get UPN
-    result = prompt("What is your full email address?");
-    while (result == undefined || result == "") {
-      result = prompt("Email cannot be empty! Enter full email address");
-    }
-    upn = result;
-    localStorage.setItem("upn", upn);
+  if(accessToken == undefined) {
+    // Get accessToken
+    let oAuthHelper = new ClientOAuthHelper();
+    authPromise = oAuthHelper.getAccessCode(
+      "1439FF2D-26AB-4049-A543-5AFF4848EEC8",
+      "test",
+      [
+        "vso.agentpools",
+        "vso.build",
+        "vso.chat_write",
+        "vso.code",
+        "vso.connected_server",
+        "vso.dashboards",
+        "vso.entitlements",
+        "vso.extension",
+        "vso.extension.data",
+        "vso.gallery",
+        "vso.identity",
+        "vso.loadtest",
+        "vso.packaging",
+        "vso.project",
+        "vso.release",
+        "vso.test",
+        "vso.work"],
+      "http://vsodash.azurewebsites.net/auth").then(code => {
+        oAuthHelper.getAccessToken(code, "test").then(token => {
+          console.log(token);
+          accessToken = token.access_token;
+          localStorage.setItem("accessToken", accessToken);
+        })
+      });
   }
 
-  $("#refreshPeriodList").children("li").removeClass("selected");
-  $("#refreshPeriodList").children("li").filter((index, element) => $(element).html() == refreshIntervalMin().toString()).addClass("selected");
-
-  $("#refreshPeriodList").children("li").on("click", event => {
-    $("#refreshPeriodList").children("li").removeClass("selected");
-    let source = $(event.target);
-    source.addClass("selected");
-
-    refreshIntervalMin(Number(source.html()));
-    localStorage.setItem("refreshIntervalMin", source.html());
-  });
-
-  setupRepoSearch();
-
-  $("#signOutButton").on("click", () => {
-    localStorage.clear();
-    location.reload();
-  });
-
-  let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
-  let repoFetches = trackedRepos.map(repoId => {
-    let uri = `${apiUri}/repositories/${repoId}?api-version=2.0`;
-    return Q<IRepository>($.ajax({
-      url: uri,
+  return authPromise.then(() => {
+    return Q<any>($.ajax({
+      url: "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=1.0",
       headers: {
-        "Authorization": `Basic ${key}`
+        "Authorization": `Bearer ${accessToken}`
       }
-    }));
-  });
+    })).then(me => {
+      upn = me.emailAddress;
+    });
+  }).then(() => {
+    $("#refreshPeriodList").children("li").removeClass("selected");
+    $("#refreshPeriodList").children("li").filter((index, element) => $(element).html() == refreshIntervalMin().toString()).addClass("selected");
 
-  Q.all(repoFetches).then(repos => {
-    repos.forEach(repo => {
-      let table = addRepoTable(repo.name, repo.id);
-    })
+    $("#refreshPeriodList").children("li").on("click", event => {
+      $("#refreshPeriodList").children("li").removeClass("selected");
+      let source = $(event.target);
+      source.addClass("selected");
+
+      refreshIntervalMin(Number(source.html()));
+      localStorage.setItem("refreshIntervalMin", source.html());
+    });
+
+    setupRepoSearch();
+
+    $("#signOutButton").on("click", () => {
+      localStorage.clear();
+      location.reload();
+    });
+
+    let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
+    let repoFetches = trackedRepos.map(repoId => {
+      let uri = `${apiUri}/repositories/${repoId}?api-version=2.0`;
+      return Q<IRepository>($.ajax({
+        url: uri,
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }));
+    });
+
+    Q.all(repoFetches).then(repos => {
+      repos.forEach(repo => {
+        let table = addRepoTable(repo.name, repo.id);
+      })
+    });
   });
 })
