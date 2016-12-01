@@ -82,13 +82,30 @@ export class VsoProxy {
     });
   }
 
-  private _makeCall<T>(options: {url: string}): Q.Promise<T> {
+  private _refreshAccessToken(refreshToken: string): Q.Promise<IAccessToken> {
+    return this._oAuthHelper.refreshAccessToken(refreshToken).then(token => {
+      this._accessTokenChanged(token);
+      return token;
+    });
+  }
+
+  private _makeCall<T>(options: {url: string}, refreshToken: boolean = true): Q.Promise<T> {
     return this._accessToken.then(token => {
       return Q<T>($.ajax({
         url: options.url,
         headers: {
           "Authorization": `Bearer ${token.access_token}`
         }
+      }).then((result: T) => {
+        return result;
+      }, reason => {
+        if(refreshToken && reason.status === 401) {
+          console.log("Refreshing access token");
+          this._accessToken = this._refreshAccessToken(token.refresh_token);
+          return this._makeCall<T>(options, false);
+        }
+
+        return Q.reject(reason);
       }));
     });
   }
