@@ -99,7 +99,7 @@ export class VsoProxy {
       }).then((result: T) => {
         return result;
       }, reason => {
-        if(refreshToken && reason.status === 401) {
+        if(refreshToken && (reason.status === 401 || reason.status === 0)) {
           console.log("Refreshing access token");
           this._accessToken = this._refreshAccessToken(token.refresh_token);
           return this._makeCall<T>(options, false);
