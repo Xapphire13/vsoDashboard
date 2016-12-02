@@ -101,7 +101,7 @@ export class VsoProxy {
       }, reason => {
         if(refreshToken && (reason.status === 401 || reason.status === 0)) {
           console.log("Refreshing access token");
-          this._accessToken = this._refreshAccessToken(token.refresh_token);
+          this._accessToken = token.refresh_token != undefined ? this._refreshAccessToken(token.refresh_token) : this._getAccessToken();
           return this._makeCall<T>(options, false);
         }
 
