@@ -16,6 +16,7 @@ export class VsoProxy {
   private _accessTokenChanged: (token: IAccessToken) => void;
   private _callbackUrl = "http://vsodash.azurewebsites.net/auth";
   private _oAuthHelper = new ClientOAuthHelper();
+  private _refreshSemaphore = 0;
   private _scopes = [
     "vso.agentpools",
     "vso.build",
@@ -100,8 +101,13 @@ export class VsoProxy {
         return result;
       }, reason => {
         if(refreshToken && (reason.status === 401 || reason.status === 0)) {
-          console.log("Refreshing access token");
-          this._accessToken = token.refresh_token != undefined ? this._refreshAccessToken(token.refresh_token) : this._getAccessToken();
+          if(++this._refreshSemaphore === 1) {
+            console.log("Refreshing access token");
+            this._accessToken = token.refresh_token != undefined ? this._refreshAccessToken(token.refresh_token) : this._getAccessToken();
+            this._accessToken.then(() => {
+              this._refreshSemaphore = 0;
+            })
+          }
           return this._makeCall<T>(options, false);
         }
 
