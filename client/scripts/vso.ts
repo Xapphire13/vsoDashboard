@@ -250,6 +250,7 @@ class Application {
       e.stopPropagation();
 
       repoSearchContainer.slideUp(250);
+      repoSearchContainer.children(".table-wrapper").remove();
       repoSearchCloseButton.hide();
       repoSearchListItem.removeClass("open");
     });
@@ -282,7 +283,7 @@ class Application {
         })
         resultsTable.items(repositories);
 
-        repoSearchContainer.children(".table").remove();
+        repoSearchContainer.children(".table-wrapper").remove();
         repoSearchContainer.append(resultsTable.dom);
         resultsTable.init();
       });
