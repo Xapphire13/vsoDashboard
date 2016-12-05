@@ -6,6 +6,7 @@ import {IAccessToken} from "../../shared/IAccessToken";
 import {IRepository} from "./IRepository";
 import {IProfile} from "./IProfile";
 import {ClientOAuthHelper} from "./ClientOAuthHelper";
+import {IThread} from "./IThread";
 import {IOdataQuery} from "./IOdataQuery";
 
 export class VsoProxy {
@@ -71,6 +72,14 @@ export class VsoProxy {
   public fetchRepository(repositoryId: string): Q.Promise<IRepository> {
     return this._makeCall<IRepository>({
       url: `${this._apiUri}/repositories/${repositoryId}?api-version=${this._apiVersion}`
+    });
+  }
+
+  public fetchThreads(pullRequest: IPullRequest): Q.Promise<IThread[]> {
+    return this._makeCall<IOdataQuery<IThread>>({
+      url: `${this._apiUri}/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}/threads?api-version=${this._apiVersion}`
+    }).then(results => {
+      return results.value;
     });
   }
 

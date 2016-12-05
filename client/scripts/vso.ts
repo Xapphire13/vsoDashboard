@@ -49,6 +49,11 @@ class Application {
       width: 2
     },
     {
+      name: "",
+      itemKey: "comments",
+      width: 5
+    },
+    {
       name: "Title",
       itemKey: "title",
       onClick: item => {
@@ -56,7 +61,7 @@ class Application {
 
         window.open(prLink, "_blank");
       },
-      width: 53
+      width: 48
     },
     {
       name: "Status",
@@ -150,12 +155,24 @@ class Application {
   public loadPullRequests(repositoryId: string, table: Table<IPullRequest>, userEmail?: string): Q.Promise<any> {
     return this.vsoProxy.listPullRequests(repositoryId).then(pullRequests => {
       if(userEmail != undefined) {
-        table.items(pullRequests.filter(pr =>
+        pullRequests = pullRequests.filter(pr =>
           pr.reviewers.filter(reviewer => reviewer.uniqueName === userEmail).length > 0 ||
-          pr.createdBy.uniqueName == this.upn));
-      } else {
-        table.items(pullRequests);
+          pr.createdBy.uniqueName == this.upn);
       }
+
+      return Q.all(pullRequests.map(pullRequest => {
+        return this.vsoProxy.fetchThreads(pullRequest).then(threads => {
+          let commentCount = 0;
+          threads.filter(thread => thread.properties != undefined && thread.properties.CodeReviewThreadType == undefined).forEach(thread => {
+            commentCount += thread.comments.length;
+          });
+
+          pullRequest["comments"] = `<div style="position: relative;"><img src='/images/comment.png' style="width: 16px; height: 16px; position: relative; top:4px;" width='16' height='16'/><span style="margin-left: 5px;">${commentCount}</span></div>`;
+          return pullRequest;
+        });
+      })).then(pullRequests => {
+        table.items(pullRequests);
+      })
     });
   }
 
