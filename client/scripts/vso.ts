@@ -16,6 +16,11 @@ $(document).ready(() => {
 
   let app = new Application(refreshIntervalMin);
   app.start();
+
+  // Refresh the page every 24hrs to pull new features
+  setTimeout(() => {
+    window.location.reload();
+  }, 24 * 60 * 60 * 1000);
 })
 
 class Application {
