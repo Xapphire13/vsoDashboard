@@ -160,19 +160,21 @@ class Application {
           pr.createdBy.uniqueName == this.upn);
       }
 
-      return Q.all(pullRequests.map(pullRequest => {
+      pullRequests.map(pullRequest => {
+        let comments = ko.observable("<div style='position: relative;''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>-</span></div>");
+        pullRequest["comments"] = comments;
+
         return this.vsoProxy.fetchThreads(pullRequest).then(threads => {
           let commentCount = 0;
           threads.filter(thread => thread.properties != undefined && thread.properties.CodeReviewThreadType == undefined).forEach(thread => {
             commentCount += thread.comments.length;
           });
 
-          pullRequest["comments"] = `<div style="position: relative;"><img src='/images/comment.png' style="width: 16px; height: 16px; position: relative; top:4px;" width='16' height='16'/><span style="margin-left: 5px;">${commentCount}</span></div>`;
-          return pullRequest;
+          comments(`<div style='position: relative;''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>${commentCount}</span></div>`);
         });
-      })).then(pullRequests => {
-        table.items(pullRequests);
       })
+
+      table.items(pullRequests);
     });
   }
 
