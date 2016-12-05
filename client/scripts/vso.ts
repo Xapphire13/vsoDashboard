@@ -226,6 +226,7 @@ class Application {
     panel.commands([
       {
         label: "Mine",
+        active: justMine,
         onClick: () => {
           justMine(true);
           return loadData();
@@ -233,6 +234,7 @@ class Application {
       },
       {
         label: "Everyones",
+        active: ko.computed(() => !justMine()),
         onClick: () => {
           justMine(false);
           return loadData();

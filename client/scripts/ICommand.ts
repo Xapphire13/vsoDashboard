@@ -3,4 +3,5 @@
 export interface ICommand<T> {
   label: string;
   onClick: () => Q.Promise<T>;
+  active: KnockoutObservable<boolean>;
 }

@@ -7,7 +7,7 @@
   </div>
   <div class="panel-commands-wrapper" data-bind="style: { height: commands().length > 0 ? '30px' : '0' }">
     <div class="panel-commands" data-bind="foreach: commands">
-      <div class="panel-command clickable" data-bind="text: label, click: onClick"></div>
+      <div class="panel-command clickable" data-bind="text: label, click: onClick, css: {'panel-command-active': active}"></div>
     </div>
   </div>
 </div>
