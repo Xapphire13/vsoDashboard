@@ -41,7 +41,7 @@ export class VsoProxy {
     this._accessTokenChanged = accessTokenChanged;
 
     if(accessToken == undefined) {
-      this._accessToken = this._getAccessToken();
+      this._oAuthHelper.getAccessCode(this._clientId, "test", this._scopes, this._callbackUrl); // This redirects the browser
     } else {
       this._accessToken = Q(accessToken);
     }
@@ -83,15 +83,6 @@ export class VsoProxy {
     });
   }
 
-  private _getAccessToken(): Q.Promise<IAccessToken> {
-    return this._oAuthHelper.getAccessCode(this._clientId, "test", this._scopes, this._callbackUrl).then(code => {
-      return this._oAuthHelper.getAccessToken(code, "test").then(token => {
-        this._accessTokenChanged(token);
-        return token;
-      })
-    });
-  }
-
   private _refreshAccessToken(refreshToken: string): Q.Promise<IAccessToken> {
     return this._oAuthHelper.refreshAccessToken(refreshToken).then(token => {
       this._accessTokenChanged(token);
@@ -112,7 +103,11 @@ export class VsoProxy {
         if(refreshToken && (reason.status === 401 || reason.status === 0)) {
           if(++this._refreshSemaphore === 1) {
             console.log("Refreshing access token");
-            this._accessToken = token.refresh_token != undefined ? this._refreshAccessToken(token.refresh_token) : this._getAccessToken();
+            if(token.refresh_token == undefined) {
+              this._oAuthHelper.getAccessCode(this._clientId, "test", this._scopes, this._callbackUrl); // This redirects the browser
+            }
+
+            this._accessToken = this._refreshAccessToken(token.refresh_token);
             this._accessToken.then(() => {
               this._refreshSemaphore = 0;
             })

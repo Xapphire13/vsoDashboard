@@ -1,6 +1,6 @@
 /// <reference path="../typings/index.d.ts" />
 
-String.prototype.format = function(...args: any[]) {
+(String.prototype as any).format = function(...args: any[]) {
   let output = this as string;
 
   args.forEach((arg, index) => {

@@ -1,6 +1,7 @@
 /// <reference path="../typings/index.d.ts"/>
 
 import * as express from "express";
+import * as path from "path";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
 eval(require('fs').readFileSync('../shared/StringFormat.js', 'utf8'));
 
@@ -12,14 +13,11 @@ let app = express();
 app.set('port', process.env.PORT || 80);
 
 // Static files
-app.use(express.static("../client"));
-app.use("/libs", express.static("../bower_components"));
-app.use("/scripts", express.static("../shared"));
-
-// OAuth Routing
-app.get("/auth", (req, res) => {
+app.use(express.static(path.join(__dirname, "/../", "client")));
+app.use("/libs", express.static(path.join(__dirname, "/../", "bower_components")));
+app.use("/scripts", express.static(path.join(__dirname, "/../", "shared")));
+app.use("/auth", express.static(path.join(__dirname, "/../", "client/auth.html")), () => {
   console.log("Auth redirect");
-  res.send("Authorizing...");
 });
 
 app.get("/token", (req, res) => {
