@@ -115,7 +115,7 @@ class Application {
     },
     {
       name: "",
-      format: "<div>\u2026</div>",
+      format: "<div style='text-align: center; position: relative; top: -4px;'>\u2026</div>",
       formatType: FormatType.html,
       onClick: (item, event: MouseEvent) => {
         let element = document.elementFromPoint(event.clientX, event.clientY);
