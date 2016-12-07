@@ -13,16 +13,17 @@ a {
 #menu {
   position: fixed;
   float: left;
-  width: 300px;
+  width: 280px;
   height: 100%;
   background: #333333;
   border-right: 2px solid #888888;
   overflow-y: auto;
+  padding: 10px;
 }
 
 ul.menu {
      list-style-type: none;
-     margin: 20px 0 0 0;
+     margin: 20px -10px 0 -10px;
      padding: 0;
 }
 
@@ -30,7 +31,7 @@ ul.menu > li {
   min-height: 40px;
   border-top: 1px solid #888888;
   border-bottom: 1px solid #888888;
-  padding: 10px 5px 10px 5px;
+  padding: 10px;
 }
 
 ul.menu > li:not(.top) {

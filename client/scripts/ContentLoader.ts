@@ -19,7 +19,10 @@ export class ContentLoader {
       let script = $(`<script id='${templateName}-template' type='text/html'></script>`);
       let def = Q.defer<any>();
       script.load(`/templates/${templateName}.html`, () => {
-        $("body").append(script);
+        // If nothing beat us to it
+        if($(`#${templateName}-template`).length <= 0) {
+          $("body").append(script);
+        }
         def.resolve();
       });
 

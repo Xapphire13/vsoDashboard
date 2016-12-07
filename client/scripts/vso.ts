@@ -121,6 +121,8 @@ class Application {
   public start(): Q.Promise<any> {
     return this.vsoProxy.fetchUserProfile().then(me => {
       this.upn = me.emailAddress;
+
+      ko.applyBindings({username: me.displayName}, document.getElementById("username"));
     }).then(() => {
       this.setupRefreshIntervalChange();
       this.setupRepoSearch();
