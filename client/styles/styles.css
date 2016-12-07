@@ -121,7 +121,7 @@ footer {
   background: rgba(153, 214, 255, 0.3);
 }
 
-.approved {
+.approved, .approvedWithSuggestions {
   background: rgba(153, 255, 153, 0.3);
 }
 
@@ -137,7 +137,7 @@ footer {
   background: rgb(153, 214, 255);
 }
 
-.approved-noAlpha {
+.approved-noAlpha, .approvedWithSuggestions-noAlpha {
   background: rgb(153, 255, 153);
 }
 

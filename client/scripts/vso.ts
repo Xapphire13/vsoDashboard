@@ -13,6 +13,8 @@ import {IAccessToken} from "../../shared/IAccessToken";
 import {ContextMenu} from "./ContextMenu";
 import {IProfile} from "./IProfile";
 import {ICommand} from "./ICommand";
+import {PullRequestStatus} from "./PullRequestStatus";
+import {PullRequestVote} from "./PullRequestVote";
 
 $(document).ready(() => {
   let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
@@ -39,8 +41,8 @@ class Application {
       name: "",
       format: (item: IPullRequest) => {
         let requiredReviewers = item.reviewers.filter(reviewer => reviewer.isRequired);
-        let rejected = item.reviewers.filter(reviewer => reviewer.vote == -10)[0] != undefined;
-        let waiting = item.reviewers.filter(reviewer => reviewer.vote == -5)[0] != undefined;
+        let rejected = item.reviewers.filter(reviewer => reviewer.vote == PullRequestVote.rejected)[0] != undefined;
+        let waiting = item.reviewers.filter(reviewer => reviewer.vote == PullRequestVote.waiting)[0] != undefined;
 
         if(rejected) {
           return "<div style='width: 10px; height: 10px;' class='rejected-noAlpha'></div>"
@@ -217,17 +219,7 @@ class Application {
         let me = item.reviewers.filter(reviewer => reviewer.uniqueName == this.upn)[0];
 
         if(me != undefined) {
-          switch(me.vote) {
-            case 0:
-              return ["noResponse"];
-            case 5:
-            case 10:
-              return ["approved"];
-            case -5:
-              return ["waiting"];
-            case -10:
-              return ["rejected"]
-          }
+          return [PullRequestVote[me.vote]];
         }
 
         return [];
@@ -351,6 +343,30 @@ class Application {
         onClick: () => {
           location.assign(`mailto:${item.createdBy.uniqueName}?subject=${encodeURIComponent(`Pull Request: ${item.title}`)}&body=${encodeURIComponent(`Hi ${item.createdBy.displayName.split(" ")[0]},\n\nI am emailing about the following pull request ${this.prUrlTemplate.format(item.repository.id, item.pullRequestId)}\n\nThanks,\n${this.me.displayName.split(" ")[0]}`)}`);
           return Q();
+        }
+      },
+      {
+        label: "Approve",
+        onClick: () => {
+          return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.approved);
+        }
+      },
+      {
+        label: "Reject",
+        onClick: () => {
+          return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.rejected);
+        }
+      },
+      {
+        label: "Complete",
+        onClick: () => {
+          return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.completed);
+        }
+      },
+      {
+        label: "Abandon",
+        onClick: () => {
+          return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.abandoned);
         }
       }
     ];
