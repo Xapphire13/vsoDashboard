@@ -81,6 +81,8 @@ export class Panel {
         this._initialized = true;
       });
     }
+
+    return Q();
   }
 
   public remove() {

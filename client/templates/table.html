@@ -8,8 +8,8 @@
     </tr>
   </thead>
   <tbody data-bind="foreach: items">
-    <tr data-bind="css: $root.getRowCssClass($data), foreach: $parent.columns">
-      <td data-bind="html: $root.getValue($parent, itemKey, $data), css: cssClass, css: { clickable: onClick != undefined }, click: function() { onClick($parent); }"></td>
+    <tr data-bind="css: $root.getRowCssClass($data), foreach: $parent.columns, event: { mousedown: function(data, event) { $parent.rowClick.call($parent, data, event) }, contextmenu: function(data, event) { return false; }}">
+      <td data-bind="html: $root.getValue($parent, itemKey, $data), css: cssClass, css: { clickable: onClick != undefined }, click: function(data, event) { onClick($parent, event); }"></td>
     </tr>
   </tbody>
 </table>

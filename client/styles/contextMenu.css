@@ -1,0 +1,41 @@
+.contextMenu {
+  width: 200px;
+  background: #fff9f2;
+  color: black;
+  position: fixed;
+  display: none;
+  border-radius: 5px;
+}
+
+.contextMenu-command-wrapper {
+  height: 20px;
+  position: relative;
+  padding: 10px;
+}
+
+.contextMenu-command-wrapper:not(.first) {
+  border-top: 1px solid #c1c1c1;
+}
+
+.contextMenu-command-wrapper.first:hover {
+  border-radius: 5px 5px 0 0;
+}
+
+.contextMenu-command-wrapper.last:hover {
+  border-radius: 0 0 5px 5px;
+}
+
+.contextMenu-command-wrapper.first.last:hover {
+  border-radius: 5px;
+}
+
+.contextMenu-command-wrapper:hover {
+  background: #61AFEF;
+}
+
+.contextMenu-command {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  width: calc(100% - 20px);
+}

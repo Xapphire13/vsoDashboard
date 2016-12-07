@@ -1,6 +1,8 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {ContentLoader} from "./ContentLoader";
+import {ContextMenu} from "./ContextMenu";
+import {ICommand} from "./ICommand";
 
 export enum FormatType {
   html,
@@ -21,6 +23,7 @@ export interface IColumn<T> {
 export interface ITableOptions<T> {
   columns: IColumn<T>[];
   getRowCssClasses?: (item: T) => string[];
+  supplyCommands?: (item: T) => ICommand<any>[];
 }
 
 export class Table<T> {
@@ -33,9 +36,10 @@ export class Table<T> {
   private _domTemplate: string = "<div class='table-wrapper' data-bind=\"template: { name: 'table-template' }\"></div>";
   private static _tableCount = 0;
   private _getRowCssClasses: (item: T) => string[];
+  private _supplyCommands: (item: T) => ICommand<any>[];
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
-    this.items = items ? items : ko.observableArray<T>([]);
+    this.items = items || ko.observableArray<T>([]);
     this.columns = options.columns.map(column => <IColumn<T>>{
       name: column.name,
       itemKey: null || column.itemKey,
@@ -47,6 +51,7 @@ export class Table<T> {
       cssClass: null || column.cssClass
     });
     this._getRowCssClasses = options.getRowCssClasses;
+    this._supplyCommands = options.supplyCommands;
     this.id = `table-${Table._tableCount++}`;
 
     // Init DOM
@@ -61,7 +66,7 @@ export class Table<T> {
     });
   }
 
-  public getValue(item: any, itemKey: string, column: any): any {
+  public getValue(item: T, itemKey: string, column: any): any {
     if(column.formatType != undefined) {
       switch(column.formatType) {
         case FormatType.html:
@@ -88,7 +93,13 @@ export class Table<T> {
     return item;
   }
 
-  public getRowCssClass(item: any): string {
+  public getRowCssClass(item: T): string {
     return this._getRowCssClasses ? this._getRowCssClasses(item).join(" ") : "";
+  }
+
+  public rowClick(item: T, event: MouseEvent): void {
+    if(event.button == 2 && this._supplyCommands) {
+      ContextMenu.show(event.clientX + 1, event.clientY + 1, this._supplyCommands(item));
+    }
   }
 }

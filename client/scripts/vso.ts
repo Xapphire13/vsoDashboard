@@ -10,6 +10,9 @@ import {ClientOAuthHelper} from "./ClientOAuthHelper";
 import {IUser} from "./IUser";
 import {VsoProxy} from "./VsoProxy";
 import {IAccessToken} from "../../shared/IAccessToken";
+import {ContextMenu} from "./ContextMenu";
+import {IProfile} from "./IProfile";
+import {ICommand} from "./ICommand";
 
 $(document).ready(() => {
   let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
@@ -28,6 +31,7 @@ class Application {
   public projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
   public accessToken: string;
   public upn: string;
+  public me: IProfile;
   public vsoProxy: VsoProxy;
   public refreshIntervalMin = ko.observable(0);
   public columns = <IColumn<IPullRequest>[]>[
@@ -93,7 +97,7 @@ class Application {
 
         return `${months[dateTime.getMonth()]}-${padNumber(dateTime.getDate())}-${dateTime.getFullYear()} ${padNumber(dateTime.getHours())}:${padNumber(dateTime.getMinutes())}`;
       },
-      width: 15
+      width: 13
     },
     {
       name: "Codeflow",
@@ -105,7 +109,19 @@ class Application {
 
         window.open(codeflowLink, "_self");
       },
-      width: 5
+      width: 4
+    },
+    {
+      name: "",
+      format: "<div>\u2026</div>",
+      formatType: FormatType.html,
+      onClick: (item, event: MouseEvent) => {
+        let element = document.elementFromPoint(event.clientX, event.clientY);
+        let bound = element.getBoundingClientRect();
+
+        ContextMenu.show(bound.left, bound.bottom, this._supplyPullRequestCommands(item));
+      },
+      width: 3
     }
   ];
 
@@ -119,7 +135,12 @@ class Application {
   }
 
   public start(): Q.Promise<any> {
+    $(document).on("click", e => {
+      ContextMenu.hide();
+    });
+
     return this.vsoProxy.fetchUserProfile().then(me => {
+      this.me = me;
       this.upn = me.emailAddress;
 
       ko.applyBindings({username: me.displayName}, document.getElementById("username"));
@@ -135,7 +156,7 @@ class Application {
       Q.all(repoFetches).then(repos => {
         repos.forEach(repo => {
           let table = this.addRepoTable(repo.name, repo.id);
-        })
+        });
       });
     });
   }
@@ -206,7 +227,8 @@ class Application {
         }
 
         return [];
-      }
+      },
+      supplyCommands: (item) => this._supplyPullRequestCommands(item)
     });
 
     let justMine = ko.observable(true);
@@ -316,5 +338,17 @@ class Application {
         resultsTable.init();
       });
     })
+  }
+
+  private _supplyPullRequestCommands(item: IPullRequest): ICommand<any>[] {
+    return [
+      {
+        label: "Send Mail",
+        onClick: () => {
+          location.assign(`mailto:${item.createdBy.uniqueName}?subject=${encodeURIComponent(`Pull Request: ${item.title}`)}&body=${encodeURIComponent(`Hi ${item.createdBy.displayName.split(" ")[0]},\n\nI am emailing about the following pull request ${this.prUrlTemplate.format(item.repository.id, item.pullRequestId)}\n\nThanks,\n${this.me.displayName.split(" ")[0]}`)}`);
+          return Q();
+        }
+      }
+    ];
   }
 }
