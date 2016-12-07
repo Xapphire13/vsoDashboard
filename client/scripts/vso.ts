@@ -151,6 +151,10 @@ class Application {
       $("#signOutButton").on("click", this.signOut);
 
       let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
+      // Remove null repos if any
+      trackedRepos = trackedRepos.filter(repoId => repoId != undefined);
+      localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos));
+
       let repoFetches = trackedRepos.map(repoId => this.vsoProxy.fetchRepository(repoId));
 
       Q.all(repoFetches).then(repos => {

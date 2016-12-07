@@ -97,26 +97,34 @@ export class VsoProxy {
         headers: {
           "Authorization": `Bearer ${token.access_token}`
         }
-      }).then((result: T) => {
+      }).then((result: T, textStatus, jqXHR) => {
+        if(jqXHR.status === 203) { // Edge/IE will get a 203 when we need a new token
+          return this._renewToken(options, token);
+        }
+
         return result;
       }, reason => {
         if(refreshToken && (reason.status === 401 || reason.status === 0)) {
-          if(++this._refreshSemaphore === 1) {
-            console.log("Refreshing access token");
-            if(token.refresh_token == undefined) {
-              this._oAuthHelper.getAccessCode(this._clientId, "test", this._scopes, this._callbackUrl); // This redirects the browser
-            }
-
-            this._accessToken = this._refreshAccessToken(token.refresh_token);
-            this._accessToken.then(() => {
-              this._refreshSemaphore = 0;
-            })
-          }
-          return this._makeCall<T>(options, false);
+          return this._renewToken(options, token);
         }
 
         return Q.reject(reason);
       }));
     });
+  }
+
+  private _renewToken<T>(options: {url: string}, token: IAccessToken): Q.Promise<T> {
+    if(++this._refreshSemaphore === 1) {
+      console.log("Refreshing access token");
+      if(token.refresh_token == undefined) {
+        this._oAuthHelper.getAccessCode(this._clientId, "test", this._scopes, this._callbackUrl); // This redirects the browser
+      }
+
+      this._accessToken = this._refreshAccessToken(token.refresh_token);
+      this._accessToken.then(() => {
+        this._refreshSemaphore = 0;
+      })
+    }
+    return this._makeCall<T>(options, false);
   }
 }
