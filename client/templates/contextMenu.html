@@ -1,5 +1,16 @@
 <div class="contextMenu" data-bind="foreach: items">
-  <div class="contextMenu-command-wrapper" data-bind="click: onClick, css: {first: $index() == 0, last: $index() == $parent.items.length - 1}">
-    <div class="contextMenu-command" data-bind="text: label"></div>
+  <div class="contextMenu-command-wrapper" data-bind="click: function(data) { return $parent.onClick(data) }, css: {first: $index() == 0, last: $index() == $parent.items.length - 1, 'clickable-not-bold': status() == 0 || status() == 3}">
+    <div class="contextMenu-command" data-bind="text: label, visible: status() == 0"></div>
+    <div class="contextMenu-command-status" data-bind="visible: status() == 1, click: function(data, event) { event.stopPropagation(); return false; }">
+      <img src="/images/loading.gif"/>
+    </div>
+    <div class="contextMenu-command-status" data-bind="visible: status() == 2, click: function(data, event) { event.stopPropagation(); return false; }">
+      <img src="/images/success.png"/>
+    </div>
+    <div class="contextMenu-command-status error" data-bind="visible: status() == 3, click: function(data, event) { $parent.onClick(data); event.stopPropagation(); return false; }">
+      <div>
+        <img src="/images/error.png" style="height: 20px; display: inline-block;"/> <span style="position: relative; top: -4px;">Retry<span>
+      </div>
+    </div>
   </div>
 </div>

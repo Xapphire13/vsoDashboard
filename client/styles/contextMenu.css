@@ -5,6 +5,7 @@
   position: fixed;
   display: none;
   border-radius: 5px;
+  z-index: 10;
 }
 
 .contextMenu-command-wrapper {
@@ -17,15 +18,18 @@
   border-top: 1px solid #c1c1c1;
 }
 
-.contextMenu-command-wrapper.first:hover {
+.contextMenu-command-wrapper.first:hover,
+.contextMenu-command-wrapper.first > .contextMenu-command-status {
   border-radius: 5px 5px 0 0;
 }
 
-.contextMenu-command-wrapper.last:hover {
+.contextMenu-command-wrapper.last:hover,
+.contextMenu-command-wrapper.last > .contextMenu-command-status {
   border-radius: 0 0 5px 5px;
 }
 
-.contextMenu-command-wrapper.first.last:hover {
+.contextMenu-command-wrapper.first.last:hover,
+.contextMenu-command-wrapper.first.last > .contextMenu-command-status {
   border-radius: 5px;
 }
 
@@ -38,4 +42,24 @@
   top: 50%;
   transform: translate(0, -50%);
   width: calc(100% - 20px);
+}
+
+.contextMenu-command-status {
+  height: 100%;
+  width: 100%;
+  margin: -10px;
+  background: #2e2e2e;
+  padding: 10px;
+}
+
+.contextMenu-command-status:not(.error) > img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 20px;
+}
+
+.contextMenu-command-status.error {
+  color: white;
 }

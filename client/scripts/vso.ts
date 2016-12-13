@@ -36,6 +36,7 @@ class Application {
   public me: IProfile;
   public vsoProxy: VsoProxy;
   public refreshIntervalMin = ko.observable(0);
+  public panels: {panel: Panel, repoId: string}[] = [];
   public columns = <IColumn<IPullRequest>[]>[
     {
       name: "",
@@ -244,6 +245,7 @@ class Application {
       onRemove: () => {
         let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
         localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
+        this.panels = this.panels.filter(p => p.repoId !== repoId);
       },
       refresh: () => {
         return loadData();
@@ -275,6 +277,10 @@ class Application {
       panel.dom.css("margin-top", "25px");
     }
     $("#content").append(panel.dom);
+    this.panels.push({
+      panel: panel,
+      repoId: repoId
+    });
 
     let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
     if(trackedRepos.filter(repo => repo == repoId).length == 0) {
@@ -348,25 +354,33 @@ class Application {
       {
         label: "Approve",
         onClick: () => {
-          return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.approved);
+          return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.approved).then(() => {
+            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+          });
         }
       },
       {
         label: "Reject",
         onClick: () => {
-          return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.rejected);
+          return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.rejected).then(() => {
+            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+          });
         }
       },
       {
         label: "Complete",
         onClick: () => {
-          return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.completed);
+          return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.completed).then(() => {
+            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+          });
         }
       },
       {
         label: "Abandon",
         onClick: () => {
-          return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.abandoned);
+          return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.abandoned).then(() => {
+            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+          });
         }
       }
     ];

@@ -113,7 +113,8 @@ footer {
   color: #61AFEF;
 }
 
-.clickable {
+.clickable,
+.clickable-not-bold {
   cursor: pointer;
 }
 

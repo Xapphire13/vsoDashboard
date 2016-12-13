@@ -85,6 +85,10 @@ export class Panel {
     return Q();
   }
 
+  public refresh(): void {
+    this._refresh();
+  }
+
   public remove() {
     this.dom.remove();
 

@@ -1,7 +1,7 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {ContentLoader} from "./ContentLoader";
-import {ICommand} from "./ICommand";
+import {ICommand, CommandStatus} from "./ICommand";
 
 export class ContextMenu {
   private static _initialized: boolean = false;
@@ -24,6 +24,8 @@ export class ContextMenu {
       prom = ContextMenu._init();
     }
 
+    items.forEach(item => item.status ? null : item.status = ko.observable(CommandStatus.none));
+
     let pageWidth = document.body.clientWidth;
     let pageHeight = document.body.clientHeight;
     const menuWidth = 200;
@@ -39,16 +41,19 @@ export class ContextMenu {
 
     prom.then(() => {
       let menu = $($("#contextMenu-template").html());
-      ContextMenu.hide();
-      $("body").append(menu);
-      ko.applyBindings({items: items}, document.getElementsByClassName("contextMenu")[0]);
+      menu.on("click", e => {
+        e.stopPropagation();
+        return false;
+      });
       menu.on("contextmenu", e => {
         return false;
       })
-      menu.on("mousedown", (e) => {
-
-      })
-      menu.css("z-index", 10);
+      ContextMenu.hide();
+      $("body").append(menu);
+      ko.applyBindings({
+        items: items,
+        onClick: ContextMenu.onClick
+      }, document.getElementsByClassName("contextMenu")[0]);
       menu.css("left", xPos);
       menu.css("top", yPos);
       menu.show();
@@ -57,5 +62,20 @@ export class ContextMenu {
 
   public static hide(): void {
     $(".contextMenu").remove();
+  }
+
+  private static onClick(command: ICommand<any>): Q.Promise<any> {
+    command.status(CommandStatus.loading);
+
+    return Q.all([
+      Q.delay(1000), // Synthetic delay
+      command.onClick(command).then(() => {
+        command.status(CommandStatus.success);
+      })
+    ]).then(() => {
+      ContextMenu.hide();
+    }, reason => {
+      command.status(CommandStatus.error);
+    });
   }
 }
