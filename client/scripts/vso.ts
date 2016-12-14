@@ -1,20 +1,20 @@
 /// <reference path="../../typings/index.d.ts" />
 /// <reference path="../../typings/StringFormat.d.ts"/>
 
-import {IPullRequest} from "./IPullRequest";
-import {IColumn, Table, FormatType} from "./Table";
-import {Panel} from "./Panel";
-import {IRepository} from "./IRepository";
-import {IProject} from "./IProject";
 import {ClientOAuthHelper} from "./ClientOAuthHelper";
-import {IUser} from "./IUser";
-import {VsoProxy} from "./VsoProxy";
-import {IAccessToken} from "../../shared/IAccessToken";
 import {ContextMenu} from "./ContextMenu";
-import {IProfile} from "./IProfile";
+import {IAccessToken} from "../../shared/IAccessToken";
+import {IColumn, Table, FormatType} from "./Table";
 import {ICommand} from "./ICommand";
+import {IProfile} from "./IProfile";
+import {IProject} from "./IProject";
+import {IPullRequest} from "./IPullRequest";
+import {IRepository} from "./IRepository";
+import {IUser} from "./IUser";
+import {Panel} from "./Panel";
 import {PullRequestStatus} from "./PullRequestStatus";
 import {PullRequestVote} from "./PullRequestVote";
+import {VsoProxy} from "./VsoProxy";
 
 $(document).ready(() => {
   let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
@@ -29,14 +29,7 @@ $(document).ready(() => {
 })
 
 class Application {
-  public prUrlTemplate = "https://msazure.visualstudio.com/One/_git/{0}/pullrequest/{1}"
-  public projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
   public accessToken: string;
-  public upn: string;
-  public me: IProfile;
-  public vsoProxy: VsoProxy;
-  public refreshIntervalMin = ko.observable(0);
-  public panels: {panel: Panel, repoId: string}[] = [];
   public columns = <IColumn<IPullRequest>[]>[
     {
       name: "",
@@ -127,6 +120,14 @@ class Application {
       width: 3
     }
   ];
+
+  public me: IProfile;
+  public panels: {panel: Panel, repoId: string}[] = [];
+  public prUrlTemplate = "https://msazure.visualstudio.com/One/_git/{0}/pullrequest/{1}"
+  public projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
+  public refreshIntervalMin = ko.observable(0);
+  public upn: string;
+  public vsoProxy: VsoProxy;
 
   constructor(refreshIntervalMin: number = 1) {
     this.refreshIntervalMin(refreshIntervalMin);

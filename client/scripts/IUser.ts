@@ -1,7 +1,7 @@
 export interface IUser {
-  id: string;
   displayName: string;
+  id: string;
+  imageUrl: string;
   uniqueName: string;
   url: string;
-  imageUrl: string;
 }

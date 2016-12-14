@@ -1,9 +1,9 @@
 import {IComment} from "./IComment";
 
 export interface IThread {
-  id: number;
-  publishedDate: string;
-  lastUpdatedDate: string;
   comments: IComment[];
+  id: number;
+  lastUpdatedDate: string;
   properties: any;
+  publishedDate: string;
 }

@@ -1,25 +1,25 @@
-import {IUser} from "./IUser";
-import {IRepository} from "./IRepository";
 import {ICommit} from "./ICommit";
+import {IRepository} from "./IRepository";
 import {IReviewer} from "./IReviewer";
+import {IUser} from "./IUser";
 
 export interface IPullRequest {
-  repository: IRepository;
-  pullRequestId: number;
   codeReviewId: number;
-  status: string;
   createdBy: IUser;
   creationDate: string;
-  title: string;
   description: string;
-  sourceRefName: string;
-  targetRefName: string;
-  mergeStatus: string;
-  mergeId: string;
+  lastMergeCommit: ICommit;
   lastMergeSourceCommit: ICommit;
   lastMergeTargetCommit: ICommit;
-  lastMergeCommit: ICommit;
+  mergeId: string;
+  mergeStatus: string;
+  pullRequestId: number;
+  repository: IRepository;
   reviewers: IReviewer[];
-  url: string;
+  sourceRefName: string;
+  status: string;
   supportsIterations: boolean;
+  targetRefName: string;
+  title: string;
+  url: string;
 }

@@ -1,23 +1,23 @@
 /// <reference path="../../typings/index.d.ts" />
 /// <reference path="../../typings/StringFormat.d.ts"/>
 
-import {IPullRequest} from "./IPullRequest";
-import {IAccessToken} from "../../shared/IAccessToken";
-import {IRepository} from "./IRepository";
-import {IProfile} from "./IProfile";
 import {ClientOAuthHelper} from "./ClientOAuthHelper";
-import {IThread} from "./IThread";
+import {IAccessToken} from "../../shared/IAccessToken";
 import {IOdataQuery} from "./IOdataQuery";
+import {IProfile} from "./IProfile";
+import {IPullRequest} from "./IPullRequest";
+import {IRepository} from "./IRepository";
+import {IThread} from "./IThread";
 import {PullRequestStatus} from "./PullRequestStatus";
 import {PullRequestVote} from "./PullRequestVote";
 
 export class VsoProxy {
-  private _apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis/git";
-  private _apiVersion = "3.0";
-  private _clientId = "C1006007-2D67-48A7-B4B9-CB82AF5C0525";
   private _accessToken: Q.Promise<IAccessToken>;
   private _accessTokenChanged: (token: IAccessToken) => void;
+  private _apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis/git";
+  private _apiVersion = "3.0";
   private _callbackUrl = "https://vsodash.azurewebsites.net/auth";
+  private _clientId = "C1006007-2D67-48A7-B4B9-CB82AF5C0525";
   private _oAuthHelper = new ClientOAuthHelper();
   private _refreshSemaphore = 0;
   private _scopes = [

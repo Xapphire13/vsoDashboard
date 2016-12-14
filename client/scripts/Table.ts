@@ -10,14 +10,14 @@ export enum FormatType {
 }
 
 export interface IColumn<T> {
-  name: string;
-  itemKey?: string;
+  cssClass?: string;
   format?: any;
   formatType?: FormatType;
+  itemKey?: string;
+  name: string;
   onClick?: (item: T) => void;
-  width?: number;
   style?: string;
-  cssClass?: string;
+  width?: number;
 }
 
 export interface ITableOptions<T> {
@@ -27,16 +27,16 @@ export interface ITableOptions<T> {
 }
 
 export class Table<T> {
-  public items: KnockoutObservableArray<T>;
   public columns: IColumn<T>[];
-  public id: string;
   public dom: JQuery;
+  public id: string;
+  public items: KnockoutObservableArray<T>;
 
-  private _headerRow: JQuery;
   private _domTemplate: string = "<div class='table-wrapper' data-bind=\"template: { name: 'table-template' }\"></div>";
-  private static _tableCount = 0;
   private _getRowCssClasses: (item: T) => string[];
+  private _headerRow: JQuery;
   private _supplyCommands: (item: T) => ICommand<any>[];
+  private static _tableCount = 0;
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
     this.items = items || ko.observableArray<T>([]);

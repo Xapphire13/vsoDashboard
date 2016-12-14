@@ -4,29 +4,29 @@ import {ContentLoader} from "./ContentLoader";
 import {ICommand} from "./ICommand";
 
 export interface IPanelOptions {
-  title: string,
+  invisible?: boolean;
   loadContent: () => Q.Promise<any>,
   onRemove?: () => void,
   refresh?: () => Q.Promise<any>,
   refreshInterval?: KnockoutObservable<number>
-  invisible?: boolean;
+  title: string,
 }
 
 export class Panel {
-  public dom: JQuery;
-  public id: string;
-  public title: KnockoutObservable<string> = ko.observable("");
-  public child: KnockoutObservable<JQuery> = ko.observable<JQuery>();
-  public onRemove: () => void;
-  public commands: KnockoutObservableArray<ICommand<any>> = ko.observableArray<ICommand<any>>([]);
-  public loading: KnockoutObservable<boolean> = ko.observable(true);
-  public isInvisible: KnockoutObservable<boolean> = ko.observable<boolean>();
-
   private static _panelCount = 0;
 
-  private _initialized: boolean = false;
-  private _domTemplate: string = "<div class='panel-wrapper' data-bind=\"template: { name: 'panel-template' }\"></div>";
+  public child: KnockoutObservable<JQuery> = ko.observable<JQuery>();
+  public commands: KnockoutObservableArray<ICommand<any>> = ko.observableArray<ICommand<any>>([]);
+  public dom: JQuery;
+  public id: string;
+  public isInvisible: KnockoutObservable<boolean> = ko.observable<boolean>();
+  public loading: KnockoutObservable<boolean> = ko.observable(true);
+  public onRemove: () => void;
+  public title: KnockoutObservable<string> = ko.observable("");
+
   private _childContainer: JQuery;
+  private _domTemplate: string = "<div class='panel-wrapper' data-bind=\"template: { name: 'panel-template' }\"></div>";
+  private _initialized: boolean = false;
   private _loadContent: () => Q.Promise<any>;
   private _refresh: () => Q.Promise<any>;
   private _refreshInterval: KnockoutObservable<number>;

@@ -8,8 +8,8 @@ export enum CommandStatus {
 }
 
 export interface ICommand<T> {
+  active?: KnockoutObservable<boolean>;
   label: string;
   onClick: (command: ICommand<T>) => Q.Promise<T>;
-  active?: KnockoutObservable<boolean>;
   status?: KnockoutObservable<CommandStatus>; // Defaults to 'none'
 }
