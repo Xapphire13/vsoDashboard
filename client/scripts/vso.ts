@@ -251,7 +251,10 @@ class Application {
       refresh: () => {
         return loadData();
       },
-      refreshInterval: this.refreshIntervalMin
+      refreshInterval: this.refreshIntervalMin,
+      minimizedText: ko.computed(() => {
+        return `${table.items().length} PR${table.items().length === 1 ? "" : "s"}`;
+      })
     });
     panel.commands([
       {

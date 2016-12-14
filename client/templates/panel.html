@@ -1,16 +1,20 @@
 <div class="panel" data-bind="css: { invisible: isInvisible() }">
-  <div class="panel-header" data-bind="visible: !isInvisible()">
-    <h3 style='display: inline-block; margin-right: 10px;' data-bind="text: title"></h3>
+  <div class="panel-header" data-bind="visible: !isInvisible(), css: { minimized: minimized() }">
+    <h3 style="display: inline-block; margin-right: 10px;" data-bind="text: title"></h3>
+    <div style="border-left: 1px solid #888888; margin-left: -3px; padding-left: 10px;" data-bind="style: {display: minimized() && minimizedText() != '' ? 'inline-block' : 'none' }, text: minimizedText"></div>
     <div style="position: absolute; display: inline-block; right: 10px;">
-      <span class='clickable' data-bind="click: remove">&#x2716;</span>
+      <div style="display: inline-block; margin-right: 5px;">
+        <div class="clickable" style="display: inline-block; position: relative;" data-bind="click: function() { minimized(!minimized()); }, style: {transform: minimized() ? 'rotate(90deg)' : 'rotate(-90deg)', left: minimized() ? '3px' : '-2px' }, attr: {title: minimized() ? 'Maximize' : 'Minimize' }">&#xbb;</div> <!-- Chevron -->
+      </div>
+      <span class="clickable" title="Close" data-bind="click: remove">&#x2716;</span> <!-- Cross -->
     </div>
   </div>
-  <div class="panel-loading" data-bind="visible: loading()">
+  <div class="panel-loading" data-bind="visible: loading() && !minimized()">
     <img src="/images/loading.gif"/>
   </div>
-  <div class="panel-content" data-bind="visible: !loading()">
+  <div class="panel-content" data-bind="visible: !loading() && !minimized()">
   </div>
-  <div class="panel-commands-wrapper" data-bind="visible: commands().length > 0">
+  <div class="panel-commands-wrapper" data-bind="visible: commands().length > 0 && !minimized()">
     <div class="panel-commands" data-bind="foreach: commands">
       <div class="panel-command clickable" data-bind="text: label, click: onClick, css: {'panel-command-active': active}"></div>
     </div>

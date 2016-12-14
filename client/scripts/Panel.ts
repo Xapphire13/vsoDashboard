@@ -6,6 +6,7 @@ import {ICommand} from "./ICommand";
 export interface IPanelOptions {
   invisible?: boolean;
   loadContent: () => Q.Promise<any>,
+  minimizedText?: KnockoutObservable<string>;
   onRemove?: () => void,
   refresh?: () => Q.Promise<any>,
   refreshInterval?: KnockoutObservable<number>
@@ -21,6 +22,8 @@ export class Panel {
   public id: string;
   public isInvisible: KnockoutObservable<boolean> = ko.observable<boolean>();
   public loading: KnockoutObservable<boolean> = ko.observable(true);
+  public minimized: KnockoutObservable<boolean> = ko.observable(false);
+  public minimizedText: KnockoutObservable<string>;
   public onRemove: () => void;
   public title: KnockoutObservable<string> = ko.observable("");
 
@@ -41,6 +44,7 @@ export class Panel {
     this._refresh = null || options.refresh;
     this._refreshInterval = options.refreshInterval || ko.observable(0);
     this.isInvisible(options.invisible || false);
+    this.minimizedText = options.minimizedText || ko.observable("");
 
     // Init dom
     this.dom = $(this._domTemplate);
