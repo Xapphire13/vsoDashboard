@@ -1,4 +1,4 @@
-<table>
+<table data-bind="visible: items().length > 0">
   <colgroup data-bind="foreach: columns">
     <col data-bind="attr: { style: style }, style: { width: `${width}%` }">
   </colgroup>
@@ -13,3 +13,6 @@
     </tr>
   </tbody>
 </table>
+<div class="table-noRows" data-bind="visible: items().length == 0">
+  No rows
+</div>

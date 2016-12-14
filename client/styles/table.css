@@ -18,3 +18,7 @@ tr.header {
 tr:not(.header):hover {
   background: #61AFEF;
 }
+
+.table-noRows {
+  text-align: center;
+}

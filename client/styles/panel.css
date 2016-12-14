@@ -4,6 +4,10 @@
   padding: 10px;
 }
 
+.panel.invisible {
+  background: none;
+}
+
 .panel-header {
   position: relative;
   top: -10px;
@@ -22,6 +26,7 @@
 .panel-commands-wrapper {
   margin-top: 5px;
   position: relative;
+  height: 30px;
 }
 
 .panel-commands {
@@ -44,4 +49,17 @@
 
 .panel-command-active, .panel-command-active:hover {
   background: #61AFEF;
+}
+
+.panel-loading {
+  position: relative;
+  height: 70px;
+}
+
+.panel-loading > img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50px;
 }

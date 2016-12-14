@@ -9,6 +9,7 @@ export interface IPanelOptions {
   onRemove?: () => void,
   refresh?: () => Q.Promise<any>,
   refreshInterval?: KnockoutObservable<number>
+  invisible?: boolean;
 }
 
 export class Panel {
@@ -18,6 +19,8 @@ export class Panel {
   public child: KnockoutObservable<JQuery> = ko.observable<JQuery>();
   public onRemove: () => void;
   public commands: KnockoutObservableArray<ICommand<any>> = ko.observableArray<ICommand<any>>([]);
+  public loading: KnockoutObservable<boolean> = ko.observable(true);
+  public isInvisible: KnockoutObservable<boolean> = ko.observable<boolean>();
 
   private static _panelCount = 0;
 
@@ -37,6 +40,7 @@ export class Panel {
     this.onRemove = null || options.onRemove;
     this._refresh = null || options.refresh;
     this._refreshInterval = options.refreshInterval || ko.observable(0);
+    this.isInvisible(options.invisible || false);
 
     // Init dom
     this.dom = $(this._domTemplate);
@@ -54,7 +58,9 @@ export class Panel {
         this._setChild();
         this.child.subscribe(newValue => this._setChild());
 
-        this._loadContent();
+        this._loadContent().then(() => {
+          this.loading(false);
+        });
 
         let queueRefresh = () => {
           clearTimeout(this._timeout);

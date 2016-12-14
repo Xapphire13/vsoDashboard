@@ -71,6 +71,7 @@ export class ContextMenu {
       Q.delay(1000), // Synthetic delay
       command.onClick(command).then(() => {
         command.status(CommandStatus.success);
+        return Q.delay(500); // Show success for a little
       })
     ]).then(() => {
       ContextMenu.hide();

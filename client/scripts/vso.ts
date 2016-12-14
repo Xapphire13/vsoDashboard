@@ -258,7 +258,8 @@ class Application {
         active: justMine,
         onClick: () => {
           justMine(true);
-          return loadData();
+          panel.loading(true);
+          return loadData().then(() => panel.loading(false));
         }
       },
       {
@@ -266,7 +267,8 @@ class Application {
         active: ko.computed(() => !justMine()),
         onClick: () => {
           justMine(false);
-          return loadData();
+          panel.loading(true);
+          return loadData().then(() => panel.loading(false));
         }
       }
     ]);
@@ -318,27 +320,34 @@ class Application {
     });
 
     repoSearchButton.on("click", () => {
-      this.vsoProxy.listRepositories().then(repositories => {
-        let searchString = (repoSearchBox.val() as string).toLowerCase();
-        repositories = repositories.filter(repo => repo.name.toLowerCase().search(searchString) >= 0);
-
-        let resultsTable = new Table<IRepository>(null, {
-          columns: <IColumn<IRepository>[]>[
-            {
-              name: "Name",
-              itemKey: "name",
-              onClick: item => {
-                let table = this.addRepoTable(item.name, item.id);
-              }
+      let resultsTable = new Table<IRepository>(null, {
+        columns: <IColumn<IRepository>[]>[
+          {
+            name: "Name",
+            itemKey: "name",
+            onClick: item => {
+              let table = this.addRepoTable(item.name, item.id);
             }
-          ]
-        })
-        resultsTable.items(repositories);
-
-        repoSearchContainer.children(".table-wrapper").remove();
-        repoSearchContainer.append(resultsTable.dom);
-        resultsTable.init();
+          }
+        ]
       });
+
+      let panel = new Panel({
+        title: "Search Results",
+        loadContent: () => {
+          return this.vsoProxy.listRepositories().then(repositories => {
+            let searchString = (repoSearchBox.val() as string).toLowerCase();
+            repositories = repositories.filter(repo => repo.name.toLowerCase().search(searchString) >= 0);
+            resultsTable.items(repositories);
+          });
+        },
+        invisible: true
+      });
+
+      repoSearchContainer.children(".panel-wrapper").remove();
+      repoSearchContainer.append(panel.dom);
+      panel.child(resultsTable.dom);
+      panel.init().then(() => resultsTable.init());
     })
   }
 
@@ -371,7 +380,10 @@ class Application {
         label: "Complete",
         onClick: () => {
           return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.completed).then(() => {
-            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+            // Completing takes a few seconds. TODO - Make this poll on status
+            return Q.delay(4000).then(() => {
+              this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+            });
           });
         }
       },
