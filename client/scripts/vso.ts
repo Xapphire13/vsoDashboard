@@ -10,6 +10,7 @@ import {IProfile} from "./IProfile";
 import {IProject} from "./IProject";
 import {IPullRequest} from "./IPullRequest";
 import {IRepository} from "./IRepository";
+import {ITrackedRepo} from "./ITrackedRepo";
 import {IUser} from "./IUser";
 import {Panel} from "./Panel";
 import {PullRequestStatus} from "./PullRequestStatus";
@@ -126,6 +127,7 @@ class Application {
   public prUrlTemplate = "https://msazure.visualstudio.com/One/_git/{0}/pullrequest/{1}"
   public projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
   public refreshIntervalMin = ko.observable(0);
+  public trackedRepos: ITrackedRepo[];
   public upn: string;
   public vsoProxy: VsoProxy;
 
@@ -154,16 +156,30 @@ class Application {
 
       $("#signOutButton").on("click", this.signOut);
 
-      let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
-      // Remove null repos if any
-      trackedRepos = trackedRepos.filter(repoId => repoId != undefined);
-      localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos));
+      let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as ITrackedRepo[];
 
-      let repoFetches = trackedRepos.map(repoId => this.vsoProxy.fetchRepository(repoId));
+      // Fix things for backward compatibility
+      trackedRepos = trackedRepos.filter(repo => repo != undefined).map(repo => {
+        if(typeof(repo) === "string") {
+          return <ITrackedRepo>{
+            isMinimized: false,
+            justMine: true,
+            repoId: repo
+          }
+        }
+
+        return repo;
+      });
+
+      this.trackedRepos = trackedRepos;
+      localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
+
+      let repoFetches = this.trackedRepos.map(repo => this.vsoProxy.fetchRepository(repo.repoId));
 
       Q.all(repoFetches).then(repos => {
         repos.forEach(repo => {
-          let table = this.addRepoTable(repo.name, repo.id);
+          let trackedRepo = this.trackedRepos.filter(tr => tr.repoId === repo.id)[0];
+          let table = this.addRepoTable(repo.name, repo.id, trackedRepo.isMinimized, trackedRepo.justMine);
         });
       });
     });
@@ -214,7 +230,9 @@ class Application {
     });
   }
 
-  public addRepoTable(title: string, repoId: string): Table<IPullRequest> {
+  public addRepoTable(title: string, repoId: string, isMinimized: boolean, showOnlyMine: boolean): Table<IPullRequest> {
+    let repo = this.trackedRepos.filter(repo => repo.repoId === repoId)[0];
+
     let table = new Table<IPullRequest>(null, {
       columns: this.columns,
       getRowCssClasses: (item: IPullRequest) => {
@@ -229,7 +247,7 @@ class Application {
       supplyCommands: (item) => this._supplyPullRequestCommands(item)
     });
 
-    let justMine = ko.observable(true);
+    let justMine = ko.observable(showOnlyMine);
     let loadData = () => {
       if(justMine()) {
         return this.loadPullRequests(repoId, table, this.upn);
@@ -244,17 +262,18 @@ class Application {
         return loadData();
       }),
       onRemove: () => {
-        let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
-        localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos.filter(repo => repo != repoId)));
+        this.trackedRepos = this.trackedRepos.filter(repo => repo.repoId != repoId);
+        localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
         this.panels = this.panels.filter(p => p.repoId !== repoId);
       },
       refresh: () => {
         return loadData();
       },
       refreshInterval: this.refreshIntervalMin,
-      minimizedText: ko.computed(() => {
-        return `${table.items().length} PR${table.items().length === 1 ? "" : "s"}`;
-      })
+      minimized: isMinimized,
+    });
+    panel.minimizedText = ko.computed(() => {
+      return panel.loading() ? "Loading..." : `${table.items().length} PR${table.items().length === 1 ? "" : "s"}`;
     });
     panel.commands([
       {
@@ -263,6 +282,12 @@ class Application {
         onClick: () => {
           justMine(true);
           panel.loading(true);
+
+          if(repo != undefined) {
+            repo.justMine = true;
+            localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
+          }
+
           return loadData().then(() => panel.loading(false));
         }
       },
@@ -272,12 +297,25 @@ class Application {
         onClick: () => {
           justMine(false);
           panel.loading(true);
+
+          if(repo != undefined) {
+            repo.justMine = false;
+            localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
+          }
+
           return loadData().then(() => panel.loading(false));
         }
       }
     ]);
     panel.child(table.dom);
     panel.init();
+
+    panel.minimized.subscribe(newValue => {
+      if(repo != undefined) {
+        repo.isMinimized = newValue;
+        localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
+      }
+    });
 
     if($("#content").find(".panel-wrapper").length > 0) {
       panel.dom.css("margin-top", "25px");
@@ -288,10 +326,14 @@ class Application {
       repoId: repoId
     });
 
-    let trackedRepos = (JSON.parse(localStorage.getItem("trackedRepos")) || []) as string[];
-    if(trackedRepos.filter(repo => repo == repoId).length == 0) {
-      trackedRepos.push(repoId);
-      localStorage.setItem("trackedRepos", JSON.stringify(trackedRepos));
+    if(repo == undefined) {
+      repo = <ITrackedRepo>{
+        isMinimized: isMinimized,
+        justMine: showOnlyMine,
+        repoId: repoId
+      };
+      this.trackedRepos.push(repo);
+      localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
     }
 
     return table;
@@ -330,7 +372,7 @@ class Application {
             name: "Name",
             itemKey: "name",
             onClick: item => {
-              let table = this.addRepoTable(item.name, item.id);
+              let table = this.addRepoTable(item.name, item.id, false, true);
             }
           }
         ]
