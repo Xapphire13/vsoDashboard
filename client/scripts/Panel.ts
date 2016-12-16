@@ -66,6 +66,8 @@ export class Panel {
 
         this._loadContent().then(() => {
           this.loading(false);
+        }, reason => {
+          console.error(reason);
         });
 
         let queueRefresh = () => {

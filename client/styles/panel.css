@@ -2,6 +2,7 @@
   border-radius: 5px;
   background: #7F7F7F;
   padding: 10px;
+  overflow-x: auto;
 }
 
 .panel.invisible {

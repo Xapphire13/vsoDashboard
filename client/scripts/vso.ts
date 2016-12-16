@@ -38,26 +38,27 @@ class Application {
         let requiredReviewers = item.reviewers.filter(reviewer => reviewer.isRequired);
         let rejected = item.reviewers.filter(reviewer => reviewer.vote == PullRequestVote.rejected)[0] != undefined;
         let waiting = item.reviewers.filter(reviewer => reviewer.vote == PullRequestVote.waiting)[0] != undefined;
+        const template = "<div style='width: 10px; height: 10px; position: absolute; top: 50%; transform: translate(0, -50%);' class='{0}'></div>"
 
         if(rejected) {
-          return "<div style='width: 10px; height: 10px;' class='rejected-noAlpha'></div>"
+          return template.format("rejected-noAlpha");
         } else if (waiting) {
-          return "<div style='width: 10px; height: 10px;' class='waiting-noAlpha'></div>"
+          return template.format("waiting-noAlpha");
         } else {
           if(requiredReviewers.filter(reviewer => reviewer.vote <= 0)[0] == undefined) { // All signed off
-            return "<div style='width: 10px; height: 10px;' class='approved-noAlpha'></div>"
+            return template.format("approved-noAlpha");
           }
 
-          return "<div style='width: 10px; height: 10px;' class='noResponse-noAlpha'></div>"
+          return template.format("noResponse-noAlpha");
         }
       },
       formatType: FormatType.map,
-      width: 2
+      width: "12px"
     },
     {
       name: "",
       itemKey: "comments",
-      width: 5
+      width: "45px"
     },
     {
       name: "Title",
@@ -67,17 +68,17 @@ class Application {
 
         window.open(prLink, "_blank");
       },
-      width: 48
+      width: 1
     },
     {
       name: "Status",
       itemKey: "status",
-      width: 10
+      width: "60px"
     },
     {
       name: "Created By",
       itemKey: "createdBy.displayName",
-      width: 15
+      width: "200px"
     },
     {
       name: "Created Date",
@@ -94,11 +95,11 @@ class Application {
 
         return `${months[dateTime.getMonth()]}-${padNumber(dateTime.getDate())}-${dateTime.getFullYear()} ${padNumber(dateTime.getHours())}:${padNumber(dateTime.getMinutes())}`;
       },
-      width: 13
+      width: "145px"
     },
     {
       name: "Codeflow",
-      format: "<img style='display: block; margin-left: auto; margin-right: auto;' src='./images/codeflow.png'/>",
+      format: "<img style='display: block; margin-left: auto; margin-right: auto; position: absolute; top: 50%; transform: translate(0, -50%);' src='./images/codeflow.png'/>",
       formatType: FormatType.html,
       onClick: item => {
         let codeflowLinkTemplate = "codeflow:open?server={0}&project={1}&repo={2}&pullRequest={3}";
@@ -106,11 +107,11 @@ class Application {
 
         window.open(codeflowLink, "_self");
       },
-      width: 4
+      width: "75px"
     },
     {
       name: "",
-      format: "<div style='text-align: center; position: relative; top: -4px;'>\u2026</div>",
+      format: "<div style='text-align: center; position: absolute; top: 50%; transform: translate(0, calc(-50% - 4px));'>\u2026</div>",
       formatType: FormatType.html,
       onClick: (item, event: MouseEvent) => {
         let element = document.elementFromPoint(event.clientX, event.clientY);
@@ -118,7 +119,7 @@ class Application {
 
         ContextMenu.show(bound.left, bound.bottom, this._supplyPullRequestCommands(item));
       },
-      width: 3
+      width: "25px"
     }
   ];
 
@@ -213,7 +214,7 @@ class Application {
       }
 
       pullRequests.map(pullRequest => {
-        let comments = ko.observable("<div style='position: relative;''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>-</span></div>");
+        let comments = ko.observable("<div style='position: absolute; top: 50%; transform: translate(0, -50%);''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>-</span></div>");
         pullRequest["comments"] = comments;
 
         return this.vsoProxy.fetchThreads(pullRequest).then(threads => {
@@ -222,7 +223,7 @@ class Application {
             commentCount += thread.comments.length;
           });
 
-          comments(`<div style='position: relative;''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>${commentCount}</span></div>`);
+          comments(`<div style='position: absolute; top: 50%; transform: translate(0, -50%);''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>${commentCount}</span></div>`);
         });
       })
 

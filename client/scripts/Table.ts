@@ -17,7 +17,7 @@ export interface IColumn<T> {
   name: string;
   onClick?: (item: T) => void;
   style?: string;
-  width?: number;
+  width?: number | string;
 }
 
 export interface ITableOptions<T> {
@@ -27,6 +27,8 @@ export interface ITableOptions<T> {
 }
 
 export class Table<T> {
+  private static _tableCount = 0;
+
   public columns: IColumn<T>[];
   public dom: JQuery;
   public id: string;
@@ -36,20 +38,27 @@ export class Table<T> {
   private _getRowCssClasses: (item: T) => string[];
   private _headerRow: JQuery;
   private _supplyCommands: (item: T) => ICommand<any>[];
-  private static _tableCount = 0;
+  private _fixedWidthTaken: number = 0;
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
     this.items = items || ko.observableArray<T>([]);
-    this.columns = options.columns.map(column => <IColumn<T>>{
-      name: column.name,
-      itemKey: null || column.itemKey,
-      format: null || column.format,
-      formatType: null || column.formatType,
-      onClick: null || column.onClick,
-      width: null || column.width,
-      style: null || column.style,
-      cssClass: null || column.cssClass
+    this.columns = options.columns || [];
+    this.columns.forEach(column  => {
+      column.cssClass = column.cssClass || null;
+      column.format = column.format || null;
+      column.formatType = null || column.formatType;
+      column.itemKey = column.itemKey || null;
+      column.onClick = column.onClick || null;
+      column.style = column.style || null;
+      column.width = column.width || null;
     });
+    this.columns.forEach(column => {
+      if(typeof(column.width) === "string") {
+        let width = (<any>Number).parseInt((<string>column.width).substring(0, (<string>column.width).length-2));
+        this._fixedWidthTaken += width;
+      }
+    });
+
     this._getRowCssClasses = options.getRowCssClasses;
     this._supplyCommands = options.supplyCommands;
     this.id = `table-${Table._tableCount++}`;
