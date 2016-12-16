@@ -99,7 +99,7 @@ class Application {
     },
     {
       name: "Codeflow",
-      format: "<img style='display: block; margin-left: auto; margin-right: auto; position: absolute; top: 50%; transform: translate(0, -50%);' src='./images/codeflow.png'/>",
+      format: "<img style='display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);' src='./images/codeflow.png'/>",
       formatType: FormatType.html,
       onClick: item => {
         let codeflowLinkTemplate = "codeflow:open?server={0}&project={1}&repo={2}&pullRequest={3}";
@@ -259,9 +259,7 @@ class Application {
 
     let panel = new Panel({
       title: title,
-      loadContent: () => table.init().then(() => {
-        return loadData();
-      }),
+      loadContent: loadData,
       onRemove: () => {
         this.trackedRepos = this.trackedRepos.filter(repo => repo.repoId != repoId);
         localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
@@ -308,8 +306,6 @@ class Application {
         }
       }
     ]);
-    panel.child(table.dom);
-    panel.init();
 
     panel.minimized.subscribe(newValue => {
       if(repo != undefined) {
@@ -318,10 +314,14 @@ class Application {
       }
     });
 
-    if($("#content").find(".panel-wrapper").length > 0) {
-      panel.dom.css("margin-top", "25px");
-    }
-    $("#content").append(panel.dom);
+    panel.getHtml().then(html => {
+      let reference = $(`<span>${html}</span>`);
+      let element = reference[0];
+      (<any>panel)._reference = reference;
+      $("#content").append(element);
+      ko.applyBindings(panel, element);
+      panel.setChild(table);
+    })
     this.panels.push({
       panel: panel,
       repoId: repoId
@@ -391,10 +391,15 @@ class Application {
         invisible: true
       });
 
-      repoSearchContainer.children(".panel-wrapper").remove();
-      repoSearchContainer.append(panel.dom);
-      panel.child(resultsTable.dom);
-      panel.init().then(() => resultsTable.init());
+      repoSearchContainer.find(".panel").parent().remove();
+      panel.getHtml().then(html => {
+        let reference = $(`<span>${html}</span>`);
+        let element = reference[0];
+        (<any>panel)._reference = reference;
+        repoSearchContainer.append(element);
+        ko.applyBindings(panel, element);
+      })
+      panel.setChild(resultsTable);
     })
   }
 

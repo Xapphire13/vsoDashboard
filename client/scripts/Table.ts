@@ -3,6 +3,7 @@
 import {ContentLoader} from "./ContentLoader";
 import {ContextMenu} from "./ContextMenu";
 import {ICommand} from "./ICommand";
+import {IControl} from "./IControl";
 
 export enum FormatType {
   html,
@@ -26,19 +27,18 @@ export interface ITableOptions<T> {
   supplyCommands?: (item: T) => ICommand<any>[];
 }
 
-export class Table<T> {
-  private static _tableCount = 0;
+export class Table<T>
+  implements IControl {
 
   public columns: IColumn<T>[];
-  public dom: JQuery;
-  public id: string;
   public items: KnockoutObservableArray<T>;
 
-  private _domTemplate: string = "<div class='table-wrapper' data-bind=\"template: { name: 'table-template' }\"></div>";
+  private _fixedWidthTaken: number = 0;
   private _getRowCssClasses: (item: T) => string[];
   private _headerRow: JQuery;
+  private _initialized: Q.Promise<any>;
+  private _reference: JQuery;
   private _supplyCommands: (item: T) => ICommand<any>[];
-  private _fixedWidthTaken: number = 0;
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
     this.items = items || ko.observableArray<T>([]);
@@ -50,7 +50,7 @@ export class Table<T> {
       column.itemKey = column.itemKey || null;
       column.onClick = column.onClick || null;
       column.style = column.style || null;
-      column.width = column.width || null;
+      column.width = column.width || 1;
     });
     this.columns.forEach(column => {
       if(typeof(column.width) === "string") {
@@ -61,17 +61,13 @@ export class Table<T> {
 
     this._getRowCssClasses = options.getRowCssClasses;
     this._supplyCommands = options.supplyCommands;
-    this.id = `table-${Table._tableCount++}`;
 
-    // Init DOM
-    this.dom = $(this._domTemplate);
-    this.dom.attr("id", this.id);
+    this._initialized = this._init();
   }
 
-  public init(): Q.Promise<any> {
-    ContentLoader.loadStylesheets(["table"]);
-    return ContentLoader.loadHtmlTemplates(["table"]).then(() => {
-      ko.applyBindings(this, document.getElementById(this.id));
+  public getHtml(): Q.Promise<string> {
+    return this._initialized.then(() => {
+      return $("#table-template").html();
     });
   }
 
@@ -110,5 +106,10 @@ export class Table<T> {
     if(event.button == 2 && this._supplyCommands) {
       ContextMenu.show(event.clientX + 1, event.clientY + 1, this._supplyCommands(item));
     }
+  }
+
+  private _init(): Q.Promise<any> {
+    ContentLoader.loadStylesheets(["table"]);
+    return ContentLoader.loadHtmlTemplates(["table"]);
   }
 }
