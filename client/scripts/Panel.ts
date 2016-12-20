@@ -1,6 +1,7 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {ContentLoader} from "./ContentLoader";
+import {ControlBase} from "./ControlBase";
 import {ICommand} from "./ICommand";
 
 export interface IPanelOptions {
@@ -14,13 +15,11 @@ export interface IPanelOptions {
   title: string,
 }
 
-export class Panel {
-  private static _panelCount = 0;
+export class Panel
+  extends ControlBase {
 
-  public child: KnockoutObservable<JQuery> = ko.observable<JQuery>();
+  public child: KnockoutObservable<ControlBase> = ko.observable<ControlBase>();
   public commands: KnockoutObservableArray<ICommand<any>> = ko.observableArray<ICommand<any>>([]);
-  public dom: JQuery;
-  public id: string;
   public isInvisible: KnockoutObservable<boolean> = ko.observable<boolean>();
   public loading: KnockoutObservable<boolean> = ko.observable(true);
   public minimized: KnockoutObservable<boolean> = ko.observable<boolean>();
@@ -28,17 +27,14 @@ export class Panel {
   public onRemove: () => void;
   public title: KnockoutObservable<string> = ko.observable("");
 
-  private _childContainer: JQuery;
-  private _domTemplate: string = "<div class='panel-wrapper' data-bind=\"template: { name: 'panel-template' }\"></div>";
-  private _initialized: boolean = false;
   private _loadContent: () => Q.Promise<any>;
   private _refresh: () => Q.Promise<any>;
   private _refreshInterval: KnockoutObservable<number>;
   private _timeout = null;
 
   constructor(options: IPanelOptions) {
+    super("panel");
     this.title(options.title);
-    this.id = `panel-${Panel._panelCount++}`;
     this._loadContent = options.loadContent;
 
     this.onRemove = null || options.onRemove;
@@ -48,55 +44,35 @@ export class Panel {
     this.minimized(options.minimized || false);
     this.minimizedText = options.minimizedText || ko.observable("");
 
-    // Init dom
-    this.dom = $(this._domTemplate);
-    this.dom.attr("id", this.id);
-  }
+    this.child.subscribe(newValue => {
+      this._loadContent().then(() => {
+        this.loading(false);
+      }, reason => {
+        console.error(reason);
+      });
 
-  public init(): Q.Promise<any> {
-    if(!this._initialized) {
-      ContentLoader.loadStylesheets(["panel"]);
-      return ContentLoader.loadHtmlTemplates(["panel"]).then(() => {
-        ko.applyBindings(this, document.getElementById(this.id));
+      let queueRefresh = () => {
+        clearTimeout(this._timeout);
 
-        this._childContainer = this.dom.find(".panel-content");
+        this._timeout = setTimeout(() => {
+          this._refresh();
+          queueRefresh();
+        }, this._refreshInterval() * 60 * 1000);
+      }
 
-        this._setChild();
-        this.child.subscribe(newValue => this._setChild());
+      if(this._refreshInterval() > 0) {
+        queueRefresh();
+      }
 
-        this._loadContent().then(() => {
-          this.loading(false);
-        }, reason => {
-          console.error(reason);
-        });
+      this._refreshInterval.subscribe(newValue => {
+        clearTimeout(this._timeout);
 
-        let queueRefresh = () => {
-          clearTimeout(this._timeout);
-
-          this._timeout = setTimeout(() => {
-            this._refresh();
-            queueRefresh();
-          }, this._refreshInterval() * 60 * 1000);
-        }
-
-        if(this._refreshInterval() > 0) {
+        if(newValue > 0) {
+          this._refresh();
           queueRefresh();
         }
-
-        this._refreshInterval.subscribe(newValue => {
-          clearTimeout(this._timeout);
-
-          if(newValue > 0) {
-            this._refresh();
-            queueRefresh();
-          }
-        });
-
-        this._initialized = true;
       });
-    }
-
-    return Q();
+    });
   }
 
   public refresh(): void {
@@ -108,13 +84,6 @@ export class Panel {
 
     if(this.onRemove != undefined) {
       this.onRemove();
-    }
-  }
-
-  private _setChild() {
-    this._childContainer.empty();
-    if(this.child() != undefined) {
-      this._childContainer.append(this.child());
     }
   }
 }

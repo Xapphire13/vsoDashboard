@@ -92,7 +92,7 @@ export class VsoProxy {
     return this._makeCall<IOdataQuery<IRepository>>({
       url: `${this._apiUri}/repositories?api-version=${this._apiVersion}`
     }).then(results => {
-      return results.value;
+      return results.value || [];
     });
   }
 
