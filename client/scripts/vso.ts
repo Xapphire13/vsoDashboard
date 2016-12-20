@@ -1,6 +1,5 @@
 /// <reference path="../../typings/index.d.ts" />
 /// <reference path="../../typings/StringFormat.d.ts"/>
-/// <reference path="../../typings/CustomKnockoutBindings.d.ts"/>
 
 import {ClientOAuthHelper} from "./ClientOAuthHelper";
 import {ContextMenu} from "./ContextMenu";
