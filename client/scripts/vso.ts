@@ -22,17 +22,17 @@ $(document).ready(() => {
   (<any>ko.bindingHandlers).control = <KnockoutBindingHandler>{
     update: (element, valueAccessor, allBindings, viewModel, bindingContext) => {
       let controlViewModel: ControlBase  = ko.unwrap(valueAccessor());
-
-      if(controlViewModel != undefined) {
+      let $element = $(element);
+      if($element.children().length === 0 && controlViewModel != undefined) {
         controlViewModel.getDom().then(dom => {
-          $(element).empty();
-          $(element).append(dom);
+          $element.empty();
+          $element.append(dom);
           ko.applyBindingsToDescendants(controlViewModel, element);
         }).fail(reason => {
           console.error(reason);
         });
       }
-    }
+    },
   }
   let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
 
