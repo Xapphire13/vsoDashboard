@@ -1,9 +1,8 @@
 /// <reference path="../../typings/index.d.ts" />
 
-import {ContentLoader} from "./ContentLoader";
 import {ContextMenu} from "./ContextMenu";
 import {ICommand} from "./ICommand";
-import {IControl} from "./IControl";
+import {ControlBase} from "./ControlBase";
 
 export enum FormatType {
   html,
@@ -28,7 +27,7 @@ export interface ITableOptions<T> {
 }
 
 export class Table<T>
-  implements IControl {
+  extends ControlBase {
 
   public columns: IColumn<T>[];
   public items: KnockoutObservableArray<T>;
@@ -36,11 +35,11 @@ export class Table<T>
   private _fixedWidthTaken: number = 0;
   private _getRowCssClasses: (item: T) => string[];
   private _headerRow: JQuery;
-  private _initialized: Q.Promise<any>;
   private _reference: JQuery;
   private _supplyCommands: (item: T) => ICommand<any>[];
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
+    super("table");
     this.items = items || ko.observableArray<T>([]);
     this.columns = options.columns || [];
     this.columns.forEach(column  => {
@@ -61,14 +60,6 @@ export class Table<T>
 
     this._getRowCssClasses = options.getRowCssClasses;
     this._supplyCommands = options.supplyCommands;
-
-    this._initialized = this._init();
-  }
-
-  public getHtml(): Q.Promise<string> {
-    return this._initialized.then(() => {
-      return $("#table-template").html();
-    });
   }
 
   public getValue(item: T, itemKey: string, column: any): any {
@@ -106,10 +97,5 @@ export class Table<T>
     if(event.button == 2 && this._supplyCommands) {
       ContextMenu.show(event.clientX + 1, event.clientY + 1, this._supplyCommands(item));
     }
-  }
-
-  private _init(): Q.Promise<any> {
-    ContentLoader.loadStylesheets(["table"]);
-    return ContentLoader.loadHtmlTemplates(["table"]);
   }
 }

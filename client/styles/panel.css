@@ -5,6 +5,10 @@
   overflow-x: auto;
 }
 
+:not(.first) > .panel {
+  margin-top: 25px;
+}
+
 .panel.invisible {
   background: none;
 }

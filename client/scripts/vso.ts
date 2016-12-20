@@ -1,8 +1,10 @@
 /// <reference path="../../typings/index.d.ts" />
 /// <reference path="../../typings/StringFormat.d.ts"/>
+/// <reference path="../../typings/CustomKnockoutBindings.d.ts"/>
 
 import {ClientOAuthHelper} from "./ClientOAuthHelper";
 import {ContextMenu} from "./ContextMenu";
+import {ControlBase} from "./ControlBase";
 import {IAccessToken} from "../../shared/IAccessToken";
 import {IColumn, Table, FormatType} from "./Table";
 import {ICommand} from "./ICommand";
@@ -18,6 +20,21 @@ import {PullRequestVote} from "./PullRequestVote";
 import {VsoProxy} from "./VsoProxy";
 
 $(document).ready(() => {
+  (<any>ko.bindingHandlers).control = <KnockoutBindingHandler>{
+    update: (element, valueAccessor, allBindings, viewModel, bindingContext) => {
+      let controlViewModel: ControlBase  = ko.unwrap(valueAccessor());
+
+      if(controlViewModel != undefined) {
+        controlViewModel.getDom().then(dom => {
+          $(element).empty();
+          $(element).append(dom);
+          ko.applyBindingsToDescendants(controlViewModel, element);
+        }).fail(reason => {
+          console.error(reason);
+        });
+      }
+    }
+  }
   let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
 
   let app = new Application(refreshIntervalMin);
@@ -122,9 +139,8 @@ class Application {
       width: "25px"
     }
   ];
-
   public me: IProfile;
-  public panels: {panel: Panel, repoId: string}[] = [];
+  public panels: KnockoutObservableArray<{panel: Panel, repoId: string}> = ko.observableArray<{panel: Panel, repoId: string}>([]);
   public prUrlTemplate = "https://msazure.visualstudio.com/One/_git/{0}/pullrequest/{1}"
   public projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
   public refreshIntervalMin = ko.observable(0);
@@ -142,6 +158,8 @@ class Application {
   }
 
   public start(): Q.Promise<any> {
+    ko.applyBindings(this.panels, $("#content")[0]);
+
     $(document).on("click", e => {
       ContextMenu.hide();
     });
@@ -263,7 +281,7 @@ class Application {
       onRemove: () => {
         this.trackedRepos = this.trackedRepos.filter(repo => repo.repoId != repoId);
         localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
-        this.panels = this.panels.filter(p => p.repoId !== repoId);
+        this.panels.remove(p => p.repoId === repoId);
       },
       refresh: () => {
         return loadData();
@@ -313,15 +331,8 @@ class Application {
         localStorage.setItem("trackedRepos", JSON.stringify(this.trackedRepos));
       }
     });
+    panel.child(table);
 
-    panel.getHtml().then(html => {
-      let reference = $(`<span>${html}</span>`);
-      let element = reference[0];
-      (<any>panel)._reference = reference;
-      $("#content").append(element);
-      ko.applyBindings(panel, element);
-      panel.setChild(table);
-    })
     this.panels.push({
       panel: panel,
       repoId: repoId
@@ -366,6 +377,8 @@ class Application {
       repoSearchBox.select();
     });
 
+    let panel = ko.observable<Panel>()
+
     repoSearchButton.on("click", () => {
       let resultsTable = new Table<IRepository>(null, {
         columns: <IColumn<IRepository>[]>[
@@ -379,7 +392,7 @@ class Application {
         ]
       });
 
-      let panel = new Panel({
+      panel(new Panel({
         title: "Search Results",
         loadContent: () => {
           return this.vsoProxy.listRepositories().then(repositories => {
@@ -389,18 +402,12 @@ class Application {
           });
         },
         invisible: true
-      });
+      }));
 
-      repoSearchContainer.find(".panel").parent().remove();
-      panel.getHtml().then(html => {
-        let reference = $(`<span>${html}</span>`);
-        let element = reference[0];
-        (<any>panel)._reference = reference;
-        repoSearchContainer.append(element);
-        ko.applyBindings(panel, element);
-      })
-      panel.setChild(resultsTable);
-    })
+      panel().child(resultsTable);
+    });
+
+    ko.applyBindings(panel ,document.getElementById("repoSearchContainer"));
   }
 
   private _supplyPullRequestCommands(item: IPullRequest): ICommand<any>[] {
@@ -416,7 +423,7 @@ class Application {
         label: "Approve",
         onClick: () => {
           return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.approved).then(() => {
-            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+            this.panels().forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
           });
         }
       },
@@ -424,7 +431,7 @@ class Application {
         label: "Reject",
         onClick: () => {
           return this.vsoProxy.modifySignOffVote(item, this.me, PullRequestVote.rejected).then(() => {
-            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+            this.panels().forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
           });
         }
       },
@@ -434,7 +441,7 @@ class Application {
           return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.completed).then(() => {
             // Completing takes a few seconds. TODO - Make this poll on status
             return Q.delay(4000).then(() => {
-              this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+              this.panels().forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
             });
           });
         }
@@ -443,7 +450,7 @@ class Application {
         label: "Abandon",
         onClick: () => {
           return this.vsoProxy.modifyPullRequestStatus(item, PullRequestStatus.abandoned).then(() => {
-            this.panels.forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
+            this.panels().forEach(p => p.repoId == item.repository.id ? p.panel.refresh() : null);
           });
         }
       }

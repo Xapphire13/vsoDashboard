@@ -21,6 +21,7 @@
             <p style="display: inline-block;">Add Repository</p><p id="repoSearchCloseButton" style="display: none; margin-left: 10px;" class="clickable clickable-color">(Close)</p>
             <div style="display: none; font-weight: normal;" id="repoSearchContainer">
               <input type="search" value="Search by repo name..." id="repoSearchBox"><button type="button" id="repoSearchButton">Search</button>
+              <div class="first" data-bind="control: $data"></div>
             </div>
           </li>
         </ul>
@@ -34,7 +35,8 @@
         </div>
       </div>
       <div id="wrapper">
-        <div id="content">
+        <div id="content" data-bind="foreach: $data">
+          <div data-bind="control: $data.panel, css: { first: $index() == 0 }"></div>
         </div>
         <div id="bottom">
           <footer>
