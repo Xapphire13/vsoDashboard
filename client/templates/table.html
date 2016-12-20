@@ -10,14 +10,14 @@
   </div>
   <div data-bind="foreach: items">
     <div class="row"data-bind="
-      css: $root.getRowCssClass($data),
+      css: $parent.getRowCssClass($data),
       foreach: $parent.columns,
       event: {
         mousedown: function(data, event) { $parent.rowClick.call($parent, data, event) },
         contextmenu: function(data, event) { return false; }
       }">
       <div class="column" data-bind="
-        html: $root.getValue($parent, itemKey, $data),
+        html: $parents[1].getValue($parent, itemKey, $data),
         css: cssClass,
         css: { clickable: onClick != undefined },
         click: function(data, event) { onClick($parent, event); },

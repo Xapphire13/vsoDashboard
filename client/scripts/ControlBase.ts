@@ -3,24 +3,22 @@
 import {ContentLoader} from "./ContentLoader";
 
 export abstract class ControlBase {
-  protected dom: JQuery;
-
   private _initialized: Q.Promise<any>;
+  private _templateName: string;
 
   constructor(templateName: string) {
-    this._initialized = this._init(templateName);
+    this._templateName = templateName;
+    this._initialized = this._init();
   }
 
-  public getDom(): Q.Promise<JQuery> {
+  public getHtml(): Q.Promise<string> {
     return this._initialized.then(() => {
-      return this.dom;
+      return $(`#${this._templateName}-template`).html();
     });
   }
 
-  private _init(templateName: string): Q.Promise<any> {
-    ContentLoader.loadStylesheets([templateName]);
-    return ContentLoader.loadHtmlTemplates([templateName]).then(() => {
-      this.dom = $($(`#${templateName}-template`).html());
-    });
+  private _init(): Q.Promise<any> {
+    ContentLoader.loadStylesheets([this._templateName]);
+    return ContentLoader.loadHtmlTemplates([this._templateName]);
   }
 }

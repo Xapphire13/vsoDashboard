@@ -20,14 +20,20 @@ import {VsoProxy} from "./VsoProxy";
 
 $(document).ready(() => {
   (<any>ko.bindingHandlers).control = <KnockoutBindingHandler>{
-    update: (element, valueAccessor, allBindings, viewModel, bindingContext) => {
-      let controlViewModel: ControlBase  = ko.unwrap(valueAccessor());
+    init: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
+      return { controlsDescendantBindings: true };
+    },
+    update: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
       let $element = $(element);
-      if($element.children().length === 0 && controlViewModel != undefined) {
-        controlViewModel.getDom().then(dom => {
+      let controlViewModel: ControlBase  = ko.unwrap(valueAccessor());
+      let childBindingContext: KnockoutBindingContext = bindingContext.createChildContext(controlViewModel);
+
+      if(controlViewModel != null) {
+        controlViewModel.getHtml().then(html => {
+          let $html = $(html);
           $element.empty();
-          $element.append(dom);
-          ko.applyBindingsToDescendants(controlViewModel, element);
+          $element.append($html);
+          ko.applyBindingsToDescendants(childBindingContext, $element[0]);
         }).fail(reason => {
           console.error(reason);
         });

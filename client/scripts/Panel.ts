@@ -80,8 +80,6 @@ export class Panel
   }
 
   public remove() {
-    this.dom.remove();
-
     if(this.onRemove != undefined) {
       this.onRemove();
     }
