@@ -1,6 +1,7 @@
 /// <reference path="../../typings/index.d.ts" />
 /// <reference path="../../typings/StringFormat.d.ts"/>
 
+import * as CustomKnockoutBindings from "./CustomKnockoutBindings";
 import {ClientOAuthHelper} from "./ClientOAuthHelper";
 import {ContextMenu} from "./ContextMenu";
 import {ControlBase} from "./ControlBase";
@@ -19,27 +20,14 @@ import {PullRequestVote} from "./PullRequestVote";
 import {VsoProxy} from "./VsoProxy";
 
 $(document).ready(() => {
-  (<any>ko.bindingHandlers).control = <KnockoutBindingHandler>{
-    init: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
-      return { controlsDescendantBindings: true };
-    },
-    update: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
-      let $element = $(element);
-      let controlViewModel: ControlBase  = ko.unwrap(valueAccessor());
-      let childBindingContext: KnockoutBindingContext = bindingContext.createChildContext(controlViewModel);
-
-      if(controlViewModel != null) {
-        controlViewModel.getHtml().then(html => {
-          let $html = $(html);
-          $element.empty();
-          $element.append($html);
-          ko.applyBindingsToDescendants(childBindingContext, $element[0]);
-        }).fail(reason => {
-          console.error(reason);
-        });
-      }
-    },
+  // Force users to use the https version of the site
+  if(location.hostname !== "127.0.0.1" && location.protocol != "https:") {
+    location.assign(`https:${location.href.substring(location.protocol.length)}`);
   }
+
+
+  CustomKnockoutBindings.init();
+
   let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
 
   let app = new Application(refreshIntervalMin);
