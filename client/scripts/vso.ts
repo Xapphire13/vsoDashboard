@@ -25,18 +25,16 @@ $(document).ready(() => {
     location.assign(`https:${location.href.substring(location.protocol.length)}`);
   }
 
-
-  CustomKnockoutBindings.init();
-
-  let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
-
-  let app = new Application(refreshIntervalMin);
-  app.start();
-
   // Refresh the page every 24hrs to pull new features
   setTimeout(() => {
     window.location.reload();
   }, 24 * 60 * 60 * 1000);
+
+  CustomKnockoutBindings.init();
+  let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
+
+  let app = new Application(refreshIntervalMin);
+  app.start();
 })
 
 class Application {
