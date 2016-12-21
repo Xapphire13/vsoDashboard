@@ -10,7 +10,7 @@ a {
   font-weight: bold;
 }
 
-#menu {
+#nav-bar {
   position: fixed;
   float: left;
   width: 280px;
@@ -21,25 +21,30 @@ a {
   padding: 10px;
 }
 
-ul.menu {
-     list-style-type: none;
-     margin: 20px -10px 0 -10px;
-     padding: 0;
+.menu {
+  margin: 20px -10px;
 }
 
-ul.menu > li {
+.menu-item {
+  position: relative;
   min-height: 40px;
   border-top: 1px solid #888888;
   border-bottom: 1px solid #888888;
   padding: 10px;
 }
 
-ul.menu > li:not(.top) {
+.menu-item:not(.first) {
   margin-top: -1px;
 }
 
-ul.menu > li:not(.open):hover {
+.menu-item:hover {
   background: #61AFEF;
+}
+
+.menu-item-label {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
 }
 
 #refreshPeriodList {
@@ -59,7 +64,7 @@ ul.menu > li:not(.open):hover {
   background: #61AFEF;
 }
 
-#wrapper {
+#content-wrapper {
   margin-left: 302px;
   height: 100%;
   display: flex;
@@ -68,27 +73,6 @@ ul.menu > li:not(.open):hover {
 
 #content {
   padding: 5px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-tr {
-  border-top: 1px solid #555555;
-}
-
-td, th {
-  padding: 5px;
-}
-
-tr.header {
-  border: 0;
-}
-
-tr:not(.header):hover {
-  background: #61AFEF;
 }
 
 #bottom {

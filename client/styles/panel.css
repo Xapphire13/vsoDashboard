@@ -3,10 +3,11 @@
   background: #7F7F7F;
   padding: 10px;
   overflow-x: auto;
+  margin-top: 25px;
 }
 
-:not(.first) > .panel {
-  margin-top: 25px;
+.first > .panel {
+  margin-top: 0px;
 }
 
 .panel.invisible {
