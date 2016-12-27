@@ -80,8 +80,14 @@ export class Panel
   }
 
   public remove() {
+    this.dispose();
+    
     if(this.onRemove != undefined) {
       this.onRemove();
     }
+  }
+
+  public dispose(): void {
+    clearTimeout(this._timeout);
   }
 }

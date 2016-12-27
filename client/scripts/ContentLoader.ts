@@ -31,4 +31,14 @@ export class ContentLoader {
 
     return Q.all(promises);
   }
+
+  public static loadView(viewName: string): Q.Promise<string> {
+    let def = Q.defer<string>();
+    let $html = $("<div></div>");
+    $html.load(`/views/${viewName}.html`, () => {
+      def.resolve($html.html());
+    });
+
+    return def.promise;
+  }
 }

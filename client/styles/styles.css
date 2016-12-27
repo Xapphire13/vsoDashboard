@@ -65,6 +65,7 @@ a {
 }
 
 #content-wrapper {
+  position: relative;
   margin-left: 302px;
   height: 100%;
   display: flex;

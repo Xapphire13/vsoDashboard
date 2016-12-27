@@ -7,6 +7,8 @@ import {ControlBase} from "./ControlBase";
 import {IAccessToken} from "../../shared/IAccessToken";
 import {IColumn, Table, FormatType} from "./Table";
 import {ICommand} from "./ICommand";
+import {IMenuItem} from "./IMenuItem";
+import {IPageViewModel} from "./IPageViewModel";
 import {IProfile} from "./IProfile";
 import {IProject} from "./IProject";
 import {IPullRequest} from "./IPullRequest";
@@ -18,7 +20,8 @@ import {PullRequestStatus} from "./PullRequestStatus";
 import {PullRequestVote} from "./PullRequestVote";
 import {VsoProxy} from "./VsoProxy";
 
-export class PullRequestPageViewModel {
+export class PullRequestPageViewModel
+  implements IPageViewModel {
   public accessToken: string;
   public columns = <IColumn<IPullRequest>[]>[
     {
@@ -112,11 +115,13 @@ export class PullRequestPageViewModel {
     }
   ];
   public me: KnockoutObservable<IProfile>;
+  public menuItems: KnockoutObservableArray<IMenuItem> = ko.observableArray([]);
   public panels: KnockoutObservableArray<{panel: Panel, repoId: string}> = ko.observableArray<{panel: Panel, repoId: string}>([]);
   public prUrlTemplate = "https://msazure.visualstudio.com/One/_git/{0}/pullrequest/{1}"
   public projectUrl = "https://msazure.visualstudio.com/DefaultCollection";
   public refreshIntervalMin = ko.observable(0);
   public trackedRepos: ITrackedRepo[];
+  public viewName: string = "pullRequests";
   public vsoProxy: VsoProxy;
 
   constructor(vsoProxy: VsoProxy, userProfile: KnockoutObservable<IProfile>) {
@@ -134,7 +139,7 @@ export class PullRequestPageViewModel {
     this._fetchTrackedRepos();
   }
 
-  public start(): Q.Promise<any> {
+  public load(): Q.Promise<any> {
     let repoFetches = this.trackedRepos.map(repo => this.vsoProxy.fetchRepository(repo.repoId));
 
     return Q.all(repoFetches).then(repos => {
@@ -142,6 +147,12 @@ export class PullRequestPageViewModel {
         let trackedRepo = this.trackedRepos.filter(tr => tr.repoId === repo.id)[0];
         let table = this.addRepoTable(repo.name, repo.id, trackedRepo.isMinimized, trackedRepo.justMine);
       });
+    });
+  }
+
+  public unload(): void {
+    this.panels().forEach(panel => {
+      panel.panel.dispose();
     });
   }
 

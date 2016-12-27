@@ -16,4 +16,6 @@ setTimeout(() => {
 $(document).ready(() => {
   let app = new Application();
   ko.applyBindings(app, $("body")[0]);
+
+  app.load();
 })
