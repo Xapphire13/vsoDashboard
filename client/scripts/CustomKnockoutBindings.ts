@@ -1,8 +1,8 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {ContentLoader} from "./ContentLoader";
-import {ControlBase} from "./ControlBase";
-import {IPageViewModel} from "./IPageViewModel";
+import {ControlBase} from "./controls/ControlBase";
+import {IPageViewModel} from "./models/IPageViewModel";
 
 let handlers: {[key: string]: KnockoutBindingHandler} = {
   boundHtml: {

@@ -3,12 +3,12 @@
 
 import * as CustomKnockoutBindings from "./CustomKnockoutBindings";
 import {IAccessToken} from "../../shared/IAccessToken";
-import {IMenuItem} from "./IMenuItem";
-import {IPageViewModel} from "./IPageViewModel";
-import {IProfile} from "./IProfile";
-import {Menu} from "./Menu";
-import {PullRequestPageViewModel} from "./PullRequestPageViewModel";
-import {VsoProxy} from "./VsoProxy";
+import {IMenuItem} from "./models/IMenuItem";
+import {IPageViewModel} from "./models/IPageViewModel";
+import {IProfile} from "./api/models/IProfile";
+import {Menu} from "./controls/Menu";
+import {PullRequestPageViewModel} from "./pages/PullRequestPageViewModel";
+import {VsoProxy} from "./api/VsoProxy";
 
 export class Application {
   public pageViewModel: KnockoutObservable<IPageViewModel> = ko.observable<IPageViewModel>();

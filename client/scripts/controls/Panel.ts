@@ -1,8 +1,8 @@
-/// <reference path="../../typings/index.d.ts" />
+/// <reference path="../../../typings/index.d.ts" />
 
-import {ContentLoader} from "./ContentLoader";
+import {ContentLoader} from "../ContentLoader";
 import {ControlBase} from "./ControlBase";
-import {ICommand} from "./ICommand";
+import {ICommand} from "../models/ICommand";
 
 export interface IPanelOptions {
   invisible?: boolean;
@@ -81,7 +81,7 @@ export class Panel
 
   public remove() {
     this.dispose();
-    
+
     if(this.onRemove != undefined) {
       this.onRemove();
     }

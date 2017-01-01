@@ -1,24 +1,24 @@
-/// <reference path="../../typings/index.d.ts" />
-/// <reference path="../../typings/StringFormat.d.ts"/>
+/// <reference path="../../../typings/index.d.ts" />
+/// <reference path="../../../typings/StringFormat.d.ts"/>
 
-import {ClientOAuthHelper} from "./ClientOAuthHelper";
-import {ContextMenu} from "./ContextMenu";
-import {ControlBase} from "./ControlBase";
-import {IAccessToken} from "../../shared/IAccessToken";
-import {IColumn, Table, FormatType} from "./Table";
-import {ICommand} from "./ICommand";
-import {IMenuItem} from "./IMenuItem";
-import {IPageViewModel} from "./IPageViewModel";
-import {IProfile} from "./IProfile";
-import {IProject} from "./IProject";
-import {IPullRequest} from "./IPullRequest";
-import {IRepository} from "./IRepository";
-import {ITrackedRepo} from "./ITrackedRepo";
-import {IUser} from "./IUser";
-import {Panel} from "./Panel";
-import {PullRequestStatus} from "./PullRequestStatus";
-import {PullRequestVote} from "./PullRequestVote";
-import {VsoProxy} from "./VsoProxy";
+import {ClientOAuthHelper} from "../ClientOAuthHelper";
+import {ContextMenu} from "../controls/ContextMenu";
+import {ControlBase} from "../controls/ControlBase";
+import {IAccessToken} from "../../../shared/IAccessToken";
+import {IColumn, Table, FormatType} from "../controls/Table";
+import {ICommand} from "../models/ICommand";
+import {IMenuItem} from "../models/IMenuItem";
+import {IPageViewModel} from "../models/IPageViewModel";
+import {IProfile} from "../api/models/IProfile";
+import {IProject} from "../api/models/IProject";
+import {IPullRequest} from "../api/models/IPullRequest";
+import {IRepository} from "../api/models/IRepository";
+import {ITrackedRepo} from "../api/models/ITrackedRepo";
+import {IUser} from "../api/models/IUser";
+import {Panel} from "../controls/Panel";
+import {PullRequestStatus} from "../api/models/PullRequestStatus";
+import {PullRequestVote} from "../api/models/PullRequestVote";
+import {VsoProxy} from "../api/VsoProxy";
 
 export class PullRequestPageViewModel
   implements IPageViewModel {

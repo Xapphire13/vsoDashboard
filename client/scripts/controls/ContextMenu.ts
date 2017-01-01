@@ -1,7 +1,7 @@
-/// <reference path="../../typings/index.d.ts" />
+/// <reference path="../../../typings/index.d.ts" />
 
-import {ContentLoader} from "./ContentLoader";
-import {ICommand, CommandStatus} from "./ICommand";
+import {ContentLoader} from "../ContentLoader";
+import {ICommand, CommandStatus} from "../models/ICommand";
 
 export class ContextMenu {
   private static _initialized: boolean = false;

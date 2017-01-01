@@ -1,6 +1,6 @@
-/// <reference path="../../typings/index.d.ts" />
+/// <reference path="../../../typings/index.d.ts" />
 
-import {ContentLoader} from "./ContentLoader";
+import {ContentLoader} from "../ContentLoader";
 
 export abstract class ControlBase {
   private _initialized: Q.Promise<any>;

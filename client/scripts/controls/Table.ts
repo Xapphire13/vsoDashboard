@@ -1,7 +1,7 @@
-/// <reference path="../../typings/index.d.ts" />
+/// <reference path="../../../typings/index.d.ts" />
 
 import {ContextMenu} from "./ContextMenu";
-import {ICommand} from "./ICommand";
+import {ICommand} from "../models/ICommand";
 import {ControlBase} from "./ControlBase";
 
 export enum FormatType {

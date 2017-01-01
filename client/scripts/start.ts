@@ -2,7 +2,7 @@
 /// <reference path="../../typings/StringFormat.d.ts"/>
 
 import {Application} from "./Application";
-import {ContextMenu} from "./ContextMenu";
+import {ContextMenu} from "./controls/ContextMenu";
 
 // Force users to use the https version of the site
 if(location.hostname !== "127.0.0.1" && location.protocol != "https:") {

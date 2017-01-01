@@ -1,15 +1,15 @@
-/// <reference path="../../typings/index.d.ts" />
-/// <reference path="../../typings/StringFormat.d.ts"/>
+/// <reference path="../../../typings/index.d.ts" />
+/// <reference path="../../../typings/StringFormat.d.ts"/>
 
-import {ClientOAuthHelper} from "./ClientOAuthHelper";
-import {IAccessToken} from "../../shared/IAccessToken";
-import {IOdataQuery} from "./IOdataQuery";
-import {IProfile} from "./IProfile";
-import {IPullRequest} from "./IPullRequest";
-import {IRepository} from "./IRepository";
-import {IThread} from "./IThread";
-import {PullRequestStatus} from "./PullRequestStatus";
-import {PullRequestVote} from "./PullRequestVote";
+import {ClientOAuthHelper} from "../ClientOAuthHelper";
+import {IAccessToken} from "../../../shared/IAccessToken";
+import {IOdataQuery} from "../models/IOdataQuery";
+import {IProfile} from "./models/IProfile";
+import {IPullRequest} from "./models/IPullRequest";
+import {IRepository} from "./models/IRepository";
+import {IThread} from "./models/IThread";
+import {PullRequestStatus} from "./models/PullRequestStatus";
+import {PullRequestVote} from "./models/PullRequestVote";
 
 export class VsoProxy {
   private _accessToken: Q.Promise<IAccessToken>;

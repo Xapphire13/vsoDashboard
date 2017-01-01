@@ -1,5 +1,5 @@
 import {ControlBase} from "./ControlBase";
-import {IMenuItem} from "./IMenuItem";
+import {IMenuItem} from "../models/IMenuItem";
 
 export interface IMenuOptions {
   items: KnockoutObservableArray<IMenuItem>
