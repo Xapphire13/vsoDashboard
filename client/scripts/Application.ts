@@ -39,7 +39,13 @@ export class Application {
             this._switchActiveViewModel(key);
           }
         },
-        active: ko.observable(key === this._defaultViewModel)
+        active: ko.observable(key === this._defaultViewModel),
+        activeControl: () => {
+          let subMenu = new Menu({
+            items: this.pageViewModel() != undefined ? this.pageViewModel().menuItems : null
+          });
+          return subMenu;
+        }
       };
 
       return menuItem;
@@ -50,7 +56,8 @@ export class Application {
         {
           label: "Sign Out",
           onClick: () => this.signOut(),
-          active: ko.observable(false)
+          active: ko.observable(false),
+          activeControl: null
         }
       ].concat(viewItems))
     });

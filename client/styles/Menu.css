@@ -37,3 +37,26 @@
   height: 60px;
   background: #61AFEF;
 }
+
+.menu-item-activeControl {
+  position: relative;
+  width: 100%;
+  top: 30px;
+}
+
+.menu-item-activeControl .menu {
+  margin-bottom: 19px;
+}
+
+.menu-item-activeControl .menu-item {
+  min-height: 20px;
+  font-size: .8em;
+  font-weight: lighter;
+  border-top: 1px dashed #888888;
+  border-bottom: 1px dashed #888888;
+  padding-left: 20px;
+}
+
+.menu-item-activeControl .menu-item-label {
+  top: 20px;
+}

@@ -11,7 +11,7 @@ export class Menu
   public items: KnockoutObservableArray<IMenuItem>;
 
   constructor(options: IMenuOptions) {
-    super("Menu");
+    super("menu");
 
     this.items = options.items || ko.observableArray([]);
   }

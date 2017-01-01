@@ -2,5 +2,8 @@
   <div class="menu-item" data-bind="css: { clickable: onClick && !active(), first: $index() === 0, active: active }, click: onClick">
     <div class="menu-item-label" data-bind="text: label"></div>
     <div class="menu-item-activeMarker" data-bind="visible: active"></div>
+    <!-- ko if: active && activeControl -->
+    <div class="menu-item-activeControl" data-bind="control: activeControl()"></div>
+    <!-- /ko -->
   </div>
 </div>

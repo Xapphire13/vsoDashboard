@@ -134,7 +134,8 @@ export class PullRequestPageViewModel
       {
         label: "Add Repo",
         onClick: () => {},
-        active: ko.observable(false)
+        active: ko.observable(false),
+        activeControl: null
       }
     ]);
 
