@@ -2,6 +2,7 @@
 /// <reference path="../../typings/StringFormat.d.ts"/>
 
 import {Application} from "./Application";
+import {ContextMenu} from "./ContextMenu";
 
 // Force users to use the https version of the site
 if(location.hostname !== "127.0.0.1" && location.protocol != "https:") {
@@ -14,6 +15,10 @@ setTimeout(() => {
 }, 24 * 60 * 60 * 1000);
 
 $(document).ready(() => {
+  $(document).on("click", e => {
+    ContextMenu.hide();
+  });
+
   let app = new Application();
   ko.applyBindings(app, $("body")[0]);
 

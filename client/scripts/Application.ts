@@ -6,14 +6,14 @@ import {IAccessToken} from "../../shared/IAccessToken";
 import {IMenuItem} from "./IMenuItem";
 import {IPageViewModel} from "./IPageViewModel";
 import {IProfile} from "./IProfile";
+import {Menu} from "./Menu";
 import {PullRequestPageViewModel} from "./PullRequestPageViewModel";
-import {TestPageViewModel} from "./TestPageViewModel";
 import {VsoProxy} from "./VsoProxy";
 
 export class Application {
   public pageViewModel: KnockoutObservable<IPageViewModel> = ko.observable<IPageViewModel>();
   public userProfile: KnockoutObservable<IProfile> = ko.observable<IProfile>();
-  public menuItems: KnockoutObservableArray<IMenuItem> = ko.observableArray([]);
+  public menu: Menu;
   public vsoProxy: VsoProxy;
   public contentLoading: KnockoutObservable<boolean> = ko.observable(false);
 
@@ -30,18 +30,30 @@ export class Application {
       localStorage.setItem("accessToken", JSON.stringify(newAccessToken));
     });
 
-    this.menuItems([
-      {
-        label: "Sign Out",
-        onClick: () => this.signOut(),
-      }
-    ].concat(Object.keys(this._viewModelResolver).map(key => {
-      return {
+    let viewItems: IMenuItem[] = Object.keys(this._viewModelResolver).map(key => {
+      let menuItem = <IMenuItem>{
         label: key,
-        onClick: () => this._switchActiveViewModel(key)
-      }
-    })));
+        onClick: () => {
+          if(!menuItem.active()) {
+            viewItems.forEach(item => item.active(item === menuItem));
+            this._switchActiveViewModel(key);
+          }
+        },
+        active: ko.observable(key === this._defaultViewModel)
+      };
 
+      return menuItem;
+    });
+
+    this.menu = new Menu({
+      items: ko.observableArray([
+        {
+          label: "Sign Out",
+          onClick: () => this.signOut(),
+          active: ko.observable(false)
+        }
+      ].concat(viewItems))
+    });
   }
 
   public load(): Q.Promise<any> {

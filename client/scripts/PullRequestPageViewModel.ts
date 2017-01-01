@@ -130,9 +130,13 @@ export class PullRequestPageViewModel
     let refreshIntervalMin = Number(localStorage.getItem("refreshIntervalMin") || 5);
     this.refreshIntervalMin(refreshIntervalMin);
 
-    $(document).on("click", e => {
-      ContextMenu.hide();
-    });
+    this.menuItems([
+      {
+        label: "Add Repo",
+        onClick: () => {},
+        active: ko.observable(false)
+      }
+    ]);
 
     this.setupRefreshIntervalChange();
     this.setupRepoSearch();

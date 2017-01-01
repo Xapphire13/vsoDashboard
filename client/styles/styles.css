@@ -21,32 +21,6 @@ a {
   padding: 10px;
 }
 
-.menu {
-  margin: 20px -10px;
-}
-
-.menu-item {
-  position: relative;
-  min-height: 40px;
-  border-top: 1px solid #888888;
-  border-bottom: 1px solid #888888;
-  padding: 10px;
-}
-
-.menu-item:not(.first) {
-  margin-top: -1px;
-}
-
-.menu-item:hover {
-  background: #61AFEF;
-}
-
-.menu-item-label {
-  position: absolute;
-  top: 50%;
-  transform: translate(0, -50%);
-}
-
 #refreshPeriodList {
   display: inline-block;
   list-style-type: none;

@@ -12,11 +12,7 @@
     <div id="nav-bar">
       <h3 style="margin: 10px;color: #61AFEF;">VSO Pull Request Dashboard</h3>
       <p>Welcome <span data-bind="text: userProfile() != undefined ? userProfile().displayName : '' "></span></p>
-      <div class="menu" data-bind="foreach: menuItems">
-        <div class="menu-item" data-bind="css: { clickable: onClick, first: $index() === 0 }, click: onClick">
-          <div class="menu-item-label" data-bind="text: label"></div>
-        </div>
-      </div>
+      <div data-bind="control: menu"></div>
       <div style="position: absolute; bottom: 10px; left: 10px;">
         Refresh Interval (min):
         <ul id="refreshPeriodList">
