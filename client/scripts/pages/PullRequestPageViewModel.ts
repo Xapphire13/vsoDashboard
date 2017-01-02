@@ -4,6 +4,7 @@
 import {ClientOAuthHelper} from "../ClientOAuthHelper";
 import {ContextMenu} from "../controls/ContextMenu";
 import {ControlBase} from "../controls/ControlBase";
+import {EmbeddedView} from "../controls/EmbeddedView";
 import {IAccessToken} from "../../../shared/IAccessToken";
 import {IColumn, Table, FormatType} from "../controls/Table";
 import {ICommand} from "../models/ICommand";
@@ -18,6 +19,7 @@ import {IUser} from "../api/models/IUser";
 import {Panel} from "../controls/Panel";
 import {PullRequestStatus} from "../api/models/PullRequestStatus";
 import {PullRequestVote} from "../api/models/PullRequestVote";
+import {RepoSearchViewModel} from "./RepoSearchViewModel";
 import {VsoProxy} from "../api/VsoProxy";
 
 export class PullRequestPageViewModel
@@ -131,12 +133,20 @@ export class PullRequestPageViewModel
     this.refreshIntervalMin(refreshIntervalMin);
 
     this.menuItems([
-      {
-        label: "Add Repo",
-        onClick: () => {},
-        active: ko.observable(false),
-        activeControl: null
-      }
+      (() => {
+        let item = {
+          label: "Add Repo",
+          onClick: () => item.active(true),
+          active: ko.observable(false),
+          activeControl: () => {
+            let view = new RepoSearchViewModel(this.vsoProxy);
+            view.load();
+            return new EmbeddedView(view);
+          }
+        };
+
+        return item;
+      })()
     ]);
 
     this.setupRefreshIntervalChange();

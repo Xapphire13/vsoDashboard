@@ -8,8 +8,8 @@ export class ContextMenu {
 
   private static _init(): Q.Promise<any> {
     if(!ContextMenu._initialized) {
-      ContentLoader.loadStylesheets(["contextMenu"]);
-      return ContentLoader.loadHtmlTemplates(["contextMenu"]).then(() => {
+      ContentLoader.loadStylesheets("contextMenu");
+      return ContentLoader.loadHtmlTemplates("contextMenu").then(() => {
         ContextMenu._initialized = true;
       });
     }

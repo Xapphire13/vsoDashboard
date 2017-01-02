@@ -60,3 +60,8 @@
 .menu-item-activeControl .menu-item-label {
   top: 20px;
 }
+
+.menu-item-activeControl .menu-item-activeMarker {
+  height: 40px;
+  background: #bbddf7;
+}

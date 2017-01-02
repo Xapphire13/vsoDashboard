@@ -18,7 +18,7 @@ export abstract class ControlBase {
   }
 
   private _init(): Q.Promise<any> {
-    ContentLoader.loadStylesheets([this._templateName]);
-    return ContentLoader.loadHtmlTemplates([this._templateName]);
+    ContentLoader.loadStylesheets(this._templateName);
+    return ContentLoader.loadHtmlTemplates(this._templateName);
   }
 }

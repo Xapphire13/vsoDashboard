@@ -1,5 +1,5 @@
 export class ContentLoader {
-  public static loadStylesheets(stylesheetNames: string[]): void {
+  public static loadStylesheets(...stylesheetNames: string[]): void {
     stylesheetNames.forEach(stylesheetName => {
       if($(`#${stylesheetName}-stylesheet`).length > 0) {
         return; // Stylesheet already loaded
@@ -10,7 +10,7 @@ export class ContentLoader {
     });
   }
 
-  public static loadHtmlTemplates(templateNames: string[]): Q.Promise<any> {
+  public static loadHtmlTemplates(...templateNames: string[]): Q.Promise<any> {
     let promises = templateNames.map(templateName => {
       if($(`#${templateName}-template`).length > 0) {
         return Q(); // Template already loaded

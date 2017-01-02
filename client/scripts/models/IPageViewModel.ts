@@ -1,9 +1,7 @@
 import {IMenuItem} from "./IMenuItem";
+import {IViewModel} from "./IViewModel";
 
-export interface IPageViewModel {
+export interface IPageViewModel
+  extends IViewModel {
   menuItems: KnockoutObservableArray<IMenuItem>;
-  viewName: string;
-
-  load(): Q.Promise<any>;
-  unload(): void;
 }

@@ -25,7 +25,7 @@
     <div id="content-wrapper">
       <!-- ko if: !contentLoading() -->
       <div id="content" data-bind="with: pageViewModel">
-        <div data-bind="{view: $data.viewName}"></div>
+        <div data-bind="{view: $data}"></div>
       </div>
       <!-- /ko -->
       <!-- ko if: contentLoading() -->
