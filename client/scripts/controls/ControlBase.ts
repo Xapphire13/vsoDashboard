@@ -5,9 +5,12 @@ import {ContentLoader} from "../ContentLoader";
 export abstract class ControlBase {
   private _initialized: Q.Promise<any>;
   private _templateName: string;
+  private _loadStylesheets: boolean;
 
-  constructor(templateName: string) {
+  constructor(templateName: string, loadStylesheets: boolean = true) {
     this._templateName = templateName;
+    this._loadStylesheets = loadStylesheets;
+
     this._initialized = this._init();
   }
 
@@ -18,7 +21,9 @@ export abstract class ControlBase {
   }
 
   private _init(): Q.Promise<any> {
-    ContentLoader.loadStylesheets(this._templateName);
+    if(this._loadStylesheets) {      
+      ContentLoader.loadStylesheets(this._templateName);
+    }
     return ContentLoader.loadHtmlTemplates(this._templateName);
   }
 }

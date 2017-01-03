@@ -7,7 +7,7 @@ export class EmbeddedView
   public viewModel: IViewModel;
 
   constructor(viewModel: IViewModel) {
-    super("embeddedView");
+    super("embeddedView", false);
 
     this.viewModel = viewModel;
   }
