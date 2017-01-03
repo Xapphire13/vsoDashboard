@@ -157,7 +157,6 @@ export class PullRequestPageViewModel
     ]);
 
     this.setupRefreshIntervalChange();
-    this.setupRepoSearch();
     this._fetchTrackedRepos();
   }
 
@@ -318,65 +317,6 @@ export class PullRequestPageViewModel
     }
 
     return table;
-  }
-
-  public setupRepoSearch(): void {
-    let repoSearchCloseButton = $("#repoSearchCloseButton");
-    let repoSearchContainer = $("#repoSearchContainer");
-    let repoSearchListItem = $("#repoSearchListItem");
-    let repoSearchBox = $("#repoSearchBox");
-    let repoSearchButton = $("#repoSearchButton");
-
-    repoSearchCloseButton.on("click", e => {
-      e.stopPropagation();
-
-      repoSearchContainer.slideUp(250);
-      repoSearchContainer.children(".table-wrapper").remove();
-      repoSearchCloseButton.hide();
-      repoSearchListItem.removeClass("open");
-    });
-
-    repoSearchListItem.on("click", () => {
-      repoSearchCloseButton.css("display", "inline-block");
-      repoSearchContainer.slideDown(250);
-      repoSearchListItem.addClass("open");
-    });
-
-    repoSearchBox.on("focus", () => {
-      repoSearchBox.select();
-    });
-
-    let panel = ko.observable<Panel>()
-
-    repoSearchButton.on("click", () => {
-      let resultsTable = new Table<IRepository>(null, {
-        columns: <IColumn<IRepository>[]>[
-          {
-            name: "Name",
-            itemKey: "name",
-            onClick: item => {
-              let table = this.addRepoTable(item.name, item.id, false, true);
-            }
-          }
-        ]
-      });
-
-      panel(new Panel({
-        title: "Search Results",
-        loadContent: () => {
-          return this.vsoProxy.listRepositories().then(repositories => {
-            let searchString = (repoSearchBox.val() as string).toLowerCase();
-            repositories = repositories.filter(repo => repo.name.toLowerCase().search(searchString) >= 0);
-            resultsTable.items(repositories);
-          });
-        },
-        invisible: true
-      }));
-
-      panel().child(resultsTable);
-    });
-
-    //ko.applyBindings(panel ,document.getElementById("repoSearchContainer"));
   }
 
   private _fetchTrackedRepos(): void {
