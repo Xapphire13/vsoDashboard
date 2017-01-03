@@ -5,6 +5,10 @@ import {Panel} from "../controls/Panel";
 import {Table} from "../controls/Table";
 import {VsoProxy} from "../api/VsoProxy";
 
+export interface IRepoSearchViewModelOptions {
+  onRepoSelected: (repo: IRepository) => void;
+}
+
 export class RepoSearchViewModel
   implements IViewModel {
 
@@ -13,31 +17,39 @@ export class RepoSearchViewModel
   public viewName: string = "repoSearch";
 
   private _vsoProxy: VsoProxy;
+  private _onRepoSelected: (repo: IRepository) => void;
 
-  constructor(vsoProxy: VsoProxy) {
+  constructor(vsoProxy: VsoProxy, options: IRepoSearchViewModelOptions) {
     this._vsoProxy = vsoProxy;
+    this._onRepoSelected = options.onRepoSelected || (() => {});
   }
 
   public search(): void {
-    this._vsoProxy.listRepositories().then(repos => {
-      repos = repos.filter(repo => repo.name.toLowerCase().indexOf(this.searchQuery().toLowerCase()) >= 0);
+    if(this.resultsPanel() != undefined) {
+      this.resultsPanel().remove();
+    }
 
-      let resultsTable = new Table<IRepository>(ko.observableArray(repos), {
-        columns: [
-          {
-            name: "",
-            itemKey: "name"
-          }
-        ]
-      });
-
-      this.resultsPanel(new Panel({
-        invisible: true,
-        loadContent: () => Q(),
-        title: ""
-      }));
-      this.resultsPanel().child(resultsTable);
+    let resultsTable = new Table<IRepository>(null, {
+      columns: [
+        {
+          name: "",
+          itemKey: "name",
+          onClick: this._onRepoSelected
+        }
+      ]
     });
+
+    this.resultsPanel(new Panel({
+      invisible: true,
+      loadContent: () => {
+        return this._vsoProxy.listRepositories().then(repos => {
+          repos = repos.filter(repo => repo.name.toLowerCase().indexOf(this.searchQuery().toLowerCase()) >= 0);
+          resultsTable.items(repos);
+        });
+      },
+      title: ""
+    }));
+    this.resultsPanel().child(resultsTable);
   }
 
   public load(): Q.Promise<any> {

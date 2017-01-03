@@ -35,7 +35,10 @@ export class Application {
         label: key,
         onClick: () => {
           if(!menuItem.active()) {
-            viewItems.forEach(item => item.active(item === menuItem));
+            viewItems.forEach(item => {
+              item.active(item === menuItem);
+              item.enabled(!item.active());
+            });
             this._switchActiveViewModel(key);
           }
         },
@@ -45,7 +48,8 @@ export class Application {
             items: this.pageViewModel() != undefined ? this.pageViewModel().menuItems : null
           });
           return subMenu;
-        }
+        },
+        enabled: ko.observable(key !== this._defaultViewModel)
       };
 
       return menuItem;
@@ -57,7 +61,8 @@ export class Application {
           label: "Sign Out",
           onClick: () => this.signOut(),
           active: ko.observable(false),
-          activeControl: null
+          activeControl: null,
+          enabled: ko.observable(true)
         }
       ].concat(viewItems))
     });

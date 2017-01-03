@@ -1,9 +1,9 @@
 <div class="menu" data-bind="foreach: items">
-  <div class="menu-item" data-bind="css: { clickable: onClick && !active(), first: $index() === 0, active: active }, click: onClick">
+  <div class="menu-item" data-bind="css: { clickable: onClick && enabled(), first: $index() === 0, active: active }, click: onClick">
     <div class="menu-item-label" data-bind="text: label"></div>
     <div class="menu-item-activeMarker" data-bind="visible: active"></div>
     <!-- ko if: active() && activeControl -->
-    <div class="menu-item-activeControl" data-bind="control: activeControl()"></div>
+    <div class="menu-item-activeControl" data-bind="control: activeControl(), click: function(data, event) { event.stopPropagation(); }"></div>
     <!-- /ko -->
   </div>
 </div>

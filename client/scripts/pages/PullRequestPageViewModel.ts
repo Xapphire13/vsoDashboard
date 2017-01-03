@@ -14,7 +14,7 @@ import {IProfile} from "../api/models/IProfile";
 import {IProject} from "../api/models/IProject";
 import {IPullRequest} from "../api/models/IPullRequest";
 import {IRepository} from "../api/models/IRepository";
-import {ITrackedRepo} from "../api/models/ITrackedRepo";
+import {ITrackedRepo} from "../models/ITrackedRepo";
 import {IUser} from "../api/models/IUser";
 import {Panel} from "../controls/Panel";
 import {PullRequestStatus} from "../api/models/PullRequestStatus";
@@ -134,15 +134,22 @@ export class PullRequestPageViewModel
 
     this.menuItems([
       (() => {
-        let item = {
+        let item: IMenuItem = {
           label: "Add Repo",
-          onClick: () => item.active(true),
+          onClick: () => item.active(!item.active()),
           active: ko.observable(false),
           activeControl: () => {
-            let view = new RepoSearchViewModel(this.vsoProxy);
+            let view = new RepoSearchViewModel(this.vsoProxy, {
+              onRepoSelected: repo => {
+                if(this.trackedRepos.filter(tRepo => tRepo.repoId === repo.id).length === 0) {
+                  this.addRepoTable(repo.name, repo.id, false, true);
+                }
+              }
+            });
             view.load();
             return new EmbeddedView(view);
-          }
+          },
+          enabled: ko.observable(true)
         };
 
         return item;
