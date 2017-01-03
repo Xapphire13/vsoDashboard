@@ -12,7 +12,7 @@
   <div class="panel-loading" data-bind="visible: loading() && !minimized()">
     <img src="/images/loading.gif"/>
   </div>
-  <div class="panel-content" data-bind="visible: !loading() && !minimized(), control: child">
+  <div class="panel-content" data-bind="visible: !loading() && !minimized(), viewModel: child">
   </div>
   <div class="panel-commands-wrapper" data-bind="visible: commands().length > 0 && !minimized()">
     <div class="panel-commands" data-bind="foreach: commands">
