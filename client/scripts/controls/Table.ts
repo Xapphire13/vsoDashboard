@@ -13,7 +13,7 @@ export interface IColumn<T> {
   cssClass?: string;
   format?: any;
   formatType?: FormatType;
-  itemKey?: string;
+  itemKey?: string | string[];
   name: string;
   onClick?: (item: T) => void;
   style?: string;
@@ -62,28 +62,30 @@ export class Table<T>
     this._supplyCommands = options.supplyCommands;
   }
 
-  public getValue(item: T, itemKey: string, column: any): any {
+  public getValue(item: T, column: IColumn<T>): any {
+    let applyItemKey = () => {
+      if(Array.isArray(column.itemKey)) {
+        let value = item;
+
+        column.itemKey.forEach(part => {
+          value = value[part];
+        });
+
+        return value;
+      } else {
+        return item[column.itemKey];
+      }
+    };
+
     if(column.formatType != undefined) {
       switch(column.formatType) {
         case FormatType.html:
           return column.format;
         case FormatType.map:
-          return column.format(column.itemKey == undefined ? item : item[column.itemKey]);
+          return column.format(column.itemKey == undefined ? item : applyItemKey());
       }
     } else if(column.itemKey != undefined) {
-      let parts = column.itemKey.split(".");
-
-      if(parts.length === 1) {
-        return item[column.itemKey];
-      } else {
-        let value: any = item;
-
-        parts.forEach(part => {
-          value = value[part];
-        });
-
-        return value;
-      }
+      return applyItemKey();
     }
 
     return item;

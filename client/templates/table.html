@@ -17,7 +17,7 @@
         contextmenu: function(data, event) { return false; }
       }">
       <div class="column" data-bind="
-        html: $parents[1].getValue($parent, itemKey, $data),
+        html: $parents[1].getValue($parent, $data),
         css: cssClass,
         css: { clickable: onClick != undefined },
         click: function(data, event) { onClick($parent, event); },

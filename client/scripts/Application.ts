@@ -9,6 +9,7 @@ import {IProfile} from "./api/models/IProfile";
 import {Menu} from "./controls/Menu";
 import {PullRequestPageViewModel} from "./viewModels/PullRequestPageViewModel";
 import {VsoProxy} from "./api/VsoProxy";
+import {WorkItemsPageViewModel} from "./viewModels/WorkItemsPageViewModel";
 
 export class Application {
   public pageViewModel: KnockoutObservable<IPageViewModel> = ko.observable<IPageViewModel>();
@@ -17,10 +18,16 @@ export class Application {
   public vsoProxy: VsoProxy;
   public contentLoading: KnockoutObservable<boolean> = ko.observable(false);
 
-  private _defaultViewModel: string = "pullRequests";
-  private _viewModelResolver: {[key: string]: () => IPageViewModel} = {
-    "pullRequests": () => new PullRequestPageViewModel(this.vsoProxy, this.userProfile)
-  }
+  private _pageViewModels: {title: string, resolver: () => IPageViewModel}[] = [
+    {
+      title: "Pull Requests",
+      resolver: () => new PullRequestPageViewModel(this.vsoProxy, this.userProfile)
+    },
+    {
+      title: "Work Items",
+      resolver: () => new WorkItemsPageViewModel(this.vsoProxy)
+    }
+  ];
 
   constructor() {
     CustomKnockoutBindings.init();
@@ -30,26 +37,30 @@ export class Application {
       localStorage.setItem("accessToken", JSON.stringify(newAccessToken));
     });
 
-    let viewItems: IMenuItem[] = Object.keys(this._viewModelResolver).map(key => {
+    let viewItems: IMenuItem[] = this._pageViewModels.map((viewModelInfo, index) => {
       let menuItem = <IMenuItem>{
-        label: key,
+        label: viewModelInfo.title,
         onClick: () => {
           if(!menuItem.active()) {
+            this._switchActiveViewModel(viewModelInfo.resolver);
             viewItems.forEach(item => {
               item.active(item === menuItem);
               item.enabled(!item.active());
             });
-            this._switchActiveViewModel(key);
           }
         },
-        active: ko.observable(key === this._defaultViewModel),
+        active: ko.observable(index === 0),
         activeControl: () => {
-          let subMenu = new Menu({
-            items: this.pageViewModel() != undefined ? this.pageViewModel().menuItems : null
-          });
-          return subMenu;
+          if(this.pageViewModel() != undefined && this.pageViewModel().menuItems().length > 0) {
+            let subMenu = new Menu({
+              items: this.pageViewModel().menuItems
+            });
+            return subMenu;
+          }
+
+          return null;
         },
-        enabled: ko.observable(key !== this._defaultViewModel)
+        enabled: ko.observable(index !== 0)
       };
 
       return menuItem;
@@ -71,7 +82,7 @@ export class Application {
   public load(): Q.Promise<any> {
     return this.vsoProxy.fetchUserProfile().then(profile => {
       this.userProfile(profile);
-      return this._switchActiveViewModel(this._defaultViewModel);
+      return this._switchActiveViewModel(this._pageViewModels[0].resolver);
     });
   }
 
@@ -80,9 +91,9 @@ export class Application {
     location.reload();
   }
 
-  private _switchActiveViewModel(viewModelName: string): Q.Promise<any> {
+  private _switchActiveViewModel(viewModelResolver: () => IPageViewModel): Q.Promise<any> {
     this.contentLoading(true);
-    let viewModel = this._viewModelResolver[viewModelName]();
+    let viewModel = viewModelResolver();
 
     if(this.pageViewModel() != undefined) {
       this.pageViewModel().unload();

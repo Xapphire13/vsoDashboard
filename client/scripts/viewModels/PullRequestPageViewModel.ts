@@ -71,7 +71,7 @@ export class PullRequestPageViewModel
     },
     {
       name: "Created By",
-      itemKey: "createdBy.displayName",
+      itemKey: ["createdBy","displayName"],
       width: "200px"
     },
     {

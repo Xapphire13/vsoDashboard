@@ -10,11 +10,13 @@ import {IRepository} from "./models/IRepository";
 import {IThread} from "./models/IThread";
 import {PullRequestStatus} from "./models/PullRequestStatus";
 import {PullRequestVote} from "./models/PullRequestVote";
+import {IWorkItem} from "./models/IWorkItem";
+import {IWorkItemQuery} from "./models/IWorkItemQuery";
 
 export class VsoProxy {
   private _accessToken: Q.Promise<IAccessToken>;
   private _accessTokenChanged: (token: IAccessToken) => void;
-  private _apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis/git";
+  private _apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis";
   private _apiVersion = "3.0";
   private _callbackUrl = "https://vsodash.azurewebsites.net/auth";
   private _clientId = "C1006007-2D67-48A7-B4B9-CB82AF5C0525";
@@ -50,7 +52,7 @@ export class VsoProxy {
 
   public listPullRequests(repositoryId: string): Q.Promise<IPullRequest[]> {
     return this._makeCall<IOdataQuery<IPullRequest>>({
-      url: `${this._apiUri}/repositories/${repositoryId}/pullRequests?api-version=${this._apiVersion}`
+      url: `${this._apiUri}/git/repositories/${repositoryId}/pullRequests?api-version=${this._apiVersion}`
     }).then(results => {
       return results.value;
     });
@@ -58,7 +60,7 @@ export class VsoProxy {
 
   public fetchPullRequest(pullRequest: IPullRequest): Q.Promise<IPullRequest> {
     return this._makeCall<IPullRequest>({
-      url: `${this._apiUri}/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}?api-version=${this._apiVersion}`
+      url: `${this._apiUri}/git/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}?api-version=${this._apiVersion}`
     });
   }
 
@@ -66,7 +68,7 @@ export class VsoProxy {
     // Fetch latest version of the request
     return this.fetchPullRequest(pullRequest).then(pullRequest => {
       return this._makeCall<IPullRequest>({
-        url: `${this._apiUri}/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}?api-version=${this._apiVersion}`,
+        url: `${this._apiUri}/git/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}?api-version=${this._apiVersion}`,
         method: "PATCH",
         contentType: "application/json",
         data: JSON.stringify({
@@ -79,7 +81,7 @@ export class VsoProxy {
 
   public modifySignOffVote(pullRequest: IPullRequest, user: IProfile, vote: PullRequestVote): Q.Promise<IProfile> {
     return this._makeCall<IProfile>({
-      url: `${this._apiUri}/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}/reviewers/${user.id}?api-version=${this._apiVersion}`,
+      url: `${this._apiUri}/git/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}/reviewers/${user.id}?api-version=${this._apiVersion}`,
       method: "PUT",
       contentType: "application/json",
       data: JSON.stringify({
@@ -90,7 +92,7 @@ export class VsoProxy {
 
   public listRepositories(): Q.Promise<IRepository[]> {
     return this._makeCall<IOdataQuery<IRepository>>({
-      url: `${this._apiUri}/repositories?api-version=${this._apiVersion}`
+      url: `${this._apiUri}/git/repositories?api-version=${this._apiVersion}`
     }).then(results => {
       return results.value || [];
     });
@@ -104,15 +106,31 @@ export class VsoProxy {
 
   public fetchRepository(repositoryId: string): Q.Promise<IRepository> {
     return this._makeCall<IRepository>({
-      url: `${this._apiUri}/repositories/${repositoryId}?api-version=${this._apiVersion}`
+      url: `${this._apiUri}/git/repositories/${repositoryId}?api-version=${this._apiVersion}`
     });
   }
 
   public fetchThreads(pullRequest: IPullRequest): Q.Promise<IThread[]> {
     return this._makeCall<IOdataQuery<IThread>>({
-      url: `${this._apiUri}/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}/threads?api-version=${this._apiVersion}`
+      url: `${this._apiUri}/git/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}/threads?api-version=${this._apiVersion}`
     }).then(results => {
       return results.value;
+    });
+  }
+
+  public listWorkItems(): Q.Promise<IWorkItem[]> {
+    return this._makeCall<IWorkItemQuery>({
+      url: `${this._apiUri}/wit/wiql?api-version=${this._apiVersion}`,
+      method: "POST",
+      data: JSON.stringify({
+        query: "Select * " +
+        "From WorkItems " +
+        "Where [System.AssignedTo] = @Me " +
+        "And [System.State] <> 'Closed' "
+      }),
+      contentType: "application/json"
+    }).then(results => {
+      return Q.all(results.workItems.map(wi => this._makeCall<IWorkItem>({url: wi.url})));
     });
   }
 
