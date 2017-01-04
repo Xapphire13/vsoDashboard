@@ -1,6 +1,7 @@
 /// <reference path="../../../typings/index.d.ts" />
 /// <reference path="../../../typings/StringFormat.d.ts"/>
 
+import * as DateHelper from "../DateHelper";
 import {ClientOAuthHelper} from "../ClientOAuthHelper";
 import {ContextMenu} from "../controls/ContextMenu";
 import {ControlBase} from "../controls/ControlBase";
@@ -75,21 +76,23 @@ export class PullRequestPageViewModel
       width: "200px"
     },
     {
-      name: "Created Date",
+      name: "Created",
       itemKey: "creationDate",
       formatType: FormatType.map,
       format: item => {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let dateTime = new Date(item);
-        let padNumber = (val: number) => {
-          let str = val.toString();
-
-          return str.length < 2 ? `0${str}` : str;
-        }
-
-        return `${months[dateTime.getMonth()]}-${padNumber(dateTime.getDate())}-${dateTime.getFullYear()} ${padNumber(dateTime.getHours())}:${padNumber(dateTime.getMinutes())}`;
+        return DateHelper.toRelativeDate(new Date(item));
       },
-      width: "145px"
+      width: "125px"
+    },
+    {
+      name: "Updated",
+      itemKey: "updated",
+      formatType: FormatType.map,
+      format: item => {
+        let value = ko.unwrap(item);
+        return value != undefined ? DateHelper.toRelativeDate(new Date(value)) : "-" ;
+      },
+      width: "125px"
     },
     {
       name: "Codeflow",
@@ -199,17 +202,23 @@ export class PullRequestPageViewModel
           pr.createdBy.uniqueName == this.me().emailAddress);
       }
 
-      pullRequests.map(pullRequest => {
+      pullRequests.forEach(pullRequest => {
         let comments = ko.observable("<div style='position: absolute; top: 50%; transform: translate(0, -50%);''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>-</span></div>");
         pullRequest["comments"] = comments;
 
-        return this.vsoProxy.fetchThreads(pullRequest).then(threads => {
+        this.vsoProxy.fetchThreads(pullRequest).then(threads => {
           let commentCount = 0;
           threads.filter(thread => thread.properties != undefined && thread.properties.CodeReviewThreadType == undefined).forEach(thread => {
             commentCount += thread.comments.length;
           });
 
           comments(`<div style='position: absolute; top: 50%; transform: translate(0, -50%);''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>${commentCount}</span></div>`);
+        });
+
+        let updated = ko.observable(null);
+        pullRequest["updated"] = updated;
+        this.vsoProxy.fetchIterations(pullRequest).then(iterations => {
+          updated(iterations[iterations.length - 1].updatedDate);
         });
       })
 

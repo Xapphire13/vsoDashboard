@@ -3,15 +3,16 @@
 
 import {ClientOAuthHelper} from "../ClientOAuthHelper";
 import {IAccessToken} from "../../../shared/IAccessToken";
+import {IIteration} from "./models/IIteration";
 import {IOdataQuery} from "../models/IOdataQuery";
 import {IProfile} from "./models/IProfile";
 import {IPullRequest} from "./models/IPullRequest";
 import {IRepository} from "./models/IRepository";
 import {IThread} from "./models/IThread";
+import {IWorkItemQuery} from "./models/IWorkItemQuery";
+import {IWorkItem} from "./models/IWorkItem";
 import {PullRequestStatus} from "./models/PullRequestStatus";
 import {PullRequestVote} from "./models/PullRequestVote";
-import {IWorkItem} from "./models/IWorkItem";
-import {IWorkItemQuery} from "./models/IWorkItemQuery";
 
 export class VsoProxy {
   private _accessToken: Q.Promise<IAccessToken>;
@@ -61,6 +62,14 @@ export class VsoProxy {
   public fetchPullRequest(pullRequest: IPullRequest): Q.Promise<IPullRequest> {
     return this._makeCall<IPullRequest>({
       url: `${this._apiUri}/git/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}?api-version=${this._apiVersion}`
+    });
+  }
+
+  public fetchIterations(pullRequest: IPullRequest): Q.Promise<IIteration[]> {
+    return this._makeCall<IOdataQuery<IIteration>>({
+      url: `${this._apiUri}/git/repositories/${pullRequest.repository.id}/pullRequests/${pullRequest.pullRequestId}/iterations?api-version=${this._apiVersion}`
+    }).then(results => {
+      return results.value;
     });
   }
 
