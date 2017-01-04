@@ -96,19 +96,19 @@ footer {
   background: rgba(255, 128, 128, 0.3);
 }
 
-.row.noResponse-noAlpha {
+.noResponse-noAlpha {
   background: rgb(153, 214, 255);
 }
 
-.row.approved-noAlpha,
-.row.approvedWithSuggestions-noAlpha {
+.approved-noAlpha,
+.approvedWithSuggestions-noAlpha {
   background: rgb(153, 255, 153);
 }
 
-.row.waiting-noAlpha {
+.waiting-noAlpha {
   background: rgb(255, 214, 153);
 }
 
-.row.rejected-noAlpha {
+.rejected-noAlpha {
   background: rgb(255, 128, 128);
 }
