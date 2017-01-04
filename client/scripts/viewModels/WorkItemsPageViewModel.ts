@@ -22,9 +22,30 @@ export class WorkItemsPageViewModel
 
     constructor(vsoProxy: VsoProxy) {
       this._vsoProxy = vsoProxy;
+
+      this.menuItems([
+        {
+          label: "Refresh",
+          active: ko.observable(false),
+          enabled: ko.observable(true),
+          activeControl: null,
+          onClick: () => {
+            this._loadWorkItems();
+          }
+        }
+      ]);
     }
 
     load(): Q.Promise<any> {
+      return this._loadWorkItems();
+    }
+
+    unload(): void {
+
+    }
+
+    private _loadWorkItems(): Q.Promise<any> {
+      this.panels([]);
       return this._vsoProxy.listWorkItems().then(items => {
         let buckets: {[bucketKey: string]: IWorkItem[]} = {};
 
@@ -96,9 +117,5 @@ export class WorkItemsPageViewModel
 
         others.forEach(addPanel);
       });
-    }
-
-    unload(): void {
-
     }
   }
