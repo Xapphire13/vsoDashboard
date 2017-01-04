@@ -9,13 +9,15 @@ import {Table} from "../controls/Table";
 import {VsoProxy} from "../api/VsoProxy";
 
 const iterationPathKey = "System.IterationPath";
+const stateKey = "System.State";
 
 export class WorkItemsPageViewModel
   implements IPageViewModel {
 
+    public loading: KnockoutObservable<boolean> = ko.observable(false);
     public menuItems: KnockoutObservableArray<IMenuItem> = ko.observableArray([]);
-    public viewName: string = "workItems";
     public panels: KnockoutObservableArray<Panel> = ko.observableArray([]);
+    public viewName: string = "workItems";
 
     private _vsoProxy: VsoProxy;
     private _workItemUrlTemplate = "https://msazure.visualstudio.com/Intune/_workitems?id={0}"
@@ -30,7 +32,8 @@ export class WorkItemsPageViewModel
           enabled: ko.observable(true),
           activeControl: null,
           onClick: () => {
-            this._loadWorkItems();
+            this.loading(true);
+            this._loadWorkItems().finally(() => this.loading(false));
           }
         }
       ]);
@@ -92,7 +95,12 @@ export class WorkItemsPageViewModel
                   window.open(prLink, "_blank");
                 }
               }
-            ]
+            ],
+            getRowCssClasses: (item: IWorkItem) => {
+              let state: string = item.fields[stateKey];
+
+              return [state];
+            },
           });
 
           let panel = new Panel({

@@ -1,3 +1,10 @@
+<!-- ko if: !loading() -->
 <div data-bind="foreach: panels">
   <div data-bind="viewModel: $data, css: { first: $index() == 0 }"></div>
 </div>
+<!-- /ko -->
+<!-- ko if: loading() -->
+<div>
+  <img style="position: absolute; max-height: 60px; top: 50%; left: 50%; transform: translate(-50%, -50%);" src="/images/loading.gif"></img>
+</div>
+<!-- /ko -->

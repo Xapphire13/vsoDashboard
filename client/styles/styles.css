@@ -77,34 +77,38 @@ footer {
   cursor: pointer;
 }
 
-.noResponse {
+.row.active,
+.row.noResponse {
   background: rgba(153, 214, 255, 0.3);
 }
 
-.approved, .approvedWithSuggestions {
+.row.approved,
+.row.approvedWithSuggestions {
   background: rgba(153, 255, 153, 0.3);
 }
 
-.waiting {
+.row.resolved,
+.row.waiting {
   background: rgba(255, 214, 153, 0.3);
 }
 
-.rejected {
+.row.rejected {
   background: rgba(255, 128, 128, 0.3);
 }
 
-.noResponse-noAlpha {
+.row.noResponse-noAlpha {
   background: rgb(153, 214, 255);
 }
 
-.approved-noAlpha, .approvedWithSuggestions-noAlpha {
+.row.approved-noAlpha,
+.row.approvedWithSuggestions-noAlpha {
   background: rgb(153, 255, 153);
 }
 
-.waiting-noAlpha {
+.row.waiting-noAlpha {
   background: rgb(255, 214, 153);
 }
 
-.rejected-noAlpha {
+.row.rejected-noAlpha {
   background: rgb(255, 128, 128);
 }
