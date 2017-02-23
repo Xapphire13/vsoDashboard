@@ -1,6 +1,6 @@
 <!-- ko if: !loading() -->
 <div data-bind="foreach: panels">
-  <div data-bind="viewModel: $data, css: { first: $index() == 0 }"></div>
+  <div data-bind="control: $data, css: { first: $index() == 0 }"></div>
 </div>
 <!-- /ko -->
 <!-- ko if: loading() -->

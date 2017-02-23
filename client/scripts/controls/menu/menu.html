@@ -3,7 +3,7 @@
     <div class="menu-item-label" data-bind="text: label"></div>
     <div class="menu-item-activeMarker" data-bind="visible: active"></div>
     <!-- ko if: active() && activeControl -->
-    <div class="menu-item-activeControl" data-bind="viewModel: activeControl(), click: function(data, event) { event.stopPropagation(); }"></div>
+    <div class="menu-item-activeControl" data-bind="control: activeControl(), click: function(data, event) { event.stopPropagation(); }"></div>
     <!-- /ko -->
   </div>
 </div>

@@ -1,12 +1,12 @@
-/// <reference path="../../../typings/index.d.ts" />
-/// <reference path="../../../typings/StringFormat.d.ts"/>
+/// <reference path="../../../../typings/index.d.ts" />
+/// <reference path="../../../../typings/StringFormat.d.ts"/>
 
-import {IMenuItem} from "../models/IMenuItem";
-import {IPageViewModel} from "../models/IPageViewModel";
-import {IWorkItem} from "../api/models/IWorkItem";
-import {Panel} from "../controls/Panel";
-import {Table} from "../controls/Table";
-import {VsoProxy} from "../api/VsoProxy";
+import {IMenuItem} from "../../models/IMenuItem";
+import {IPageViewModel} from "../../models/IPageViewModel";
+import {IWorkItem} from "../../api/models/IWorkItem";
+import {Panel} from "../../controls/panel/Panel";
+import {Table} from "../../controls/table/Table";
+import {VsoProxy} from "../../api/VsoProxy";
 
 const iterationPathKey = "System.IterationPath";
 const stateKey = "System.State";
@@ -14,6 +14,7 @@ const stateKey = "System.State";
 export class WorkItemsPageViewModel
   implements IPageViewModel {
 
+    public templatePath = "workItems/workItems.html";
     public loading: KnockoutObservable<boolean> = ko.observable(false);
     public menuItems: KnockoutObservableArray<IMenuItem> = ko.observableArray([]);
     public panels: KnockoutObservableArray<Panel> = ko.observableArray([]);

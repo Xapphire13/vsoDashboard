@@ -6,17 +6,16 @@ import {IAccessToken} from "../../shared/IAccessToken";
 import {IMenuItem} from "./models/IMenuItem";
 import {IPageViewModel} from "./models/IPageViewModel";
 import {IProfile} from "./api/models/IProfile";
-import {Menu} from "./controls/Menu";
-import {PullRequestPageViewModel} from "./viewModels/PullRequestPageViewModel";
+import {Menu} from "./controls/menu/Menu";
+import {PullRequestPageViewModel} from "./pages/pullRequests/PullRequestPageViewModel";
 import {VsoProxy} from "./api/VsoProxy";
-import {WorkItemsPageViewModel} from "./viewModels/WorkItemsPageViewModel";
+import {WorkItemsPageViewModel} from "./pages/workItems/WorkItemsPageViewModel";
 
 export class Application {
   public pageViewModel: KnockoutObservable<IPageViewModel> = ko.observable<IPageViewModel>();
   public userProfile: KnockoutObservable<IProfile> = ko.observable<IProfile>();
   public menu: Menu;
   public vsoProxy: VsoProxy;
-  public contentLoading: KnockoutObservable<boolean> = ko.observable(false);
 
   private _pageViewModels: {title: string, resolver: () => IPageViewModel}[] = [
     {
@@ -91,8 +90,7 @@ export class Application {
     location.reload();
   }
 
-  private _switchActiveViewModel(viewModelResolver: () => IPageViewModel): Q.Promise<any> {
-    this.contentLoading(true);
+  private _switchActiveViewModel(viewModelResolver: () => IPageViewModel): void {
     let viewModel = viewModelResolver();
 
     if(this.pageViewModel() != undefined) {
@@ -100,8 +98,5 @@ export class Application {
     }
 
     this.pageViewModel(viewModel);
-    return viewModel.load().then(() => {
-      this.contentLoading(false);
-    });
   }
 }

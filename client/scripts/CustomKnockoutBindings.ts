@@ -2,37 +2,69 @@
 
 import {ContentLoader} from "./ContentLoader";
 import {ControlBase} from "./controls/ControlBase";
-import {IViewModel} from "./models/IViewModel";
+import {IPageViewModel} from "./models/IPageViewModel";
 
 let handlers: {[key: string]: KnockoutBindingHandler} = {
-  viewModel: {
+  control: {
     init: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
       return { controlsDescendantBindings: true };
     },
     update: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
-      let view: IViewModel | ControlBase = ko.unwrap(valueAccessor());
+      let control: ControlBase = ko.unwrap(valueAccessor());
 
-      if(view != undefined) {
+      if(control != undefined) {
         let $element = $(element);
         $element.empty();
-        let childBindingContext: KnockoutBindingContext = bindingContext.createChildContext(view);
+        let childBindingContext: KnockoutBindingContext = bindingContext.createChildContext(control);
 
-        let fetchHtml: Q.Promise<string>;
-        if((<ControlBase>view).getHtml != undefined) {
-          fetchHtml = (<ControlBase>view).getHtml();
-        } else if ((<IViewModel>view).viewName != undefined) {
-          fetchHtml = ContentLoader.loadView((<IViewModel>view).viewName);
+        if(control.stylesheetPath != undefined) {
+          ContentLoader.loadStylesheets(control.stylesheetPath);
         }
 
-        fetchHtml.then(html => {
+        ContentLoader.loadHtmlTemplate(control.templatePath).then(html => {
           $element.append(html);
           ko.applyBindingsToDescendants(childBindingContext, $element[0]);
+          control.load();
         }, reason => {
           console.error(reason);
         });
       }
     }
   },
+  page: {
+    init: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
+      return { controlsDescendantBindings: true };
+    },
+    update: (element: HTMLElement, valueAccessor, allBindings, viewModel, bindingContext) => {
+      let page: IPageViewModel = ko.unwrap(valueAccessor());
+
+      if(page != undefined) {
+        let $element = $(element);
+        $element.empty();
+        let childBindingContext: KnockoutBindingContext = bindingContext.createChildContext(page);
+
+        if(page.stylesheetPath != undefined) {
+          ContentLoader.loadStylesheets(page.stylesheetPath);
+        }
+
+        let $loading = $(
+          "<div> " +
+          "<img style='position: absolute; max-height: 60px; top: 50%; left: 50%; transform: translate(-50%, -50%);' src='/images/loading.gif'></img>" +
+          "</div>");
+
+        $element.append($loading);
+
+        ContentLoader.loadHtmlTemplate(`/scripts/pages/${page.templatePath}`).then(html => {
+          $element.empty();
+          $element.append(html);
+          ko.applyBindingsToDescendants(childBindingContext, $element[0]);
+          page.load();
+        }, reason => {
+          console.error(reason);
+        });
+      }
+    }
+  }
 }
 
 

@@ -3,27 +3,13 @@
 import {ContentLoader} from "../ContentLoader";
 
 export abstract class ControlBase {
-  private _initialized: Q.Promise<any>;
-  private _templateName: string;
-  private _loadStylesheets: boolean;
+  public templatePath: string;
+  public stylesheetPath: string;
 
-  constructor(templateName: string, loadStylesheets: boolean = true) {
-    this._templateName = templateName;
-    this._loadStylesheets = loadStylesheets;
-
-    this._initialized = this._init();
+  constructor(templatePath: string, stylesheetPath?: string) {
+    this.templatePath = `/scripts/controls/${templatePath}`;
+    this.stylesheetPath = stylesheetPath && `/scripts/controls/${stylesheetPath}`;
   }
 
-  public getHtml(): Q.Promise<string> {
-    return this._initialized.then(() => {
-      return $(`#${this._templateName}-template`).html();
-    });
-  }
-
-  private _init(): Q.Promise<any> {
-    if(this._loadStylesheets) {      
-      ContentLoader.loadStylesheets(this._templateName);
-    }
-    return ContentLoader.loadHtmlTemplates(this._templateName);
-  }
+  public abstract load(): Q.Promise<any>;
 }

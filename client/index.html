@@ -12,7 +12,7 @@
     <div id="nav-bar">
       <h3 style="margin: 10px;color: #61AFEF;">VSO Pull Request Dashboard</h3>
       <p>Welcome <span data-bind="text: userProfile() != undefined ? userProfile().displayName : '' "></span></p>
-      <div data-bind="viewModel: menu"></div>
+      <div data-bind="control: menu"></div>
       <div style="position: absolute; bottom: 10px; left: 10px;">
         Refresh Interval (min):
         <ul id="refreshPeriodList">
@@ -23,14 +23,7 @@
       </div>
     </div>
     <div id="content-wrapper">
-      <!-- ko if: !contentLoading() -->
-      <div id="content" data-bind="viewModel: pageViewModel"></div>
-      <!-- /ko -->
-      <!-- ko if: contentLoading() -->
-      <div id="content">
-        <img style="position: absolute; max-height: 60px; top: 50%; left: 50%; transform: translate(-50%, -50%);" src="/images/loading.gif"></img>
-      </div>
-      <!-- /ko -->
+      <div id="content" data-bind="page: pageViewModel"></div>
       <div id="bottom">
         <footer>
           <p style="margin: 0; position: relative; top: 50%; transform: translate(0, -50%);">

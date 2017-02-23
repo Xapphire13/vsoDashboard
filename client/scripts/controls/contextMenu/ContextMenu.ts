@@ -1,15 +1,15 @@
-/// <reference path="../../../typings/index.d.ts" />
+/// <reference path="../../../../typings/index.d.ts" />
 
-import {ContentLoader} from "../ContentLoader";
-import {ICommand, CommandStatus} from "../models/ICommand";
+import {ContentLoader} from "../../ContentLoader";
+import {ICommand, CommandStatus} from "../../models/ICommand";
 
 export class ContextMenu {
   private static _initialized: boolean = false;
 
   private static _init(): Q.Promise<any> {
     if(!ContextMenu._initialized) {
-      ContentLoader.loadStylesheets("contextMenu");
-      return ContentLoader.loadHtmlTemplates("contextMenu").then(() => {
+      ContentLoader.loadStylesheets("/scripts/controls/contextMenu/contextMenu.css");
+      return ContentLoader.loadHtmlTemplate("/scripts/controls/contextMenu/contextMenu.html").then(() => {
         ContextMenu._initialized = true;
       });
     }

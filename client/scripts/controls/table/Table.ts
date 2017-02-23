@@ -1,8 +1,8 @@
-/// <reference path="../../../typings/index.d.ts" />
+/// <reference path="../../../../typings/index.d.ts" />
 
-import {ContextMenu} from "./ContextMenu";
-import {ICommand} from "../models/ICommand";
-import {ControlBase} from "./ControlBase";
+import {ContextMenu} from "../contextMenu/ContextMenu";
+import {ICommand} from "../../models/ICommand";
+import {ControlBase} from "../ControlBase";
 
 export enum FormatType {
   html,
@@ -39,7 +39,7 @@ export class Table<T>
   private _supplyCommands: (item: T) => ICommand<any>[];
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
-    super("table");
+    super("table/table.html", "table/table.css");
     this.items = items || ko.observableArray<T>([]);
     this.columns = options.columns || [];
     this.columns.forEach(column  => {
@@ -60,6 +60,10 @@ export class Table<T>
 
     this._getRowCssClasses = options.getRowCssClasses;
     this._supplyCommands = options.supplyCommands;
+  }
+
+  public load(): Q.Promise<any> {
+    return Q();
   }
 
   public getValue(item: T, column: IColumn<T>): any {

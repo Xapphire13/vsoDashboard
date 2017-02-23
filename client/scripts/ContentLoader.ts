@@ -1,42 +1,30 @@
 export class ContentLoader {
-  public static loadStylesheets(...stylesheetNames: string[]): void {
-    stylesheetNames.forEach(stylesheetName => {
+  public static loadStylesheets(...stylesheetPaths: string[]): void {
+    stylesheetPaths.forEach(stylesheetPath => {
+      let stylesheetName = (/\/([^/]*)\.css/gi).exec(stylesheetPath)[1];
       if($(`#${stylesheetName}-stylesheet`).length > 0) {
         return; // Stylesheet already loaded
       }
 
-      let link = $(`<link id='${stylesheetName}-stylesheet' rel="stylesheet" type="text/css" href="/styles/${stylesheetName}.css"/>`);
+      let link = $(`<link id='${stylesheetName}-stylesheet' rel="stylesheet" type="text/css" href="${stylesheetPath}"/>`);
       $("head").append(link);
     });
   }
 
-  public static loadHtmlTemplates(...templateNames: string[]): Q.Promise<any> {
-    let promises = templateNames.map(templateName => {
-      if($(`#${templateName}-template`).length > 0) {
-        return Q(); // Template already loaded
-      }
+  public static loadHtmlTemplate(templatePath: string): Q.Promise<string> {
+    let templateName = (/\/([^/]*)\.html/gi).exec(templatePath)[1];
+    if($(`#${templateName}-template`).length > 0) {
+      return Q($(`#${templateName}-template`)[0].innerHTML); // Template already loaded
+    }
 
-      let script = $(`<script id='${templateName}-template' type='text/html'></script>`);
-      let def = Q.defer<any>();
-      script.load(`/templates/${templateName}.html`, () => {
-        // If nothing beat us to it
-        if($(`#${templateName}-template`).length <= 0) {
-          $("body").append(script);
-        }
-        def.resolve();
-      });
-
-      return def.promise;
-    });
-
-    return Q.all(promises);
-  }
-
-  public static loadView(viewName: string): Q.Promise<string> {
+    let script = $(`<script id='${templateName}-template' type='text/html'></script>`);
     let def = Q.defer<string>();
-    let $html = $("<div></div>");
-    $html.load(`/views/${viewName}.html`, () => {
-      def.resolve($html.html());
+    script.load(templatePath, () => {
+      // If nothing beat us to it
+      if($(`#${templateName}-template`).length <= 0) {
+        $("body").append(script);
+      }
+      def.resolve(script[0].innerHTML);
     });
 
     return def.promise;

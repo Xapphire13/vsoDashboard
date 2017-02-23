@@ -1,25 +1,26 @@
-import {ContentLoader} from "../ContentLoader";
-import {IRepository} from "../api/models/IRepository";
-import {IViewModel} from "../models/IViewModel";
-import {Panel} from "../controls/Panel";
-import {Table} from "../controls/Table";
-import {VsoProxy} from "../api/VsoProxy";
+import {ContentLoader} from "../../ContentLoader";
+import {ControlBase} from "../ControlBase";
+import {IRepository} from "../../api/models/IRepository";
+import {IViewModel} from "../../models/IViewModel";
+import {Panel} from "../../controls/panel/Panel";
+import {Table} from "../../controls/table/Table";
+import {VsoProxy} from "../../api/VsoProxy";
 
 export interface IRepoSearchViewModelOptions {
   onRepoSelected: (repo: IRepository) => void;
 }
 
-export class RepoSearchViewModel
-  implements IViewModel {
+export class RepoSearch
+  extends ControlBase {
 
   public resultsPanel: KnockoutObservable<Panel> = ko.observable<Panel>();
   public searchQuery: KnockoutObservable<string> = ko.observable<string>();
-  public viewName: string = "repoSearch";
 
   private _vsoProxy: VsoProxy;
   private _onRepoSelected: (repo: IRepository) => void;
 
   constructor(vsoProxy: VsoProxy, options: IRepoSearchViewModelOptions) {
+    super("repoSearch/repoSearch.html", "repoSearch/repoSearch.css");
     this._vsoProxy = vsoProxy;
     this._onRepoSelected = options.onRepoSelected || (() => {});
   }
@@ -53,7 +54,6 @@ export class RepoSearchViewModel
   }
 
   public load(): Q.Promise<any> {
-    ContentLoader.loadStylesheets(this.viewName);
     return Q();
   }
 

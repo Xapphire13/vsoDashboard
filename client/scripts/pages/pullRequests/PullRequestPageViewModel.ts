@@ -1,30 +1,31 @@
-/// <reference path="../../../typings/index.d.ts" />
-/// <reference path="../../../typings/StringFormat.d.ts"/>
+/// <reference path="../../../../typings/index.d.ts" />
+/// <reference path="../../../../typings/StringFormat.d.ts"/>
 
-import * as DateHelper from "../DateHelper";
-import {ClientOAuthHelper} from "../ClientOAuthHelper";
-import {ContextMenu} from "../controls/ContextMenu";
-import {ControlBase} from "../controls/ControlBase";
-import {EmbeddedView} from "../controls/EmbeddedView";
-import {IAccessToken} from "../../../shared/IAccessToken";
-import {IColumn, Table, FormatType} from "../controls/Table";
-import {ICommand} from "../models/ICommand";
-import {IMenuItem} from "../models/IMenuItem";
-import {IPageViewModel} from "../models/IPageViewModel";
-import {IProfile} from "../api/models/IProfile";
-import {IProject} from "../api/models/IProject";
-import {IPullRequest} from "../api/models/IPullRequest";
-import {IRepository} from "../api/models/IRepository";
-import {ITrackedRepo} from "../models/ITrackedRepo";
-import {IUser} from "../api/models/IUser";
-import {Panel} from "../controls/Panel";
-import {PullRequestStatus} from "../api/models/PullRequestStatus";
-import {PullRequestVote} from "../api/models/PullRequestVote";
-import {RepoSearchViewModel} from "./RepoSearchViewModel";
-import {VsoProxy} from "../api/VsoProxy";
+import * as DateHelper from "../../DateHelper";
+import {ClientOAuthHelper} from "../../ClientOAuthHelper";
+import {ContextMenu} from "../../controls/contextMenu/ContextMenu";
+import {ControlBase} from "../../controls/ControlBase";
+import {EmbeddedView} from "../../controls/embeddedView/EmbeddedView";
+import {IAccessToken} from "../../../../shared/IAccessToken";
+import {IColumn, Table, FormatType} from "../../controls/table/Table";
+import {ICommand} from "../../models/ICommand";
+import {IMenuItem} from "../../models/IMenuItem";
+import {IPageViewModel} from "../../models/IPageViewModel";
+import {IProfile} from "../../api/models/IProfile";
+import {IProject} from "../../api/models/IProject";
+import {IPullRequest} from "../../api/models/IPullRequest";
+import {IRepository} from "../../api/models/IRepository";
+import {ITrackedRepo} from "../../models/ITrackedRepo";
+import {IUser} from "../../api/models/IUser";
+import {Panel} from "../../controls/panel/Panel";
+import {PullRequestStatus} from "../../api/models/PullRequestStatus";
+import {PullRequestVote} from "../../api/models/PullRequestVote";
+import {RepoSearch} from "../../controls/repoSearch/RepoSearch";
+import {VsoProxy} from "../../api/VsoProxy";
 
 export class PullRequestPageViewModel
   implements IPageViewModel {
+  public templatePath = "pullRequests/pullRequests.html";
   public accessToken: string;
   public columns = <IColumn<IPullRequest>[]>[
     {
@@ -142,15 +143,13 @@ export class PullRequestPageViewModel
           onClick: () => item.active(!item.active()),
           active: ko.observable(false),
           activeControl: () => {
-            let view = new RepoSearchViewModel(this.vsoProxy, {
+            return new RepoSearch(this.vsoProxy, {
               onRepoSelected: repo => {
                 if(this.trackedRepos.filter(tRepo => tRepo.repoId === repo.id).length === 0) {
                   this.addRepoTable(repo.name, repo.id, false, true);
                 }
               }
             });
-            view.load();
-            return new EmbeddedView(view);
           },
           enabled: ko.observable(true)
         };

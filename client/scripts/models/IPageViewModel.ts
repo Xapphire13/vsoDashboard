@@ -3,5 +3,7 @@ import {IViewModel} from "./IViewModel";
 
 export interface IPageViewModel
   extends IViewModel {
-  menuItems: KnockoutObservableArray<IMenuItem>;
+    templatePath: string;
+    stylesheetPath?: string;
+    menuItems: KnockoutObservableArray<IMenuItem>;
 }

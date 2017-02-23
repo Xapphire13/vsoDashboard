@@ -1,8 +1,8 @@
-/// <reference path="../../../typings/index.d.ts" />
+/// <reference path="../../../../typings/index.d.ts" />
 
-import {ContentLoader} from "../ContentLoader";
-import {ControlBase} from "./ControlBase";
-import {ICommand} from "../models/ICommand";
+import {ContentLoader} from "../../ContentLoader";
+import {ControlBase} from "../ControlBase";
+import {ICommand} from "../../models/ICommand";
 
 export interface IPanelOptions {
   invisible?: boolean;
@@ -33,7 +33,7 @@ export class Panel
   private _timeout = null;
 
   constructor(options: IPanelOptions) {
-    super("panel");
+    super("panel/panel.html", "panel/panel.css");
     this.title(options.title);
     this._loadContent = options.loadContent;
 
@@ -73,6 +73,10 @@ export class Panel
         }
       });
     });
+  }
+
+  public load(): Q.Promise<any> {
+    return Q();
   }
 
   public refresh(): void {
