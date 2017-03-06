@@ -18,6 +18,9 @@ export interface IColumn<T> {
   onClick?: (item: T) => void;
   style?: string;
   width?: number | string;
+  sortable?: boolean;
+  sortAscending?: KnockoutObservable<boolean>;
+  flipSortDirection?: boolean;
 }
 
 export interface ITableOptions<T> {
@@ -31,6 +34,7 @@ export class Table<T>
 
   public columns: IColumn<T>[];
   public items: KnockoutObservableArray<T>;
+  public sortColumn: KnockoutObservable<IColumn<T>> = ko.observable(null);
 
   private _fixedWidthTaken: number = 0;
   private _getRowCssClasses: (item: T) => string[];
@@ -41,16 +45,27 @@ export class Table<T>
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
     super("table/table.html", "table/table.css");
     this.items = items || ko.observableArray<T>([]);
-    this.columns = options.columns || [];
-    this.columns.forEach(column  => {
-      column.cssClass = column.cssClass || null;
-      column.format = column.format || null;
-      column.formatType = null || column.formatType;
-      column.itemKey = column.itemKey || null;
-      column.onClick = column.onClick || null;
-      column.style = column.style || null;
-      column.width = column.width || 1;
+    let columns = options.columns || [];
+    this.columns = columns.map(column  => {
+      return <IColumn<T>>{
+        name: column.name,
+        cssClass: column.cssClass || null,
+        format: column.format || null,
+        formatType: null || column.formatType,
+        itemKey: column.itemKey || null,
+        onClick: column.onClick || null,
+        style: column.style || null,
+        width: column.width || 1,
+        sortable: column.sortable || false,
+        sortAscending: ko.observable((column.sortAscending && column.sortAscending()) || true),
+        flipSortDirection: column.flipSortDirection || false
+      };
     });
+
+    this.sortColumn.subscribe(newValue => {
+      this._sort(newValue);
+    })
+
     this.columns.forEach(column => {
       if(typeof(column.width) === "string") {
         let width = (<any>Number).parseInt((<string>column.width).substring(0, (<string>column.width).length-2));
@@ -67,29 +82,15 @@ export class Table<T>
   }
 
   public getValue(item: T, column: IColumn<T>): any {
-    let applyItemKey = () => {
-      if(Array.isArray(column.itemKey)) {
-        let value = item;
-
-        column.itemKey.forEach(part => {
-          value = value[part];
-        });
-
-        return value;
-      } else {
-        return item[column.itemKey];
-      }
-    };
-
     if(column.formatType != undefined) {
       switch(column.formatType) {
         case FormatType.html:
           return column.format;
         case FormatType.map:
-          return column.format(column.itemKey == undefined ? item : applyItemKey());
+          return column.format(column.itemKey == undefined ? item : this._getRawValue(item, column));
       }
     } else if(column.itemKey != undefined) {
-      return applyItemKey();
+      return this._getRawValue(item, column);
     }
 
     return item;
@@ -103,5 +104,33 @@ export class Table<T>
     if(event.button == 2 && this._supplyCommands) {
       ContextMenu.show(event.clientX + 1, event.clientY + 1, this._supplyCommands(item));
     }
+  }
+
+  private _getRawValue(item: T, column: IColumn<T>): any {
+    if(Array.isArray(column.itemKey)) {
+      let value = item;
+
+      column.itemKey.forEach(part => {
+        value = ko.unwrap(value[part]);
+      });
+
+      return value;
+    } else {
+      return ko.unwrap(item[column.itemKey]);
+    }
+  }
+
+  private _sort(sortColumn: IColumn<T>): void {
+    this.items(this.items().sort((left: T, right: T) => {
+      let sortAscending = sortColumn.flipSortDirection ? !sortColumn.sortAscending() : sortColumn.sortAscending();
+      let leftValue = this._getRawValue(sortAscending ? left : right, sortColumn);
+      let rightValue = this._getRawValue(sortAscending ? right : left, sortColumn);
+
+      if(typeof(leftValue) === "number") {
+        return leftValue < rightValue ? -1 : leftValue === rightValue ? 0 : 1;
+      } else {
+        return leftValue.toString().toLocaleLowerCase().localeCompare(rightValue.toString().toLocaleLowerCase());
+      }
+    }));
   }
 }

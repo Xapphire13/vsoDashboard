@@ -64,7 +64,8 @@ export class PullRequestPageViewModel
 
         window.open(prLink, "_blank");
       },
-      width: 1
+      width: 1,
+      sortable: true,
     },
     {
       name: "Status",
@@ -83,7 +84,9 @@ export class PullRequestPageViewModel
       format: item => {
         return DateHelper.toRelativeDate(new Date(item));
       },
-      width: "125px"
+      width: "125px",
+      sortable: true,
+      flipSortDirection: true,
     },
     {
       name: "Updated",
@@ -93,7 +96,9 @@ export class PullRequestPageViewModel
         let value = ko.unwrap(item);
         return value != undefined ? DateHelper.toRelativeDate(new Date(value)) : "-" ;
       },
-      width: "125px"
+      width: "125px",
+      sortable: true,
+      flipSortDirection: true,
     },
     {
       name: "Codeflow",
