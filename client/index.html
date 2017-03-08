@@ -6,14 +6,14 @@
     <script src="./libs/q/q.js"></script>
     <script src="./scripts/StringFormat.js"></script>
     <script data-main="./scripts/start" src="./libs/requirejs/require.js"></script>
-    <title>VSO Pull Request Dashboard</title>
+    <title>VSO Dashboard</title>
   </head>
   <body>
-    <div id="nav-bar">
-      <h3 style="margin: 10px;color: #61AFEF;">VSO Pull Request Dashboard</h3>
+    <nav>
+      <h3 style="margin: 10px;color: #61AFEF; text-align: center;">VSO Dashboard</h3>
       <p>Welcome <span data-bind="text: userProfile() != undefined ? userProfile().displayName : '' "></span></p>
-      <div data-bind="control: menu"></div>
-      <div style="position: absolute; bottom: 10px; left: 10px;">
+      <div id="menu" data-bind="control: menu"></div>
+      <div id="refreshPeriod">
         Refresh Interval (min):
         <ul id="refreshPeriodList">
           <li class="clickable">1</li>
@@ -21,7 +21,7 @@
           <li class="clickable">10</li>
         </ul>
       </div>
-    </div>
+    </nav>
     <div id="content-wrapper">
       <div id="content" data-bind="page: pageViewModel"></div>
       <div id="bottom">
