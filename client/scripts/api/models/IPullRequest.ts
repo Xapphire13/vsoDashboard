@@ -21,5 +21,6 @@ export interface IPullRequest {
   supportsIterations: boolean;
   targetRefName: string;
   title: string;
+  updated: string;
   url: string;
 }

@@ -218,12 +218,6 @@ export class PullRequestPageViewModel
 
           comments(`<div style='position: absolute; top: 50%; transform: translate(0, -50%);''><img src='/images/comment.png' style='width: 16px; height: 16px; position: relative; top:4px;'/><span style='margin-left: 5px;'>${commentCount}</span></div>`);
         });
-
-        let updated = ko.observable(null);
-        pullRequest["updated"] = updated;
-        this.vsoProxy.fetchIterations(pullRequest).then(iterations => {
-          updated(iterations[iterations.length - 1].updatedDate);
-        });
       })
 
       table.items(pullRequests);

@@ -55,7 +55,15 @@ export class VsoProxy {
     return this._makeCall<IOdataQuery<IPullRequest>>({
       url: `${this._apiUri}/git/repositories/${repositoryId}/pullRequests?api-version=${this._apiVersion}`
     }).then(results => {
-      return results.value;
+      let pullRequests = results.value;
+
+      return Q.all(pullRequests.map(pullRequest => {
+        // Fetch last updated time
+        return this.fetchIterations(pullRequest).then(iterations => {
+          pullRequest.updated = iterations[iterations.length - 1].updatedDate;
+          return pullRequest;
+        });
+      }));
     });
   }
 

@@ -41,6 +41,7 @@ export class Table<T>
   private _headerRow: JQuery;
   private _reference: JQuery;
   private _supplyCommands: (item: T) => ICommand<any>[];
+  private _itemsSubscription: KnockoutSubscription;
 
   constructor(items: KnockoutObservableArray<T>, options: ITableOptions<T>) {
     super("table/table.html", "table/table.css");
@@ -62,10 +63,6 @@ export class Table<T>
       };
     });
 
-    this.sortColumn.subscribe(newValue => {
-      this._sort(newValue);
-    })
-
     this.columns.forEach(column => {
       if(typeof(column.width) === "string") {
         let width = (<any>Number).parseInt((<string>column.width).substring(0, (<string>column.width).length-2));
@@ -75,6 +72,20 @@ export class Table<T>
 
     this._getRowCssClasses = options.getRowCssClasses;
     this._supplyCommands = options.supplyCommands;
+
+    this.sortColumn.subscribe(newValue => {
+      this._sort(newValue);
+    })
+
+    this._sort(this.sortColumn());
+
+    const sortNewItems = () => {
+        this._itemsSubscription.dispose();
+        this._sort(this.sortColumn());
+        this._itemsSubscription = this.items.subscribe(sortNewItems);
+    };
+
+    this._itemsSubscription = this.items.subscribe(sortNewItems);
   }
 
   public load(): Q.Promise<any> {
@@ -121,10 +132,18 @@ export class Table<T>
   }
 
   private _sort(sortColumn: IColumn<T>): void {
+    if(sortColumn == undefined) {
+      return;
+    }
+
     this.items(this.items().sort((left: T, right: T) => {
       let sortAscending = sortColumn.flipSortDirection ? !sortColumn.sortAscending() : sortColumn.sortAscending();
       let leftValue = this._getRawValue(sortAscending ? left : right, sortColumn);
       let rightValue = this._getRawValue(sortAscending ? right : left, sortColumn);
+
+      if(leftValue == undefined || rightValue == undefined) {
+        return 0;
+      }
 
       if(typeof(leftValue) === "number") {
         return leftValue < rightValue ? -1 : leftValue === rightValue ? 0 : 1;
