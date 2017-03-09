@@ -9,7 +9,11 @@
     <title>VSO Dashboard</title>
   </head>
   <body>
-    <nav>
+    <nav data-bind="style: {width: showNav() ? '280px' : '20px'}">
+      <div data-bind="click: function() { showNav(!showNav()); }" style="margin-left: 3px; cursor: pointer;">
+        &#x2630;
+      </div>
+      <!-- ko if: showNav() -->
       <h3 style="margin: 10px;color: #61AFEF; text-align: center;">VSO Dashboard</h3>
       <p>Welcome <span data-bind="text: userProfile() != undefined ? userProfile().displayName : '' "></span></p>
       <div id="menu" data-bind="control: menu"></div>
@@ -21,6 +25,7 @@
           <li class="clickable">10</li>
         </ul>
       </div>
+      <!-- /ko -->
     </nav>
     <div id="content-wrapper">
       <!-- ko if: notificationText() -->

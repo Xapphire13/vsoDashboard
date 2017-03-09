@@ -17,6 +17,7 @@ export class Application {
   public menu: Menu;
   public vsoProxy: VsoProxy;
   public notificationText: KnockoutObservable<string> = ko.observable("");
+  public showNav: KnockoutObservable<boolean> = ko.observable(false);
 
   private _pageViewModels: {title: string, resolver: () => IPageViewModel}[] = [
     {

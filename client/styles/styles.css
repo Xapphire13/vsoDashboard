@@ -13,7 +13,6 @@ a {
 
 nav {
   height: calc(100% - 20px);
-  width: 280px;
   background: #333333;
   border-right: 2px solid #888888;
   overflow-y: auto;
