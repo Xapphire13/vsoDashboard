@@ -16,6 +16,7 @@ export class Application {
   public userProfile: KnockoutObservable<IProfile> = ko.observable<IProfile>();
   public menu: Menu;
   public vsoProxy: VsoProxy;
+  public notificationText: KnockoutObservable<string> = ko.observable("");
 
   private _pageViewModels: {title: string, resolver: () => IPageViewModel}[] = [
     {

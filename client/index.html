@@ -23,14 +23,17 @@
       </div>
     </nav>
     <div id="content-wrapper">
-      <div id="content" data-bind="page: pageViewModel"></div>
-      <div id="bottom">
-        <footer>
-          <p style="margin: 0; position: relative; top: 50%; transform: translate(0, -50%);">
-            Created by <a href="mailto:stevhob@microsoft.com">Steven Hobson-Campbell</a>
-          </p>
-        </footer>
+      <!-- ko if: notificationText() -->
+      <div id="notification">
+        <div data-bind="text: notificationText;"></div>
       </div>
+      <!-- /ko -->
+      <div id="content" data-bind="page: pageViewModel"></div>
+      <footer>
+        <p style="margin: 0; position: relative; top: 50%; transform: translate(0, -50%);">
+          Created by <a href="mailto:stevhob@microsoft.com">Steven Hobson-Campbell</a>
+        </p>
+      </footer>
     </div>
   </body>
 </html>
