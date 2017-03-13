@@ -13,19 +13,19 @@
       <div data-bind="click: function() { showNav(!showNav()); }" style="margin-left: 3px; cursor: pointer;">
         &#x2630;
       </div>
-      <!-- ko if: showNav() -->
-      <h3 style="margin: 10px;color: #61AFEF; text-align: center;">VSO Dashboard</h3>
-      <p>Welcome <span data-bind="text: userProfile() != undefined ? userProfile().displayName : '' "></span></p>
-      <div id="menu" data-bind="control: menu"></div>
-      <div id="refreshPeriod">
-        Refresh Interval (min):
-        <ul id="refreshPeriodList">
-          <li class="clickable">1</li>
-          <li class="selected clickable">5</li>
-          <li class="clickable">10</li>
-        </ul>
+      <div data-bind="visible: showNav()">
+        <h3 style="margin: 10px;color: #61AFEF; text-align: center;">VSO Dashboard</h3>
+        <p>Welcome <span data-bind="text: userProfile() != undefined ? userProfile().displayName : '' "></span></p>
+        <div id="menu" data-bind="control: menu"></div>
+        <div id="refreshPeriod">
+          Refresh Interval (min):
+          <ul id="refreshPeriodList">
+            <li class="clickable">1</li>
+            <li class="selected clickable">5</li>
+            <li class="clickable">10</li>
+          </ul>
+        </div>
       </div>
-      <!-- /ko -->
     </nav>
     <div id="content-wrapper">
       <!-- ko if: notificationText() -->
