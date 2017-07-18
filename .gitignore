@@ -1,8 +1,2 @@
-images/
 node_modules/
-bower_components/
-typings/globals/
-typings/index.d.ts
-*.js
-favicon.ico
-*.log
+*.ts
