@@ -1,9 +1,8 @@
-/// <reference path="../typings/index.d.ts"/>
-/// <reference path="../typings/StringFormat.d.ts"/>
-
-import * as Q from "q";
+// import * as Q from "q";
 import * as https from "https";
-import {IAccessToken} from "../shared/IAccessToken";
+import * as format from "string-format-obj";
+
+import {IAccessToken} from "../../shared/IAccessToken";
 
 export class ServerOAuthHelper {
   public static refreshTokenDataTemplate: string = "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}&grant_type=refresh_token&assertion={1}&redirect_uri={2}";
@@ -19,10 +18,10 @@ export class ServerOAuthHelper {
     this._redirectUri = redirectUri;
   }
 
-  public getAccessToken(clientCode: string): Q.Promise<IAccessToken> {
-    let def = Q.defer<IAccessToken>();
+  public getAccessToken(clientCode: string): Promise<IAccessToken> {
 
-    let post = https.request({
+    return new Promise((resolve, reject) => {
+      let post = https.request({
       method: "POST",
       host: ServerOAuthHelper.tokenHost,
       path: ServerOAuthHelper.tokenPath,
@@ -32,19 +31,23 @@ export class ServerOAuthHelper {
     }, (res) => {
       res.setEncoding("utf8");
       res.on('data', data => {
-        def.resolve(JSON.parse(data as any));
+        resolve(JSON.parse(data as any));
       });
     });
 
-    post.write(ServerOAuthHelper.tokenDataTemplate.format(this._clientSecret, clientCode, this._redirectUri));
-    post.end();
+    post.write(format(ServerOAuthHelper.tokenDataTemplate, {
+      0: this._clientSecret,
+      1: clientCode,
+      2: this._redirectUri
+    }));
 
-    return def.promise;
+    post.end();
+    });
   }
 
-  public refreshAccessToken(refreshToken: string): Q.Promise<IAccessToken> {
-    let def = Q.defer<IAccessToken>();
+  public refreshAccessToken(refreshToken: string): Promise<IAccessToken> {
 
+    return new Promise((resolve, reject) => {
     let post = https.request({
       method: "POST",
       host: ServerOAuthHelper.tokenHost,
@@ -55,13 +58,17 @@ export class ServerOAuthHelper {
     }, (res) => {
       res.setEncoding("utf8");
       res.on('data', data => {
-        def.resolve(JSON.parse(data as any));
+        resolve(JSON.parse(data as any));
       });
     });
 
-    post.write(ServerOAuthHelper.refreshTokenDataTemplate.format(this._clientSecret, refreshToken, this._redirectUri));
+    post.write(format(ServerOAuthHelper.refreshTokenDataTemplate,
+      {
+        0: this._clientSecret,
+        1: refreshToken,
+        2: this._redirectUri
+      }));
     post.end();
-
-    return def.promise;
+    });
   }
 }

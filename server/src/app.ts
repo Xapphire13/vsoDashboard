@@ -1,9 +1,6 @@
-/// <reference path="../typings/index.d.ts"/>
-
 import * as express from "express";
 import * as path from "path";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
-eval(require('fs').readFileSync(path.join(__dirname, "/../", "shared/StringFormat.js"), 'utf8'));
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 let clientSecret = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJjaWQiOiJjMTAwNjAwNy0yZDY3LTQ4YTctYjRiOS1jYjgyYWY1YzA1MjUiLCJjc2kiOiIwM2FmYjM2Zi0xMDFmLTRkYjktOWVlZi1lY2QwZmQ2NzIyOTIiLCJuYW1laWQiOiIyNzkyYWI2MS1iMDQwLTRmODItYjM5NC0wZGY4ZjMwYzkxMDUiLCJpc3MiOiJhcHAudnNzcHMudmlzdWFsc3R1ZGlvLmNvbSIsImF1ZCI6ImFwcC52c3Nwcy52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNDgxMTM5MzM1LCJleHAiOjE2Mzg5MDU3MzV9.pabPSSkgf8V6CTG273ODrK_H9Hvk9Ki2ctWW4wRz1TRw3H-kHCbiRaoogBX1F4AlTRlNSNuwWnBCPaIukDuupHe-i0OCZYOhUfVTq6BVQqsJLa7IPN9fdT8fPDj4wX8ThV-jmXCWg6QKEPwlqfA-YLRNWsMOR1091XsadARVjYdxFhNcNSL9h8NiAECh_GNSezX10-tsrnXGMh-NVPvrNYtP66wAMyvpggGy5wmFdGjw03RDofd4CG6PH14Q1psOD6YsR1Bl-xURRdwf82EmzYjWlaTbZEEBxFpff1nuaB7FJIU6okt0jACTX-GUwo6Q-ykXZbN175nu-OfpLp3nnw";
@@ -31,6 +28,7 @@ app.get("/token", (req, res) => {
     oAuthHelper.getAccessToken(accessCode).then(accessToken => {
       console.log("Got access token");
       res.setHeader("Content-Type", "application/json");
+      res.statusCode = 200;
       res.send(accessToken);
     });
   } else if(refreshToken != undefined && refreshToken != "") {
@@ -38,8 +36,13 @@ app.get("/token", (req, res) => {
     oAuthHelper.refreshAccessToken(refreshToken).then(accessToken => {
       console.log("Got access token");
       res.setHeader("Content-Type", "application/json");
+      res.statusCode = 200;
       res.send(accessToken);
     });
+  } else{
+    res.statusCode = 400;
+    res.send();
+
   }
 });
 
