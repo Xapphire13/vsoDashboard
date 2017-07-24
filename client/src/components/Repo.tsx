@@ -1,9 +1,15 @@
 import * as React from "react";
 
+import {PullRequestList} from "./PullRequestList";
+import {RepoChartContainer} from "./RepoChartContainer";
+import {RepoHeader} from "./RepoHeader";
+
 export class Repo extends React.Component {
   public render(): JSX.Element {
     return <div>
-      <h1>I'm a repo</h1>
+      <RepoHeader />
+      <PullRequestList />
+      <RepoChartContainer />
     </div>;
   }
 }
