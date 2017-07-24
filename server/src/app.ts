@@ -1,45 +1,49 @@
+/// <reference path="../typings/index.d.ts"/>
+
 import * as express from "express";
 import * as path from "path";
-import * as logger from "morgan";
-import * as cookieParser from "cookie-parser";
-import * as bodyParser from "body-parser";
+import {ServerOAuthHelper} from "./ServerOAuthHelper";
+eval(require('fs').readFileSync(path.join(__dirname, "/../", "shared/StringFormat.js"), 'utf8'));
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+let clientSecret = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJjaWQiOiJjMTAwNjAwNy0yZDY3LTQ4YTctYjRiOS1jYjgyYWY1YzA1MjUiLCJjc2kiOiIwM2FmYjM2Zi0xMDFmLTRkYjktOWVlZi1lY2QwZmQ2NzIyOTIiLCJuYW1laWQiOiIyNzkyYWI2MS1iMDQwLTRmODItYjM5NC0wZGY4ZjMwYzkxMDUiLCJpc3MiOiJhcHAudnNzcHMudmlzdWFsc3R1ZGlvLmNvbSIsImF1ZCI6ImFwcC52c3Nwcy52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNDgxMTM5MzM1LCJleHAiOjE2Mzg5MDU3MzV9.pabPSSkgf8V6CTG273ODrK_H9Hvk9Ki2ctWW4wRz1TRw3H-kHCbiRaoogBX1F4AlTRlNSNuwWnBCPaIukDuupHe-i0OCZYOhUfVTq6BVQqsJLa7IPN9fdT8fPDj4wX8ThV-jmXCWg6QKEPwlqfA-YLRNWsMOR1091XsadARVjYdxFhNcNSL9h8NiAECh_GNSezX10-tsrnXGMh-NVPvrNYtP66wAMyvpggGy5wmFdGjw03RDofd4CG6PH14Q1psOD6YsR1Bl-xURRdwf82EmzYjWlaTbZEEBxFpff1nuaB7FJIU6okt0jACTX-GUwo6Q-ykXZbN175nu-OfpLp3nnw";
+let redirectUri = "https://vsodash.azurewebsites.net/auth";
+let app = express();
 
-var app = express();
+app.set('port', process.env.PORT || 80);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', index);
-app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+// Static files
+app.use(express.static(path.join(__dirname, "/../", "client")));
+app.use("/libs", express.static(path.join(__dirname, "/../", "bower_components")));
+app.use("/scripts", express.static(path.join(__dirname, "/../", "shared")));
+app.use("/auth", express.static(path.join(__dirname, "/../", "client/auth.html")), () => {
+  console.log("Auth redirect");
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.get("/token", (req, res) => {
+  let oAuthHelper = new ServerOAuthHelper(clientSecret, redirectUri);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  let accessCode = req.query["accessCode"];
+  let refreshToken = req.query["refreshToken"];
+
+  if(accessCode != undefined && accessCode != "") {
+    console.log("Getting Access Token");
+    oAuthHelper.getAccessToken(accessCode).then(accessToken => {
+      console.log("Got access token");
+      res.setHeader("Content-Type", "application/json");
+      res.send(accessToken);
+    });
+  } else if(refreshToken != undefined && refreshToken != "") {
+    console.log("Refreshing Access Token");
+    oAuthHelper.refreshAccessToken(refreshToken).then(accessToken => {
+      console.log("Got access token");
+      res.setHeader("Content-Type", "application/json");
+      res.send(accessToken);
+    });
+  }
 });
 
-module.exports = app;
+// Start server
+let server = app.listen(app.get('port'), () => {
+  console.log("Listening on port " + server.address().port);
+});
