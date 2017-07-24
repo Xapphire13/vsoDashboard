@@ -1,13 +1,23 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "outDir": "./dist",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "commonjs",
-        "target": "es2016",
-        "jsx": "react"
+        "target": "es6",
+        "jsx": "react",
+        "removeComments": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noImplicitReturns": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     },
     "include": [
-        "./src/**/*"
+        "./src/**/*.ts",
+        "./src/**/*.tsx"
     ]
 }
