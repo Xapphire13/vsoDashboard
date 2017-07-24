@@ -2,8 +2,7 @@
   "name": "vsodash",
   "version": "1.0.0",
   "main": "./dist/index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Xapphire13/vsoDashboard.git"
@@ -23,5 +22,12 @@
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2",
     "sqlite": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.4",
+    "@types/cookie-parser": "^1.4.0",
+    "@types/express": "^4.0.36",
+    "@types/morgan": "^1.7.32",
+    "@types/node": "^8.0.16"
   }
 }
