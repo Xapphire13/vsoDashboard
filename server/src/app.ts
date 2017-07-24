@@ -2,7 +2,7 @@ import * as express from "express";
 import * as path from "path";
 import * as logger from "morgan";
 import * as cookieParser from "cookie-parser";
-var bodyParser = require('body-parser');
+import * as bodyParser from "body-parser";
 
 var index = require('./routes/index');
 var users = require('./routes/users');
