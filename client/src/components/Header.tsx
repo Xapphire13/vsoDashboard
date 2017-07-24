@@ -6,9 +6,9 @@ import {UserInfo} from "./UserInfo";
 export class Header extends React.Component {
     public render(): JSX.Element {
         return <div>
-            <h1>VSO Dashboard</h1>
-            <MainMenu />
-            <UserInfo />
+                <h1>VSO Dashboard</h1>
+                <MainMenu />
+                <UserInfo />
             </div>;
     }
 }
