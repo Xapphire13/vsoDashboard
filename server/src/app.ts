@@ -1,46 +1,52 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+import * as express from "express";
+import * as path from "path";
+import {ServerOAuthHelper} from "./ServerOAuthHelper";
+import * as fs from "fs";
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+let clientSecret = JSON.parse(fs.readFileSync('secrets/clientSecret.json', 'utf8'))["clientSecret"];
+let redirectUri = "https://vsodash.azurewebsites.net/auth";
+let app = express();
 
-var app = express();
+app.set('port', process.env.PORT || 80);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', index);
-app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+// Static files
+app.use(express.static(path.join(__dirname, "/../", "client")));
+app.use("/scripts", express.static(path.join(__dirname, "/../", "shared")));
+app.use("/auth", express.static(path.join(__dirname, "/../", "client/auth.html")), () => {
+  console.log("Auth redirect");
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.get("/token", (req, res) => {
+  let oAuthHelper = new ServerOAuthHelper(clientSecret, redirectUri);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  let accessCode = req.query["accessCode"];
+  let refreshToken = req.query["refreshToken"];
+
+  if(accessCode != undefined && accessCode != "") {
+    console.log("Getting Access Token");
+    oAuthHelper.getAccessToken(accessCode).then(accessToken => {
+      console.log("Got access token");
+      res.setHeader("Content-Type", "application/json");
+      res.statusCode = 200;
+      res.send(accessToken);
+    });
+  } else if(refreshToken != undefined && refreshToken != "") {
+    console.log("Refreshing Access Token");
+    oAuthHelper.refreshAccessToken(refreshToken).then(accessToken => {
+      console.log("Got access token");
+      res.setHeader("Content-Type", "application/json");
+      res.statusCode = 200;
+      res.send(accessToken);
+    });
+  } else{
+    res.statusCode = 400;
+    res.send();
+
+  }
 });
 
-module.exports = app;
+// Start server
+let server = app.listen(app.get('port'), () => {
+  console.log("Listening on port " + server.address().port);
+});

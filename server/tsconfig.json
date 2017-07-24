@@ -11,7 +11,13 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": [
+      "../typings/string-format-obj"
+    ]
   },
   "include": [
       "./src/**/*.ts"
