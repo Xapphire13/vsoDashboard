@@ -12,7 +12,6 @@ app.set('port', process.env.PORT || 80);
 
 // Static files
 app.use(express.static(path.join(__dirname, "/../", "client")));
-app.use("/libs", express.static(path.join(__dirname, "/../", "bower_components")));
 app.use("/scripts", express.static(path.join(__dirname, "/../", "shared")));
 app.use("/auth", express.static(path.join(__dirname, "/../", "client/auth.html")), () => {
   console.log("Auth redirect");
