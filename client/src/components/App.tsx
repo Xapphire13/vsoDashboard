@@ -1,7 +1,13 @@
 import * as React from "react";
 
-export class App extends React.Component{
+import {Header} from "./Header";
+import {RepoList} from "./RepoList";
+
+export class App extends React.Component {
     public render(): JSX.Element {
-        return <p>Hello World</p>;
+        return <div>
+          <Header />
+          <RepoList/>
+        </div>;
     }
 }
