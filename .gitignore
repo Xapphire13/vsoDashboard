@@ -1,2 +1,5 @@
-node_modules/
-*.ts
+**/node_modules/
+*.js
+.vscode/launch.json
+**/bin/
+**/dist/
