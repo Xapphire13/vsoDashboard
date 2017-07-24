@@ -24,10 +24,15 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^3.2.1",
+    "css-loader": "^0.28.4",
     "eslint": "^4.3.0",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.5",
     "source-map-loader": "^0.2.1",
+    "style-loader": "^0.18.2",
     "tslint": "^5.5.0",
     "tslint-microsoft-contrib": "^5.0.1",
-    "typescript": "^2.4.2"
+    "typescript": "^2.4.2",
+    "webpack": "^3.3.0"
   }
 }
