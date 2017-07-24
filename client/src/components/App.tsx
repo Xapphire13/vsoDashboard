@@ -1,10 +1,12 @@
 import * as React from "react";
 
-import {RepoList} from './RepoList';
+import {Header} from "./Header";
+import {RepoList} from "./RepoList";
 
-export class App extends React.Component{
+export class App extends React.Component {
     public render(): JSX.Element {
         return <div>
+          <Header />
           <RepoList/>
         </div>;
     }
