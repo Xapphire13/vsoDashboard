@@ -3,7 +3,8 @@ CREATE TABLE UserStore (
   id integer PRIMARY KEY,
   oAuthId text UNIQUE,
   emailOverride text,
-  pollIntervalInSecs integer);
+  pollIntervalInSecs integer,
+  staleIntervalInMins integer);
 CREATE TABLE UserPreference (
   id INTEGER PRIMARY KEY,
   userId INTEGER,
