@@ -58,7 +58,6 @@ app.get("/preferences", (req, res) => {
     column: SortColumns.myStatus
   }
 
-
   let repoPrefs = new Array<IRepositoryPreference>(1);
   repoPrefs[0] = <IRepositoryPreference>{
     isMinimised: true,
