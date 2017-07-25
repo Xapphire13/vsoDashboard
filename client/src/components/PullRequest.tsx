@@ -14,14 +14,14 @@ declare type Propeties = {
 
 export class PullRequest extends React.Component<Propeties, {}> {
   public render(): JSX.Element {
-    return <div className="pullRequest">
-      <div className="cell">{this.props.numberOfComments}</div>
-      <div className="cell">{this.props.title}</div>
-      <div className="cell">{this.props.myStatus}</div>
-      <div className="cell">{this.props.status}</div>
-      <div className="cell">{this.props.createBy}</div>
-      <div className="cell">{this.props.created}</div>
-      <div className="cell">{this.props.updated}</div>
-    </div>;
+    return <tr className="pullRequest">
+      <td>{this.props.numberOfComments}</td>
+      <td>{this.props.title}</td>
+      <td>{this.props.myStatus}</td>
+      <td>{this.props.status}</td>
+      <td>{this.props.createBy}</td>
+      <td>{this.props.created}</td>
+      <td>{this.props.updated}</td>
+    </tr>;
   }
 }
