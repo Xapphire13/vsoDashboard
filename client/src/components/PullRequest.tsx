@@ -10,7 +10,7 @@ declare type Propeties = {
   created: string,
   updated: string,
   numberOfComments: number;
-}
+};
 
 export class PullRequest extends React.Component<Propeties, {}> {
   public render(): JSX.Element {
