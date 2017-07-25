@@ -2,6 +2,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  height: 35px;
 
   li {
     display: inline;
@@ -11,5 +12,11 @@
 
   li + li {
     margin-left: 5px;
+  }
+
+  li:hover {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-image: linear-gradient(to right, rgba(0, 0, 0, 0), white, rgba(0, 0, 0, 0)) 1 1;
   }
 }
