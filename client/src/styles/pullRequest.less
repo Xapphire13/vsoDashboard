@@ -6,7 +6,35 @@
     padding: 0 2px;
   }
 
+  .comments {
+    display: flex;
+    flex-direction: row-reverse;
+
+    .icon {
+      margin-left: 5px;
+
+      svg {
+        fill: transparent;
+        stroke: white;
+      }
+    }
+  }
+
+  .quickActions {
+    display: none;
+  }
+
+  .clickable {
+    .icon {
+      cursor: pointer;
+    }
+  }
+
   &:hover {
     background-color: #777777;
+
+    .quickActions {
+      display: block;
+    }
   }
 }
