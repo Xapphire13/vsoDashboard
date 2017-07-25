@@ -7,11 +7,14 @@ import {IPreferences} from "../../shared/IPreferences"
 import {IRepositoryPreference} from "../../shared/IRepositoryPreference"
 import {ISortPreference} from "../../shared/ISortPreference"
 import {SortColumns} from "../../shared/SortColumns"
+import {SqlLiteHelper} from "./SqlLiteHelper"
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 let clientSecret = JSON.parse(fs.readFileSync(path.join(process.cwd(), './src/secrets/clientSecret.json'), 'utf8'))["clientSecret"];
 let redirectUri = "https://vsodash.azurewebsites.net/auth";
 let app = express();
+let dbHelper = new SqlLiteHelper();
+dbHelper.init();
 
 app.set('port', process.env.PORT || 80);
 
