@@ -29,6 +29,10 @@ module.exports = {
               }, {
                   loader: "less-loader" // compiles Less to CSS
               }]
+            },
+            {
+              test: /\.svg$/,
+              loader: 'svg-inline-loader'
             }
         ]
     },

@@ -16,6 +16,7 @@ export class PullRequestList extends React.Component<{pullRequests: any[]}> {
           <th>Created by</th>
           <th>Created</th>
           <th>Updated</th>
+          <th style={{width: "100px"}}></th>
         </tr>
       </thead>
       <tbody>
