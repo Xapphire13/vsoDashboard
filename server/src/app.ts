@@ -1,6 +1,10 @@
 import * as express from "express";
 import * as path from "path";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
+import {IPreferences} from "../../shared/IPreferences"
+import {IRepositoryPreference} from "../../shared/IRepositoryPreference"
+import {ISortPreference} from "../../shared/ISortPreference"
+import {SortColumns} from "../../shared/SortColumns"
 import * as fs from "fs";
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
@@ -42,8 +46,29 @@ app.get("/token", (req, res) => {
   } else{
     res.statusCode = 400;
     res.send();
-
   }
+});
+
+app.get("/preferences", (req, res) => {
+  let sortOrder = new Array<ISortPreference>(1)
+  sortOrder[0] = <ISortPreference>{
+    isAssending: true,
+    column: SortColumns.myStatus
+  }
+
+
+  let repoPrefs = new Array<IRepositoryPreference>(10);
+  repoPrefs[0] = <IRepositoryPreference>{
+    isMinimised: true,
+    justMine: true,
+    repositoryId: "69a2604e-6637-4585-a31e-926488801182",
+    sortPreferences: sortOrder
+  };
+
+  res.send(<IPreferences>{
+    emailOverride: "foo@test.com",
+    repositoryPrefrences: repoPrefs
+  })
 });
 
 // Start server
