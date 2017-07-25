@@ -1,8 +1,9 @@
 -- up
 CREATE TABLE UserStore (
   id integer PRIMARY KEY,
-  oAuthId text,
-  emailOverride text);
+  oAuthId text UNIQUE,
+  emailOverride text,
+  pollIntervalInSecs integer);
 CREATE TABLE UserPreference (
   id INTEGER PRIMARY KEY,
   userId INTEGER,
