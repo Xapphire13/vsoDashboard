@@ -1,14 +1,21 @@
+import "../styles/header.less";
+
 import * as React from "react";
 
-import {MainMenu} from "./MainMenu";
-import {UserInfo} from "./UserInfo";
+import { MainMenu } from "./MainMenu";
+import { UserInfo } from "./UserInfo";
 
-export class Header extends React.Component<{onSelectedChanged(item: string):void}, {}> {
-    public render(): JSX.Element {
-        return <div>
-                <h1>VSO Dashboard</h1>
-                <MainMenu onSelectedChanged={this.props.onSelectedChanged}/>
-                <UserInfo />
-            </div>;
-    }
+export class Header extends React.Component<{ onSelectedChanged(item: string): void }, {}> {
+  public render(): JSX.Element {
+    return <div className="header">
+      <div className="logo"></div>
+      <div className="content">
+        <div className="title">
+          <h1>VSO Dashboard</h1>
+        </div>
+        <MainMenu onSelectedChanged={this.props.onSelectedChanged} />
+      </div>
+      <UserInfo />
+    </div>;
+  }
 }
