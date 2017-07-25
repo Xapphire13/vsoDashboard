@@ -63,7 +63,7 @@ app.get("/preferences", (req, res) => {
   repoPrefs[0] = <IRepositoryPreference>{
     isMinimised: true,
     justMine: true,
-    repositoryId: "69a2604e-6637-4585-a31e-926488801182",
+    repositoryId: "89a2604e-6637-4585-a31e-926488801182",
     sortPreferences: sortOrder
   };
 
