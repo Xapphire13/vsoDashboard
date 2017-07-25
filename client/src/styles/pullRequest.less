@@ -1,13 +1,17 @@
 .pullRequest {
   position: relative;
   height: 20px;
+
+  .cell {
+    display: inline-block;
+    padding: 0 2px;
+  }
+
+  &:hover {
+    background-color: #777777;
+  }
 }
 
-.pullRequest:hover {
-  background-color: #777777;
-}
-
-.pullRequest .cell {
-  display: inline-block;
-  padding: 0 5px;
+.pullRequest + .pullRequest {
+  margin-top: 5px;
 }

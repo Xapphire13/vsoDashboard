@@ -1,3 +1,5 @@
+import "../styles/repoList.less";
+
 import * as React from "react";
 
 import {Repo} from './Repo';
@@ -8,7 +10,7 @@ export class RepoList extends React.Component {
     repos.push(<Repo name="Test Repo"/>);
     repos.push(<Repo name="Super cool repo"/>);
 
-    return <div>
+    return <div className="repoList">
       {repos}
     </div>;
   }
