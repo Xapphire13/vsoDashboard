@@ -17,7 +17,11 @@
         "emitDecoratorMetadata": true
     },
     "include": [
-        "./src/**/*.ts",
-        "./src/**/*.tsx"
+      "./src/**/*.ts",
+      "./src/**/*.tsx",
+      "../typings/index.d.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
     ]
 }

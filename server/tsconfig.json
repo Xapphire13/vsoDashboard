@@ -11,16 +11,11 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "types": [
-      "../typings/string-format-obj"
-    ]
+    "emitDecoratorMetadata": true
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "../typings/index.d.ts"
   ],
   "exclude": [
     "**/*.d.ts"
