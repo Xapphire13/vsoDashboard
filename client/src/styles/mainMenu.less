@@ -5,25 +5,29 @@
   height: 35px;
 
   li {
-    display: inline;
+    display: inline-block;
     padding: 0 10px;
     cursor: pointer;
     width: 100px;
     position: relative;
     top: 6px;
+    text-align: center;
   }
 
   li + li {
     margin-left: 5px;
   }
 
-  .selected {
-    font-weight: bold;
+  .caret {
+    display: none;
+    height: 7px;
+    width: 100px;
+    margin: 0 auto;
+    position: relative;
+    top: 1px;
   }
-  
-  li:hover {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-image: linear-gradient(to right, rgba(0, 0, 0, 0), white, rgba(0, 0, 0, 0)) 1 1;
+
+  .caret.selected {
+    display: block;
   }
 }
