@@ -24,7 +24,7 @@ export class PullRequestList extends React.Component<{pullRequests: any[]}> {
           title={pullRequest.title}
           myStatus={pullRequest.myStatus}
           status={pullRequest.status}
-          createBy={pullRequest.status}
+          createdBy={pullRequest.status}
           created={pullRequest.created}
           updated={pullRequest.updated}
           numberOfComments={pullRequest.numberOfComments}
