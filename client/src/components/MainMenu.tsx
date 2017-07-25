@@ -19,8 +19,11 @@ export class MainMenu extends React.Component<{ onSelectedChanged(item: string):
 
   public render(): JSX.Element {
     return <ul className="mainMenu">
-      {Object.keys(this._menuItems).map(i => <li><a className={i === this.state.selectedItem ? "selected" : ""}
-        onClick={(e) => { this._handleClick(e); this._processMenuChange(i); }}>{this._menuItems[i]}</a></li>)}
+      {Object.keys(this._menuItems).map((item, index) => <li key={index}>
+        <a className={item === this.state.selectedItem ? "selected" : ""} onClick={(e) => { this._handleClick(e); this._processMenuChange(item); }}>
+          {this._menuItems[item]}
+        </a>
+      </li>)}
     </ul>;
   }
 
