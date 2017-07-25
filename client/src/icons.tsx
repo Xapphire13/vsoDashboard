@@ -15,7 +15,7 @@ export function getIcon(icon: Icon): JSX.Element {
   node.innerHTML = require("../node_modules/entypo/dist/sprite.svg");
   const svgNode = node.querySelector(`[id=entypo-${Icon[icon]}]`);
 
-  return <div className="icon">
+  return <div className={`icon ${Icon[icon]}`}>
     <svg dangerouslySetInnerHTML={{ __html: svgNode ? svgNode.innerHTML : ""}}></svg>
   </div>;
 };

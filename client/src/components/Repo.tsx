@@ -51,6 +51,7 @@ export class Repo extends React.Component<{name: string}, {collapsed: boolean, p
         onToggleVisibility={this.onToggleVisibility}
         collapsed={this.state.collapsed}
         pullRequestCount={this.state.pullRequests.length}
+        needsAttention={true}
       />
       {!this.state.collapsed &&
       <div className="repoContent">
