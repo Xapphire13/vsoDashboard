@@ -17,27 +17,27 @@ export class Repo extends React.Component<{name: string}, {collapsed: boolean, p
           title: "Test PR",
           myStatus: "Assigned",
           status: "Active",
-          createBy: "Joe Bloggs",
-          created: "2017-04-23T18:00:00.000Z",
-          updated: "2012-04-24T18:00:00.000Z",
+          createdBy: "Joe Bloggs",
+          created: "2012-04-23T18:00:00.000Z",
+          updated: "2017-04-24T18:00:00.000Z",
           numberOfComments: 10
         },
         {
           title: "Test PR 2",
           myStatus: "Assigned",
           status: "Active",
-          createBy: "Joe Bloggs",
+          createdBy: "Joe Bloggs",
           created: "2017-04-23T18:00:00.000Z",
-          updated: "2012-04-24T18:00:00.000Z",
+          updated: (new Date(Date.now())).toJSON(),
           numberOfComments: 12
         },
         {
           title: "Test PR 3",
           myStatus: "Assigned",
           status: "Active",
-          createBy: "Joe Bloggs",
-          created: "2017-04-23T18:00:00.000Z",
-          updated: "2012-04-24T18:00:00.000Z",
+          createdBy: "Joe Bloggs",
+          created: "2010-04-23T18:00:00.000Z",
+          updated: (new Date(Date.now())).toJSON(),
           numberOfComments: 0
         },
       ]
@@ -45,7 +45,7 @@ export class Repo extends React.Component<{name: string}, {collapsed: boolean, p
   }
 
   public render(): JSX.Element {
-    return <div className={`repo ${this.state.collapsed ? "collapsed" : ""}`}>
+    return <div className={`repo ${this.state.collapsed && "collapsed"}`}>
       <RepoHeader
         name={this.props.name}
         onToggleVisibility={this.onToggleVisibility}
