@@ -9,13 +9,15 @@ export class PullRequestList extends React.Component<{pullRequests: any[]}> {
     return <table className="pullRequestList">
       <thead>
         <tr>
-          <th></th>
+          <th style={{width: "25px"}}></th>
+          <th style={{width: "50px"}}></th>
           <th>Title</th>
-          <th>My Status</th>
-          <th>Status</th>
-          <th>Created by</th>
-          <th>Created</th>
-          <th>Updated</th>
+          <th style={{width: "100px"}}>My Status</th>
+          <th style={{width: "100px"}}>Status</th>
+          <th style={{width: "200px"}}>Created by</th>
+          <th style={{width: "150px"}}>Created</th>
+          <th style={{width: "150px"}}>Updated</th>
+          <th style={{width: "25px"}}></th>
         </tr>
       </thead>
       <tbody>
@@ -24,7 +26,7 @@ export class PullRequestList extends React.Component<{pullRequests: any[]}> {
           title={pullRequest.title}
           myStatus={pullRequest.myStatus}
           status={pullRequest.status}
-          createdBy={pullRequest.status}
+          createdBy={pullRequest.createdBy}
           created={pullRequest.created}
           updated={pullRequest.updated}
           numberOfComments={pullRequest.numberOfComments}
