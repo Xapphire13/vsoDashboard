@@ -1,13 +1,14 @@
 .pullRequestList {
-  display: inline-block;
+  display: inline-table;
   width: ~"calc(100% - 200px)";
+  border-collapse: collapse;
 
-  .columnHeader {
-    color: #646464;
-    display: inline-block;
+  thead, tbody {
+    width: 100%;
   }
 
-  .columnHeader.first {
-    margin-left: 100px;
+  th {
+    color: #646464;
+    text-align: left;
   }
 }

@@ -4,46 +4,23 @@ import * as React from "react";
 
 import {PullRequest} from "./PullRequest";
 
-export class PullRequestList extends React.Component {
+export class PullRequestList extends React.Component<{pullRequests: any[]}> {
   public render(): JSX.Element {
-    const pullRequests = [
-      {
-        title: "Test PR",
-        myStatus: "Assigned",
-        status: "Active",
-        createBy: "Joe Bloggs",
-        created: "2017-04-23T18:00:00.000Z",
-        updated: "2012-04-24T18:00:00.000Z",
-        numberOfComments: 10
-      },
-      {
-        title: "Test PR 2",
-        myStatus: "Assigned",
-        status: "Active",
-        createBy: "Joe Bloggs",
-        created: "2017-04-23T18:00:00.000Z",
-        updated: "2012-04-24T18:00:00.000Z",
-        numberOfComments: 12
-      },
-      {
-        title: "Test PR 3",
-        myStatus: "Assigned",
-        status: "Active",
-        createBy: "Joe Bloggs",
-        created: "2017-04-23T18:00:00.000Z",
-        updated: "2012-04-24T18:00:00.000Z",
-        numberOfComments: 0
-      },
-    ];
-
-    return <div className="pullRequestList">
-      <div className="columnHeader first">Title</div>
-      <div className="columnHeader">My Status</div>
-      <div className="columnHeader">Status</div>
-      <div className="columnHeader">Created by</div>
-      <div className="columnHeader">Created</div>
-      <div className="columnHeader">Updated</div>
-      {pullRequests.map(pullRequest => <PullRequest
+    return <table className="pullRequestList">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Title</th>
+          <th>My Status</th>
+          <th>Status</th>
+          <th>Created by</th>
+          <th>Created</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {this.props.pullRequests.map(pullRequest => <PullRequest
+          key={pullRequest.title}
           title={pullRequest.title}
           myStatus={pullRequest.myStatus}
           status={pullRequest.status}
@@ -51,7 +28,8 @@ export class PullRequestList extends React.Component {
           created={pullRequest.created}
           updated={pullRequest.updated}
           numberOfComments={pullRequest.numberOfComments}
-        />)}
-    </div>;
+          />)}
+      </tbody>
+    </table>;
   }
 }
