@@ -49,13 +49,14 @@ export class UserDBHelper {
         return <IPreferences> {
             emailOverride: dbUser.emailOverride,
             pollIntervalInSeconds: dbUser.pollIntervalInSecs,
-            repositoryPrefrences: userRepoPrefs == null ? null : userRepoPrefs
+            repositoryPrefrences: userRepoPrefs == null ? null : userRepoPrefs,
+            staleThresholdInMinutes: dbUser.staleIntervalInMins
         }
     }
 
     public async updateUserPreference(databaseHelper : SqlLiteHelper, prefs : IPreferences, oAuthId : string) : Promise<any>
     {
-        let query = `INSERT OR REPLACE INTO UserStore (id, oAuthId, emailOverride, pollIntervalInSecs) VALUES ((SELECT id FROM UserStore WHERE oAuthId = '${oAuthId}'), '${oAuthId}', '${prefs.emailOverride}', '${prefs.pollIntervalInSeconds}');`;
+        let query = `INSERT OR REPLACE INTO UserStore (id, oAuthId, emailOverride, pollIntervalInSecs, staleIntervalInMins) VALUES ((SELECT id FROM UserStore WHERE oAuthId = '${oAuthId}'), '${oAuthId}', '${prefs.emailOverride}', '${prefs.pollIntervalInSeconds}', '${prefs.staleThresholdInMinutes}');`;
         databaseHelper.exec(query);
         let dbUser = await databaseHelper.getSingle<IDBUser, string>("UserStore", "oAuthId", oAuthId);
 

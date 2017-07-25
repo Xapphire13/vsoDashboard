@@ -4,4 +4,5 @@ export interface IPreferences {
     emailOverride : string;
     repositoryPrefrences : Array<IRepositoryPreference>;
     pollIntervalInSeconds : number;
+    staleThresholdInMinutes : number;
 }
