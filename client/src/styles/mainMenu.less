@@ -2,15 +2,15 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  height: 35px;
 
   li {
     display: inline;
     padding: 0 10px;
     cursor: pointer;
-  }
-
-  li:hover {
-    font-weight: bold;
+    width: 100px;
+    position: relative;
+    top: 6px;
   }
 
   li + li {
@@ -19,5 +19,11 @@
 
   .selected {
     font-weight: bold;
+  }
+  
+  li:hover {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-image: linear-gradient(to right, rgba(0, 0, 0, 0), white, rgba(0, 0, 0, 0)) 1 1;
   }
 }

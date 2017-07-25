@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "Bowtie";
+  src: url(https://msazure.visualstudio.com/_static/tfs/20170724T131601/_content/Fonts/Icons/bowtie.woff);
+}
+
 .header {
   position: relative;
   height: 75px;
@@ -9,6 +14,16 @@
     width: 45px;
     height: 100%;
     display: inline-block;
+    text-align: center;
+    position: relative;
+  }
+
+  .logo::before {
+    content: "\ea60";
+    font-family: "Bowtie";
+    font-size: 1.5em;
+    top: 9px;
+    position: relative;
   }
 
   .content {
@@ -16,20 +31,21 @@
   }
 
   .title {
+    height: 40px;
     padding-left: 10px;
-    background-color: #005A9E;
+    background-color: #0078d7;
+    position: relative;
 
-    h1 {
+    h2 {
       font-weight: normal;
+      margin: 0;
+      position: relative;
+      top: 3px;
     }
   }
 
   .userInfo {
     position: absolute;
     right: 0;
-  }
-
-  .title > h1 {
-    margin: 0;
   }
 }

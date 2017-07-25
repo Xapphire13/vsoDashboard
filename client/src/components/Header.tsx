@@ -11,7 +11,7 @@ export class Header extends React.Component<{ onSelectedChanged(item: string): v
       <div className="logo"></div>
       <div className="content">
         <div className="title">
-          <h1>VSO Dashboard</h1>
+          <h2>VSO Dashboard</h2>
         </div>
         <MainMenu onSelectedChanged={this.props.onSelectedChanged} />
       </div>
