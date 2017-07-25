@@ -15,7 +15,7 @@ export class Header extends React.Component<{ onSelectedChanged(item: string): v
         </div>
         <MainMenu onSelectedChanged={this.props.onSelectedChanged} />
       </div>
-      <UserInfo />
+      <UserInfo userName="Steven" />
     </div>;
   }
 }
