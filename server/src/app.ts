@@ -4,10 +4,8 @@ import * as fs from "fs";
 import * as bodyParser from "body-parser";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
 import {IPreferences} from "../../shared/IPreferences"
-import {IRepositoryPreference} from "../../shared/IRepositoryPreference"
-import {ISortPreference} from "../../shared/ISortPreference"
-import {SortColumns} from "../../shared/SortColumns"
 import {SqlLiteHelper} from "./SqlLiteHelper"
+import {UserDBHelper} from "./UserDBHelper"
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 let clientSecret = JSON.parse(fs.readFileSync(path.join(process.cwd(), './src/secrets/clientSecret.json'), 'utf8'))["clientSecret"];
@@ -15,6 +13,7 @@ let redirectUri = "https://vsodash.azurewebsites.net/auth";
 let app = express();
 let dbHelper = new SqlLiteHelper();
 dbHelper.init();
+let userDbHelper = new UserDBHelper();
 
 app.set('port', process.env.PORT || 80);
 
@@ -54,34 +53,20 @@ app.get("/token", (req, res) => {
   }
 });
 
-app.get("/preferences", (req, res) => {
-  let sortOrder = new Array<ISortPreference>(1)
-  sortOrder[0] = <ISortPreference>{
-    isAssending: true,
-    column: SortColumns.myStatus
-  }
-
-  let repoPrefs = new Array<IRepositoryPreference>(1);
-  repoPrefs[0] = <IRepositoryPreference>{
-    isMinimised: true,
-    justMine: true,
-    repositoryId: "89a2604e-6637-4585-a31e-926488801182",
-    sortPreferences: sortOrder
-  };
-
+app.get("/preferences", async (req, res) => {
+  // TODO: Figure out how to get this
+  let userId = "Foo";
+  let response = await userDbHelper.getUserPreferences(dbHelper, userId)
   res.statusCode = 200;
-
-  res.send(<IPreferences>{
-    emailOverride: "foo@test.com",
-    repositoryPrefrences: repoPrefs
-  })
+  res.send(response)
 });
 
-app.post("/preferences", (req, res) => {
+app.post("/preferences", async (req, res) => {
   let body = <IPreferences>req.body;
 
-  console.log("emailOverride: " + body.emailOverride);
-  console.log("repositoryId: " + body.repositoryPrefrences[0].repositoryId);
+  // TODO: Figure out how to get this
+  let userId = "Foo";
+  await userDbHelper.updateUserPreference(dbHelper, body, userId);
 
   res.statusCode = 200;
   res.send(body);

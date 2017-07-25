@@ -4,17 +4,17 @@ import * as React from "react";
 
 import {getIcon, Icon} from "../icons";
 
-declare type Propeties = {
+declare type Properties = {
   title: string,
   myStatus: string,
   status: string,
-  createBy: string,
+  createdBy: string,
   created: string,
   updated: string,
   numberOfComments: number;
-}
+};
 
-export class PullRequest extends React.Component<Propeties, {}> {
+export class PullRequest extends React.Component<Properties, {}> {
   public render(): JSX.Element {
     return <tr className="pullRequest">
       <td>
@@ -26,7 +26,7 @@ export class PullRequest extends React.Component<Propeties, {}> {
       <td>{this.props.title}</td>
       <td>{this.props.myStatus}</td>
       <td>{this.props.status}</td>
-      <td>{this.props.createBy}</td>
+      <td>{this.props.createdBy}</td>
       <td>{this.props.created}</td>
       <td>{this.props.updated}</td>
       <td>
