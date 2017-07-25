@@ -11,7 +11,7 @@ export class SqlLiteHelper {
         await this.theDB.migrate({ force: "last", migrationsPath: path.join(process.cwd(), "/src/migrations/")});
     }
 
-    public async get<T, TId1, TId2 = void>(tableName: string, coulmnName1: string, id1: TId1, coulmnName2?: string, id2?: TId2) : Promise<T> {
+    public async getSingle<T, TId1, TId2 = void>(tableName: string, coulmnName1: string, id1: TId1, coulmnName2?: string, id2?: TId2) : Promise<T> {
         if (coulmnName2 == undefined && id2 == undefined) {
             return await this.theDB.get(`SELECT * FROM ${tableName} WHERE ${coulmnName1} = '${id1}'`);
         } else if (coulmnName2 != undefined && coulmnName2 != undefined) {
@@ -20,6 +20,10 @@ export class SqlLiteHelper {
             // TODO: Error Handling
             return <T>{};
         }
+    }
+
+    public async getList<T, TId>(tableName: string, coulmnName: string, id: TId) : Promise<Array<T>> {
+        return await this.theDB.all(`SELECT * FROM ${tableName} WHERE ${coulmnName} = '${id}'`);
     }
 
     public async exec(command : string) : Promise<any>
