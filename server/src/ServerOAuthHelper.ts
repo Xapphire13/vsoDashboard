@@ -1,4 +1,3 @@
-// import * as Q from "q";
 import * as https from "https";
 import * as format from "string-format-obj";
 
