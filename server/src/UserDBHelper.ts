@@ -1,10 +1,10 @@
-import {IPreferences} from "./IPreferences"
-import {IRepositoryPreference} from "./IRepositoryPreference"
-import {ISortPreference} from "./ISortPreference"
-import {SqlLiteHelper} from "./SqlLiteHelper"
-import {IDBUser} from "./DB/IDBUser"
-import {IDBUserRepoPreference} from "./DB/IDBUserRepoPreference"
-import {IDBUserSortPreference} from "./DB/IDBUserSortPreference"
+import {IDBUser} from "./DB/IDBUser";
+import {IDBUserRepoPreference} from "./DB/IDBUserRepoPreference";
+import {IDBUserSortPreference} from "./DB/IDBUserSortPreference";
+import {IPreferences} from "./IPreferences";
+import {IRepositoryPreference} from "./IRepositoryPreference";
+import {ISortPreference} from "./ISortPreference";
+import {SqlLiteHelper} from "./SqlLiteHelper";
 
 export class UserDBHelper {
     public async getUserPreferences(databaseHelper : SqlLiteHelper, oAuthId : string) : Promise<IPreferences|null> {
@@ -44,7 +44,7 @@ export class UserDBHelper {
         return <IPreferences> {
             emailOverride: dbUser.emailOverride,
             pollIntervalInSeconds: dbUser.pollIntervalInSecs,
-            repositoryPrefrences: userRepoPrefs == null ? null : userRepoPrefs,
+            repositoryPreferences: userRepoPrefs == null ? null : userRepoPrefs,
             staleThresholdInMinutes: dbUser.staleIntervalInMins
         }
     }
@@ -59,8 +59,8 @@ export class UserDBHelper {
 
         let repositoryPrefsToDelete = new Array<number>();
         if (dbUserRepoPrefs != undefined && dbUserRepoPrefs.length > 0) {
-            if (prefs.repositoryPrefrences != undefined) {
-                repositoryPrefsToDelete.concat(dbUserRepoPrefs.filter(x => !prefs.repositoryPrefrences.some(y => y.repositoryId === x.vsoRepositoryId)).map(x => x.id));
+            if (prefs.repositoryPreferences != undefined) {
+                repositoryPrefsToDelete.concat(dbUserRepoPrefs.filter(x => !prefs.repositoryPreferences.some(y => y.repositoryId === x.vsoRepositoryId)).map(x => x.id));
             } else {
                 repositoryPrefsToDelete.concat(dbUserRepoPrefs.map(x => x.id));
             }
@@ -88,9 +88,9 @@ export class UserDBHelper {
             await Promise.all(deleteTasks);
         }
 
-        if (prefs.repositoryPrefrences != undefined && prefs.repositoryPrefrences.length > 0) {
+        if (prefs.repositoryPreferences != undefined && prefs.repositoryPreferences.length > 0) {
             let sortInsertTasks = new Array<Promise<any>>();
-            prefs.repositoryPrefrences.forEach(async element => {
+            prefs.repositoryPreferences.forEach(async element => {
                 query = `INSERT OR REPLACE INTO UserPreference (id, userId, vsoRepositoryId, justMine, isMinimised) VALUES ((SELECT id FROM UserPreference WHERE userId = '${dbUser.id}' AND vsoRepositoryId = '${element.repositoryId}'), '${dbUser.id}', '${element.repositoryId}', '${element.justMine ? 1 : 0}', '${element.isMinimised ? 1 : 0}')`;
                 await databaseHelper.exec(query);
                 if (element.sortPreferences != undefined && element.sortPreferences.length > 0) {

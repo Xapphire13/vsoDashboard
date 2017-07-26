@@ -1,7 +1,6 @@
-import {ISortPreference} from "./ISortPreference"
+import {ISortPreference} from "./ISortPreference";
 
-export interface IRepositoryPreference
-{
+export interface IRepositoryPreference {
     repositoryId: string;
     justMine: boolean;
     isMinimised: boolean;
