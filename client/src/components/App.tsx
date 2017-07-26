@@ -11,13 +11,14 @@ import { SettingsArea } from "./SettingsArea";
 import { WorkItemsArea } from "./WorkItemsArea";
 import { IAccessToken } from "../../../shared/IAccessToken";
 import { ClientOAuthHelper } from "../ClientOAuthHelper";
+import { IPreferences } from "../../../shared/IPreferences";
 
-export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null, vstsConnection: vsts.WebApi | null}> {
+export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null, vstsConnection: vsts.WebApi | null, preferences: IPreferences | null}> {
     constructor() {
         super();
 
         let accessTokenString = localStorage.getItem("accessToken");
-        let accessToken = null;
+        let accessToken: IAccessToken | null = null;
         let vstsConnection = null;
 
         if (accessTokenString != undefined) {
@@ -33,12 +34,30 @@ export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea
             isLoggedIn: accessToken != undefined,
             selectedArea: "pullRequests",
             accessToken: accessToken,
-            vstsConnection: vstsConnection
+            vstsConnection: vstsConnection,
+            preferences: null
         };
     }
 
     private _defaultCollectionUri = "https://msazure.visualstudio.com/DefaultCollection";
     private _oAuthHelper = new ClientOAuthHelper();
+    private _preferenceUrl = "/preferences";
+
+    public async componentDidMount(): Promise<any> {
+        if (this.state.accessToken != null) {
+                let preferences = await new Promise<IPreferences>((resolve, reject) => {
+                    $.ajax({
+                        url: this._preferenceUrl,
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${this.state.accessToken && this.state.accessToken.access_token}`
+                        }
+                    }).then(resolve, reject);
+                });
+
+                this._onPreferenceUpdate(preferences);
+            }
+    }
 
     public render(): JSX.Element {
         let content: JSX.Element[] = [];
@@ -68,13 +87,33 @@ export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea
         this.setState({ selectedArea: s });
     }
 
-    private _onGetPRList = (repoId: string): Promise<any> => {
-        if (this.state.vstsConnection != undefined) {
-            let gitHelper = this.state.vstsConnection.getGitApi();
-            return gitHelper.getPullRequests(repoId, { status: GitInterfaces.PullRequestStatus.Active } as any)
-        }
+    private _onPreferenceUpdate = (p: IPreferences): void => {
+        this.setState({ preferences: p });
+    }
 
-        return Promise.resolve();
+    private async getPRList(repoId: string): Promise<GitInterfaces.GitPullRequest[]> {
+        let count = 0;
+        do {
+            if (this.state.vstsConnection != undefined) {
+                let gitHelper = this.state.vstsConnection.getGitApi();
+
+                    try {
+                        return await gitHelper.getPullRequests(repoId, { status: GitInterfaces.PullRequestStatus.Active } as any)
+                    } catch (err) {
+                        if (count == 0) {
+                        // TODO: figure this out
+                            await this.resetAccessToken();
+                        }
+                        else {
+                            throw err;
+                        }
+                    }
+
+            } else {
+                this.resetAccessToken();
+            }
+        } while (count++ < 1);
+        return Promise.resolve([]);
     }
 
     private async resetAccessToken(): Promise<any> {
