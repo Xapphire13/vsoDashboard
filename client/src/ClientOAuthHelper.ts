@@ -1,8 +1,7 @@
 import * as $ from "jquery"
-import {IAccessToken} from "../../shared/IAccessToken";
+import {IAccessToken} from "../../server/src/IAccessToken";
 
 export class ClientOAuthHelper {
-
   public getAccessCode(clientId: string, state: string, scopes: string[], redirectUri: string): void {
     window.location.assign(`https://app.vssps.visualstudio.com/oauth2/authorize?client_id=${clientId}&response_type=Assertion&state=${state}&scope=${scopes.join(" ")}&redirect_uri=${redirectUri}`);
   }

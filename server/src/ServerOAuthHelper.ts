@@ -1,7 +1,7 @@
 import * as https from "https";
 import * as format from "string-format-obj";
 
-import {IAccessToken} from "../../shared/IAccessToken";
+import {IAccessToken} from "./IAccessToken";
 
 export class ServerOAuthHelper {
   public static refreshTokenDataTemplate: string = "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion={0}&grant_type=refresh_token&assertion={1}&redirect_uri={2}";

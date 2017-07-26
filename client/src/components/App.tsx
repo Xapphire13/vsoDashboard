@@ -7,7 +7,7 @@ import { Login } from "./Login";
 import { PullRequestArea } from "./PullRequestArea";
 import { SettingsArea } from "./SettingsArea";
 import { WorkItemsArea } from "./WorkItemsArea";
-import { IAccessToken } from "../../../shared/IAccessToken"
+import { IAccessToken } from "../../../server/src/IAccessToken"
 
 export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null }> {
     constructor() {
