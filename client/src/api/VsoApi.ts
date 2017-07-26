@@ -129,3 +129,7 @@ export async function listWorkItems(): Promise<IWorkItem[]> {
 
   return Promise.all(results.workItems.map(wi => _makeCall<IWorkItem>({ url: wi.url })));
 }
+
+export function getDisplayImageUrl(userId: string, size: number = 1): string {
+  return `https://msazure.visualstudio.com/_api/_common/identityImage?size=${size}&id=${userId}`;
+};
