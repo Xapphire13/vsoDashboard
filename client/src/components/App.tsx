@@ -7,46 +7,59 @@ import { Login } from "./Login";
 import { PullRequestArea } from "./PullRequestArea";
 import { SettingsArea } from "./SettingsArea";
 import { WorkItemsArea } from "./WorkItemsArea";
+import { IAccessToken } from "../../../shared/IAccessToken"
 
-export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string }> {
+export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null }> {
     constructor() {
         super();
 
+        let accessTokenString = localStorage.getItem("accessToken");
+        let accessToken = null;
+
+        if (accessTokenString != undefined) {
+            accessToken = JSON.parse(accessTokenString) as IAccessToken
+        }
+
         this.state = {
-            isLoggedIn: false,
-            selectedArea: "pullRequests"
+            isLoggedIn: accessToken != undefined,
+            selectedArea: "pullRequests",
+            accessToken: accessToken
         };
     }
 
     public render(): JSX.Element {
-        if (this.state.isLoggedIn) {
-            let area: JSX.Element;
-            if (this.state.selectedArea === "pullRequests") {
-                area = <PullRequestArea />;
-            } else if (this.state.selectedArea === "workItems") {
-                area = <WorkItemsArea />;
-            } else if (this.state.selectedArea === "settings") {
-                area = <SettingsArea />;
-            } else {
-                area = <div />;
-            }
+        let content: JSX.Element[] = [];
 
-            return <div className="app">
-                <Header onSelectedChanged={this._onMenuSelectionChanged} />
-                {area}
-            </div>;
+        if (this.state.isLoggedIn) {
+            content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} />);
+
+            if (this.state.selectedArea === "pullRequests") {
+                content.push(<PullRequestArea />);
+            } else if (this.state.selectedArea === "workItems") {
+                content.push(<WorkItemsArea />);
+            } else if (this.state.selectedArea === "settings") {
+                content.push(<SettingsArea />);
+            } else {
+                content.push(<div />);
+            }
+        } else {
+            content.push(<Login />);
         }
 
         return <div className="app">
-            <Login onLogin={this._onLogin} />
+            {content}
         </div>;
     }
 
-    private _onLogin = (): void => {
+    /*private _onLogin = (): void => {
         this.setState({ isLoggedIn: true });
-    }
+    }*/
 
     private _onMenuSelectionChanged = (s: string): void => {
         this.setState({ selectedArea: s });
     }
+
+    /*private _onAccessTokenChanged = (t: IAccessToken): void => {
+        this.setState({ accessToken: t });
+    }*/
 }
