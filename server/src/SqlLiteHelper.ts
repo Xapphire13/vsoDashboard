@@ -1,4 +1,3 @@
-// import * as db from 'sqlite';
 import * as path from "path";
 import db = require("sqlite/legacy");
 

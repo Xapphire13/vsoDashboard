@@ -18,7 +18,8 @@ export class Login extends React.Component<{}> {
     "vso.taskgroups",
     "vso.test",
     "vso.work_write",
-    "vso.workitemsearch"];
+    "vso.workitemsearch"
+  ];
 
   public render(): JSX.Element {
     return <div className="login">
@@ -29,6 +30,7 @@ export class Login extends React.Component<{}> {
 
   private _handleClick = (event: React.FormEvent<HTMLButtonElement>): void => {
       event.preventDefault();
-      this._oAuthHelper.getAccessCode(this._clientId, "test", this._scopes, this._callbackUrl); // This redirects the browser
+      const state = window.location.host === "127.0.0.1" ? "local" : "prod";
+      this._oAuthHelper.getAccessCode(this._clientId, state, this._scopes, this._callbackUrl); // This redirects the browser
   }
 }

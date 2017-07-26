@@ -2,7 +2,10 @@
 .vscode/
 **/bin/
 **/dist/
+release/
 *.map
 *.log
 **/secrets
 *.sqllite
+.tern-project
+**/clientSecret.json

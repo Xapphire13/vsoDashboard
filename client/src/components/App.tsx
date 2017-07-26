@@ -9,9 +9,9 @@ import { Login } from "./Login";
 import { PullRequestArea } from "./PullRequestArea";
 import { SettingsArea } from "./SettingsArea";
 import { WorkItemsArea } from "./WorkItemsArea";
-import { IAccessToken } from "../../../shared/IAccessToken";
+import { IAccessToken } from "../../../server/src/IAccessToken"
 import { ClientOAuthHelper } from "../ClientOAuthHelper";
-import { IPreferences } from "../../../shared/IPreferences";
+import { IPreferences } from "../../../server/src/IPreferences";
 
 export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null, vstsConnection: vsts.WebApi | null, preferences: IPreferences | null}> {
     constructor() {

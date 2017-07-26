@@ -1,11 +1,12 @@
 import "babel-polyfill";
 
-import * as express from "express";
-import * as path from "path";
-import * as fs from "fs";
 import * as bodyParser from "body-parser";
+import * as express from "express";
+import * as fs from "fs";
+import * as path from "path";
+import * as url from "url";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
-import {IPreferences} from "../../shared/IPreferences"
+import {IPreferences} from "./IPreferences"
 import {SqlLiteHelper} from "./SqlLiteHelper"
 import {UserDBHelper} from "./UserDBHelper"
 import {VsoUserHelper} from "./VSO/VsoUserHelper"
@@ -22,11 +23,28 @@ let userHelper = new VsoUserHelper();
 app.set('port', process.env.PORT || 80);
 
 // Static files
-app.use(express.static(path.join(__dirname, "../../client")));
+app.use(express.static(path.join(__dirname, "../client")));
 app.use(bodyParser.json());
-app.use("/scripts", express.static(path.join(__dirname, "/../", "shared")));
-app.use("/auth", express.static(path.join(__dirname, "../../client/auth.html")), () => {
+app.use("/authorized", express.static(path.join(__dirname, "../client/auth.html")), () => {
   console.log("Auth redirect");
+});
+
+app.get("/auth", (req, res) => {
+    const state = req.query["state"];
+
+    if(state === "local" && req.host !== "127.0.0.1") {
+        res.redirect(url.format({
+            protocol: "http",
+            host: "127.0.0.1",
+            pathname: "/auth",
+            query: req.query
+        }));
+    } else {
+        res.redirect(url.format({
+            pathname: "/authorized",
+            query: req.query
+        }));
+    }
 });
 
 app.get("/token", (req, res) => {
@@ -107,8 +125,4 @@ app.post("/preferences", async (req, res) => {
 // Start server
 let server = app.listen(app.get('port'), () => {
   console.log("Listening on port " + server.address().port);
-});
-
-process.on("exit", () => {
-    console.error("Server crashed");
 });
