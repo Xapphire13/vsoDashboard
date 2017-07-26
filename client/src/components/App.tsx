@@ -30,7 +30,7 @@ export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea
     public render(): JSX.Element {
         let content: JSX.Element[] = [];
 
-        if (!this.state.isLoggedIn) {
+        if (this.state.isLoggedIn) {
             content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} />);
 
             if (this.state.selectedArea === "pullRequests") {
