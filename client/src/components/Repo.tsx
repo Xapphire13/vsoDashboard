@@ -6,11 +6,14 @@ import {PullRequestList} from "./PullRequestList";
 import {RepoChartContainer} from "./RepoChartContainer";
 import {RepoHeader} from "./RepoHeader";
 
-export class Repo extends React.Component<{name: string}, {collapsed: boolean, pullRequests: any[]}> {
+export class Repo extends React.Component<{name: string}, {chartsMinimized: boolean, collapsed: boolean, pullRequests: any[]}> {
+  private _repoContent: HTMLDivElement | null;
+
   constructor() {
     super();
 
     this.state = {
+      chartsMinimized: true,
       collapsed: false,
       pullRequests: [
         {
@@ -40,8 +43,61 @@ export class Repo extends React.Component<{name: string}, {collapsed: boolean, p
           updated: (new Date(Date.now())).toJSON(),
           numberOfComments: 0
         },
+        {
+          title: "Test PR 4",
+          myStatus: "Assigned",
+          status: "Active",
+          createdBy: "Joe Bloggs",
+          created: "2012-04-23T18:00:00.000Z",
+          updated: "2017-04-24T18:00:00.000Z",
+          numberOfComments: 10
+        },
+        {
+          title: "Test PR 5",
+          myStatus: "Assigned",
+          status: "Active",
+          createdBy: "Joe Bloggs",
+          created: "2017-04-23T18:00:00.000Z",
+          updated: (new Date(Date.now())).toJSON(),
+          numberOfComments: 12
+        },
+        {
+          title: "Test PR 6",
+          myStatus: "Assigned",
+          status: "Active",
+          createdBy: "Joe Bloggs",
+          created: "2010-04-23T18:00:00.000Z",
+          updated: (new Date(Date.now())).toJSON(),
+          numberOfComments: 0
+        },
+        {
+          title: "Test PR 7",
+          myStatus: "Assigned",
+          status: "Active",
+          createdBy: "Joe Bloggs",
+          created: "2012-04-23T18:00:00.000Z",
+          updated: "2017-04-24T18:00:00.000Z",
+          numberOfComments: 10
+        },
+        {
+          title: "Test PR 8",
+          myStatus: "Assigned",
+          status: "Active",
+          createdBy: "Joe Bloggs",
+          created: "2017-04-23T18:00:00.000Z",
+          updated: (new Date(Date.now())).toJSON(),
+          numberOfComments: 12
+        }
       ]
     };
+  }
+
+  public componentDidMount(): void {
+    if(this._repoContent) {
+      this.setState({
+        chartsMinimized: this._repoContent.clientHeight < 330
+      });
+    }
   }
 
   public render(): JSX.Element {
@@ -51,11 +107,15 @@ export class Repo extends React.Component<{name: string}, {collapsed: boolean, p
         onToggleVisibility={this.onToggleVisibility}
         collapsed={this.state.collapsed}
         pullRequestCount={this.state.pullRequests.length}
+        needsAttention={true}
       />
       {!this.state.collapsed &&
-      <div className="repoContent">
+      <div className="repoContent" ref={(element) => this._repoContent = element}>
         <PullRequestList pullRequests={this.state.pullRequests} />
-        <RepoChartContainer />
+        <RepoChartContainer
+          isMinimized={this.state.chartsMinimized}
+          numberOfPullRequests={this.state.pullRequests.length}
+        />
       </div>}
     </div>;
   }
