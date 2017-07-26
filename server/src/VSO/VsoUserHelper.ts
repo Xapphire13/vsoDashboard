@@ -5,8 +5,8 @@ export class VsoUserHelper {
 
     public static host: string = "app.vssps.visualstudio.com";
 
-    public getUserId(authorizationToken : string) : Promise<string> {
-        return new Promise((resolve, reject) => {
+    public getUserId(authorizationToken : string) : Promise<string | null> {
+        return new Promise<string | null>((resolve, reject) => {
             let get = https.request({
                 method: "GET",
                 host: VsoUserHelper.host,
@@ -17,7 +17,11 @@ export class VsoUserHelper {
             }, (res) => {
                 res.setEncoding("utf8");
                 res.on('data', data => {
-                    resolve((<IVsoUser>(JSON.parse(data as any))).id);
+                    try {
+                        resolve((<IVsoUser>(JSON.parse(data as any))).id);
+                    } catch (err) {
+                        resolve(null);
+                    }
                 });
             });
 

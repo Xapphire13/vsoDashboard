@@ -1,38 +1,70 @@
 import "../styles/app.less";
 
-import * as NameParser from "another-name-parser";
 import * as React from "react";
+import * as VsoApi from "../api/VsoApi";
 
-import { Header } from "./Header";
-import { IAccessToken } from "../../../server/src/IAccessToken";
-import { Login } from "./Login";
-import { PullRequestArea } from "./PullRequestArea";
-import { SettingsArea } from "./SettingsArea";
-import { WorkItemsArea } from "./WorkItemsArea";
+import {Header} from "./Header";
+import {IAccessToken} from "../../../server/src/IAccessToken"
+import {IPreferences} from "../../../server/src/IPreferences";
+import {Login} from "./Login";
+import {PullRequestArea} from "./PullRequestArea";
+import {SettingsArea} from "./SettingsArea";
+import {WorkItemsArea} from "./WorkItemsArea";
 
-export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null }> {
+// import {ClientOAuthHelper} from "../ClientOAuthHelper";
+
+
+declare type State = {
+  isLoggedIn: boolean,
+  selectedArea: string,
+  accessToken : IAccessToken | null,
+  preferences: IPreferences | null
+};
+
+export class App extends React.Component<{}, State> {
+    // private _oAuthHelper = new ClientOAuthHelper();
+    private _preferenceUrl = "/preferences";
+
     constructor() {
         super();
 
-        let accessTokenString: string | null = localStorage.getItem("accessToken");
+        let accessTokenString = localStorage.getItem("accessToken");
         let accessToken: IAccessToken | null = null;
 
         if (accessTokenString != undefined) {
-            accessToken = JSON.parse(accessTokenString) as IAccessToken;
+            accessToken = JSON.parse(accessTokenString) as IAccessToken
+            VsoApi.setAccessToken(accessToken);
         }
 
         this.state = {
             isLoggedIn: accessToken != undefined,
             selectedArea: "pullRequests",
-            accessToken: accessToken
+            accessToken: accessToken,
+            preferences: null
         };
+    }
+
+    public async componentDidMount(): Promise<any> {
+        if (this.state.accessToken != null) {
+            let preferences = await new Promise<IPreferences>((resolve, reject) => {
+                $.ajax({
+                    url: this._preferenceUrl,
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${this.state.accessToken && this.state.accessToken.access_token}`
+                    }
+                }).then(resolve, reject);
+            });
+
+            this._onPreferenceUpdate(preferences);
+        }
     }
 
     public render(): JSX.Element {
         let content: JSX.Element[] = [];
 
-        if (this.state.isLoggedIn) {
-            content.push(<Header userName={(NameParser as any)("Steven Hyphenated-Lastname").first} onSelectedChanged={this._onMenuSelectionChanged} />);
+        if (this.state.isLoggedIn && this.state.accessToken != null) {
+            content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} />);
 
             if (this.state.selectedArea === "pullRequests") {
                 content.push(<PullRequestArea />);
@@ -52,15 +84,39 @@ export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea
         </div>;
     }
 
-    /*private _onLogin = (): void => {
-        this.setState({ isLoggedIn: true });
-    }*/
-
     private _onMenuSelectionChanged = (s: string): void => {
         this.setState({ selectedArea: s });
     }
 
-    /*private _onAccessTokenChanged = (t: IAccessToken): void => {
-        this.setState({ accessToken: t });
-    }*/
+    private _onPreferenceUpdate = (p: IPreferences): void => {
+        this.setState({ preferences: p });
+    }
+
+    // private async resetAccessToken(): Promise<void> {
+    //     if (this.state.accessToken != undefined) {
+    //         let newToken = await this._oAuthHelper.refreshAccessToken(this.state.accessToken.refresh_token);
+    //         if (newToken != undefined) {
+    //             localStorage.setItem("accessToken", JSON.stringify(newToken));
+    //             this.setState({
+    //                 accessToken: newToken,
+    //                 isLoggedIn: true,
+    //             });
+    //
+    //             VsoApi.setAccessToken(newToken);
+    //         } else {
+    //             this.logOut();
+    //         }
+    //     } else {
+    //         this.logOut();
+    //     }
+    // }
+
+    // private logOut(): void {
+    //     this.setState({
+    //         accessToken: null,
+    //         isLoggedIn: false,
+    //     });
+    //     localStorage.removeItem("accessToken");
+    //     this.render();
+    // }
 }
