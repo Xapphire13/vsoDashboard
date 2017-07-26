@@ -2,7 +2,7 @@ import "../styles/app.less";
 
 import * as React from "react";
 import * as vsts from "vso-node-api"
-import * as gitInterfaces from 'vso-node-api/interfaces/GitInterfaces';
+import * as GitInterfaces from 'vso-node-api/interfaces/GitInterfaces';
 
 import { Header } from "./Header";
 import { Login } from "./Login";
@@ -71,8 +71,10 @@ export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea
     private _onGetPRList = (repoId: string): Promise<any> => {
         if (this.state.vstsConnection != undefined) {
             let gitHelper = this.state.vstsConnection.getGitApi();
-            gitHelper.getPullRequests(repoId, { status: gitInterfaces.PullRequestStatus.Active})
+            return gitHelper.getPullRequests(repoId, { status: GitInterfaces.PullRequestStatus.Active } as any)
         }
+
+        return Promise.resolve();
     }
 
     private async resetAccessToken(): Promise<any> {
