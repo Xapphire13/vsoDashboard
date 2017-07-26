@@ -8,7 +8,7 @@ export class SqlLiteHelper {
 
     public async init() : Promise<void> {
         this.theDB = await db.open("./preferences.sqllite", <any>{ promise: Promise, cached: true});
-        await this.theDB.migrate({ force: "last", migrationsPath: path.join(process.cwd(), "/src/migrations/")});
+        await this.theDB.migrate({migrationsPath: path.join(process.cwd(), "/src/migrations/")});
     }
 
     public async getSingle<T, TId1, TId2 = void>(tableName: string, coulmnName1: string, id1: TId1, coulmnName2?: string, id2?: TId2) : Promise<T> {

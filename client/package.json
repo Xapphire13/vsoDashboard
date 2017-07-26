@@ -26,6 +26,7 @@
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
+    "@types/jquery": "^3.2.9",
     "@types/moment": "^2.13.0",
     "awesome-typescript-loader": "^3.2.1",
     "css-loader": "^0.28.4",
