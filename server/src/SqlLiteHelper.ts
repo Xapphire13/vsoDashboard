@@ -1,14 +1,13 @@
 // import * as db from 'sqlite';
 import * as path from "path";
-import db = require("sqlite");
-
+import db = require("sqlite/legacy");
 
 export class SqlLiteHelper {
     theDB : db.Database;
 
     public async init() : Promise<void> {
         this.theDB = await db.open("./preferences.sqllite", <any>{ promise: Promise, cached: true});
-        await this.theDB.migrate({migrationsPath: path.join(process.cwd(), "/src/migrations/")});
+        await this.theDB.migrate({migrationsPath: path.join(__dirname, "./migrations/")});
     }
 
     public async getSingle<T, TId1, TId2 = void>(tableName: string, coulmnName1: string, id1: TId1, coulmnName2?: string, id2?: TId2) : Promise<T> {
