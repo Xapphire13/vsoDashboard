@@ -1,23 +1,24 @@
 import "../styles/app.less";
 
+import * as NameParser from "another-name-parser";
 import * as React from "react";
 
 import { Header } from "./Header";
+import { IAccessToken } from "../../../server/src/IAccessToken";
 import { Login } from "./Login";
 import { PullRequestArea } from "./PullRequestArea";
 import { SettingsArea } from "./SettingsArea";
 import { WorkItemsArea } from "./WorkItemsArea";
-import { IAccessToken } from "../../../server/src/IAccessToken"
 
 export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea: string, accessToken : IAccessToken | null }> {
     constructor() {
         super();
 
-        let accessTokenString = localStorage.getItem("accessToken");
-        let accessToken = null;
+        let accessTokenString: string | null = localStorage.getItem("accessToken");
+        let accessToken: IAccessToken | null = null;
 
         if (accessTokenString != undefined) {
-            accessToken = JSON.parse(accessTokenString) as IAccessToken
+            accessToken = JSON.parse(accessTokenString) as IAccessToken;
         }
 
         this.state = {
@@ -31,7 +32,7 @@ export class App extends React.Component<{}, { isLoggedIn: boolean, selectedArea
         let content: JSX.Element[] = [];
 
         if (this.state.isLoggedIn) {
-            content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} />);
+            content.push(<Header userName={(NameParser as any)("Steven Hyphenated-Lastname").first} onSelectedChanged={this._onMenuSelectionChanged} />);
 
             if (this.state.selectedArea === "pullRequests") {
                 content.push(<PullRequestArea />);
