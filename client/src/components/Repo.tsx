@@ -2,12 +2,20 @@ import "../styles/repo.less";
 
 import * as React from "react";
 
+import {RepoFilter, RepoFilters} from "./RepoFilters";
+
 import {PullRequestList} from "./PullRequestList";
 import {RepoChartContainer} from "./RepoChartContainer";
-import {RepoFilter, RepoFilters} from "./RepoFilters";
 import {RepoHeader} from "./RepoHeader";
 
-export class Repo extends React.Component<{name: string}, {chartsMinimized: boolean, collapsed: boolean, pullRequests: any[], filter: RepoFilter}> {
+interface IProps {
+  id: string;
+  name: string;
+  collapsed: boolean;
+  onToggleCollapse: (id: string)=>void;
+}
+
+export class Repo extends React.Component<IProps, {chartsMinimized: boolean, pullRequests: any[], filter: RepoFilter}> {
   private _repoContent: HTMLDivElement | null;
 
   constructor() {
@@ -15,7 +23,6 @@ export class Repo extends React.Component<{name: string}, {chartsMinimized: bool
 
     this.state = {
       chartsMinimized: true,
-      collapsed: false,
       filter: RepoFilter.mine,
       pullRequests: [
         {
@@ -103,15 +110,15 @@ export class Repo extends React.Component<{name: string}, {chartsMinimized: bool
   }
 
   public render(): JSX.Element {
-    return <div className={`repo ${this.state.collapsed && "collapsed"}`}>
+    return <div className={`repo ${this.props.collapsed && "collapsed"}`}>
       <RepoHeader
         name={this.props.name}
         onToggleVisibility={this.onToggleVisibility}
-        collapsed={this.state.collapsed}
+        collapsed={this.props.collapsed}
         pullRequestCount={this.state.pullRequests.length}
         needsAttention={true}
       />
-      {!this.state.collapsed &&
+      {!this.props.collapsed &&
       <div className="repoContent" ref={(element) => this._repoContent = element}>
         <div className="pullRequestContainer">
           <PullRequestList pullRequests={this.state.pullRequests} />
@@ -128,8 +135,6 @@ export class Repo extends React.Component<{name: string}, {chartsMinimized: bool
   }
 
   public onToggleVisibility = (): void => {
-    this.setState((previousState) => ({
-      collapsed: !previousState.collapsed
-    }));
+    this.props.onToggleCollapse(this.props.id);
   }
 }
