@@ -1,12 +1,10 @@
-import {IPreferences} from "../../shared/IPreferences"
-import {IRepositoryPreference} from "../../shared/IRepositoryPreference"
-import {ISortPreference} from "../../shared/ISortPreference"
+import {IPreferences} from "./IPreferences"
+import {IRepositoryPreference} from "./IRepositoryPreference"
+import {ISortPreference} from "./ISortPreference"
 import {SqlLiteHelper} from "./SqlLiteHelper"
 import {IDBUser} from "./DB/IDBUser"
 import {IDBUserRepoPreference} from "./DB/IDBUserRepoPreference"
 import {IDBUserSortPreference} from "./DB/IDBUserSortPreference"
-import {TS} from "typescript-linq"
-
 
 export class UserDBHelper {
     public async getUserPreferences(databaseHelper : SqlLiteHelper, oAuthId : string) : Promise<IPreferences|null> {
@@ -19,32 +17,29 @@ export class UserDBHelper {
         let dbUserRepoPrefsTask = databaseHelper.getList<IDBUserRepoPreference, number>("UserPreference", "userId", dbUser.id);
         let dbSortTasks = databaseHelper.getList<IDBUserSortPreference, number>("UserSortPreference", "userId", dbUser.id);
 
-        const [dbUserRepoPrefs,dbSort] = await Promise.all([
+        const result: any[] = await Promise.all([
             await dbUserRepoPrefsTask,
-            await dbSortTasks]);
+            await dbSortTasks
+        ]);
 
-            let sortsEnumerator : TS.Linq.Enumerator<IDBUserSortPreference>;
+        const dbUserRepoPrefs: IDBUserRepoPreference[] = result[0];
+        const dbSort: IDBUserSortPreference[] = result[1];
 
-            if (dbSort != undefined && dbSort.length > 0) {
-                sortsEnumerator = new TS.Linq.Enumerator(dbSort);
-            }
-
-            let userRepoPrefs : Array<IRepositoryPreference> | undefined;
-            if (dbUserRepoPrefs != undefined && dbUserRepoPrefs.length > 0)
-            {
-                userRepoPrefs = new TS.Linq.Enumerator(dbUserRepoPrefs).select(x => <IRepositoryPreference>{
-                    isMinimised: x.isMinimised === 1,
-                    justMine: x.justMine === 1,
-                    repositoryId: x.vsoRepositoryId,
-                    sortPreferences: sortsEnumerator == null ? null : sortsEnumerator
-                        .where(y => y.userId === x.userId && y.preferenceId === x.id)
-                        .select(y => <ISortPreference>{
-                            column: y.sortColumn,
-                            isAssending: y.isAssending === 1,
-                            presidence: y.presidence
-                        }).toArray()
-                }).toArray();
-            }
+        let userRepoPrefs : Array<IRepositoryPreference> | undefined;
+        if (dbUserRepoPrefs != undefined && dbUserRepoPrefs.length > 0) {
+            userRepoPrefs = dbUserRepoPrefs.map(x => <IRepositoryPreference>{
+                isMinimised: x.isMinimised === 1,
+                justMine: x.justMine === 1,
+                repositoryId: x.vsoRepositoryId,
+                sortPreferences: dbSort
+                    .filter(y => y.userId === x.userId && y.preferenceId === x.id)
+                    .map(y => <ISortPreference>{
+                        column: y.sortColumn,
+                        isAssending: y.isAssending === 1,
+                        presidence: y.presidence
+                    })
+            });
+        }
 
         return <IPreferences> {
             emailOverride: dbUser.emailOverride,
@@ -62,18 +57,12 @@ export class UserDBHelper {
 
         let dbUserRepoPrefs = await databaseHelper.getList<IDBUserRepoPreference, number>("UserPreference", "userId", dbUser.id);
 
-        let preferencesEnumerator: TS.Linq.Enumerator<IRepositoryPreference> | undefined;
-        if (prefs.repositoryPrefrences != null) {
-            preferencesEnumerator = new TS.Linq.Enumerator(prefs.repositoryPrefrences);
-        }
-
         let repositoryPrefsToDelete = new Array<number>();
         if (dbUserRepoPrefs != undefined && dbUserRepoPrefs.length > 0) {
-            let dbUserRepoEnumerator = new TS.Linq.Enumerator(dbUserRepoPrefs);
-            if (preferencesEnumerator != undefined) {
-                repositoryPrefsToDelete.concat(dbUserRepoEnumerator.where(x => preferencesEnumerator != undefined && !preferencesEnumerator.any(y => y.repositoryId === x.vsoRepositoryId)).select(x => x.id).toArray());
+            if (prefs.repositoryPrefrences != undefined) {
+                repositoryPrefsToDelete.concat(dbUserRepoPrefs.filter(x => !prefs.repositoryPrefrences.some(y => y.repositoryId === x.vsoRepositoryId)).map(x => x.id));
             } else {
-                repositoryPrefsToDelete.concat(dbUserRepoEnumerator.select(x => x.id).toArray());
+                repositoryPrefsToDelete.concat(dbUserRepoPrefs.map(x => x.id));
             }
         }
 

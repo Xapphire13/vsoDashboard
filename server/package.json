@@ -1,9 +1,9 @@
 {
   "name": "vsodash",
   "version": "1.0.0",
-  "main": "../dist/server/src/app.js",
+  "main": "../dist/app.js",
   "scripts": {
-    "start": "node ../dist/server/src/app.js"
+    "start": "node ../dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -16,17 +16,16 @@
   },
   "homepage": "https://github.com/Xapphire13/vsoDashboard#readme",
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "body-parser": "^1.17.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "express": "~4.15.2",
-    "jade": "~1.11.0",
     "morgan": "~1.8.1",
     "q": "^1.5.0",
     "serve-favicon": "~2.4.2",
     "sqlite": "^2.8.0",
-    "string-format-obj": "^1.1.0",
-    "typescript-linq": "^1.0.6"
+    "string-format-obj": "^1.1.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.4",

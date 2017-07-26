@@ -1,12 +1,57 @@
 .repoChartContainer {
   display: inline-block;
-  min-height: 200px;
-  width: 200px;
+  width: 280px;
   position: absolute;
   right: 0;
+  top: 0;
+  padding: 10px;
+
+  &:not(:hover) {
+    height: ~"calc(100% - 20px)";
+  }
 
   &:hover {
     background-color: #3A3A3A;
     z-index: 1000;
+  }
+
+  .chartContainer {
+    width: 230px;
+    height: 125px;
+    position: relative;
+
+    h1 {
+      position: absolute;
+      bottom: -10px;
+      right: -50px;
+    }
+  }
+
+  h1 {
+    font-weight: lighter;
+    font-size: 4em;
+    margin: 0;
+    display: inline-block;
+  }
+
+  .pullRequestCount {
+    display: inline-block;
+    margin-left: 5px;
+  }
+
+  .expandIcon {
+    position: absolute;
+    bottom: 0;
+    width: ~"calc(100% - 20px)";
+    text-align: center;
+    font-size: 1.5em;
+  }
+
+  hr {
+    border: 1px solid #646464;
+  }
+
+  p {
+    margin: 0;
   }
 }

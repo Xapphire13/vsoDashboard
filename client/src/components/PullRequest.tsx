@@ -33,7 +33,9 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
   public render(): JSX.Element {
     return <tr className={`pullRequest ${this.state.needsAttention && "needsAttention"}`}>
       <td>
-        {this.state.needsAttention && getIcon(Icon.warning)}
+        {this.state.needsAttention && <span title="Needs attention">
+          {getIcon(Icon.warning)}
+        </span>}
       </td>
       <td>
         <div className="comments">
@@ -49,7 +51,9 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
       <td>{moment(this.props.updated).fromNow()}</td>
       <td>
         <div className="quickActions clickable">
-          {getIcon(Icon.mail)}
+          <span title="Send email">
+            {getIcon(Icon.mail)}
+          </span>
         </div>
       </td>
     </tr>;

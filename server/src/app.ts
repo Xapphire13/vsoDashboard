@@ -1,15 +1,17 @@
+import "babel-polyfill";
+
 import * as express from "express";
 import * as path from "path";
 import * as fs from "fs";
 import * as bodyParser from "body-parser";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
-import {IPreferences} from "../../shared/IPreferences"
+import {IPreferences} from "./IPreferences"
 import {SqlLiteHelper} from "./SqlLiteHelper"
 import {UserDBHelper} from "./UserDBHelper"
 import {VsoUserHelper} from "./VSO/VsoUserHelper"
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-let clientSecret = JSON.parse(fs.readFileSync(path.join(process.cwd(), './src/secrets/clientSecret.json'), 'utf8'))["clientSecret"];
+let clientSecret = JSON.parse(fs.readFileSync(path.join(__dirname, './secrets/clientSecret.json'), 'utf8'))["clientSecret"];
 let redirectUri = "https://vsodash.azurewebsites.net/auth";
 let app = express();
 let dbHelper = new SqlLiteHelper();
@@ -20,10 +22,9 @@ let userHelper = new VsoUserHelper();
 app.set('port', process.env.PORT || 80);
 
 // Static files
-app.use(express.static(path.join(__dirname, "/../", "client")));
+app.use(express.static(path.join(__dirname, "../../client")));
 app.use(bodyParser.json());
-app.use("/scripts", express.static(path.join(__dirname, "/../", "shared")));
-app.use("/auth", express.static(path.join(__dirname, "/../", "client/auth.html")), () => {
+app.use("/auth", express.static(path.join(__dirname, "../client/auth.html")), () => {
   console.log("Auth redirect");
 });
 
