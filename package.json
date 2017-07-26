@@ -1,0 +1,20 @@
+{
+  "name": "vso-dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "start": "node scripts/run.js",
+    "prepare-release": "node scripts/prepare-release.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xapphire13/vsoDashboard.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Xapphire13/vsoDashboard/issues"
+  },
+  "homepage": "https://github.com/Xapphire13/vsoDashboard#readme"
+}
