@@ -4,9 +4,10 @@ import * as React from "react";
 
 import {PullRequestList} from "./PullRequestList";
 import {RepoChartContainer} from "./RepoChartContainer";
+import {RepoFilter, RepoFilters} from "./RepoFilters";
 import {RepoHeader} from "./RepoHeader";
 
-export class Repo extends React.Component<{name: string}, {chartsMinimized: boolean, collapsed: boolean, pullRequests: any[]}> {
+export class Repo extends React.Component<{name: string}, {chartsMinimized: boolean, collapsed: boolean, pullRequests: any[], filter: RepoFilter}> {
   private _repoContent: HTMLDivElement | null;
 
   constructor() {
@@ -15,6 +16,7 @@ export class Repo extends React.Component<{name: string}, {chartsMinimized: bool
     this.state = {
       chartsMinimized: true,
       collapsed: false,
+      filter: RepoFilter.mine,
       pullRequests: [
         {
           title: "Test PR",
@@ -111,7 +113,12 @@ export class Repo extends React.Component<{name: string}, {chartsMinimized: bool
       />
       {!this.state.collapsed &&
       <div className="repoContent" ref={(element) => this._repoContent = element}>
-        <PullRequestList pullRequests={this.state.pullRequests} />
+        <div className="pullRequestContainer">
+          <PullRequestList pullRequests={this.state.pullRequests} />
+          <RepoFilters
+            currentFilter={this.state.filter}
+            onFilterChanged={(filter: RepoFilter) => this.setState({filter})}/>
+        </div>
         <RepoChartContainer
           isMinimized={this.state.chartsMinimized}
           numberOfPullRequests={this.state.pullRequests.length}
