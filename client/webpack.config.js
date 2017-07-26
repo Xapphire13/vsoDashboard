@@ -1,7 +1,10 @@
 module.exports = {
-    entry: "./src/index.tsx",
+    entry: {
+      app: "./src/index.tsx",
+      auth: "./src/auth.ts"
+    },
     output: {
-        filename: "bundle.js",
+        filename: "[name].js",
         path: __dirname + "/dist"
     },
 
