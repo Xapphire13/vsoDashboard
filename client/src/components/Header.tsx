@@ -5,7 +5,7 @@ import * as React from "react";
 import { MainMenu } from "./MainMenu";
 import { UserInfo } from "./UserInfo";
 
-export class Header extends React.Component<{ onSelectedChanged(item: string): void }> {
+export class Header extends React.Component<{ onSelectedChanged(item: string): void }, {}> {
   public render(): JSX.Element {
     return <div className="header">
       <div className="logo"></div>
