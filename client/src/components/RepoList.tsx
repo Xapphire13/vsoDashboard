@@ -23,6 +23,7 @@ export class RepoList extends React.Component<{}, IState> {
       { id: "2", name: "Super cool repo", collapsed: false }]
     };
   }
+
   public render(): JSX.Element {
     const repos: JSX.Element[] = this.state.repos.map(r => <Repo key={r.id} id={r.id} name={r.name} collapsed={r.collapsed} onToggleCollapse={this._toggleCollapsed} />);
 

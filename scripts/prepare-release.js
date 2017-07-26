@@ -7,7 +7,8 @@ const releasePath = path.resolve(__dirname, "../release");
 const serverPath = path.resolve(__dirname, "../server");
 
 let res = child_process.spawnSync("cmd", ["/C", "webpack"], {
-  cwd: clientPath
+  cwd: clientPath,
+  stdio: "inherit"
 });
 
 if (res.code) {
@@ -21,7 +22,8 @@ copy(`${path.join(clientPath,"package.json")}`, path.join(releasePath, "client/.
 
 
 res = child_process.spawnSync("cmd", ["/C", "tsc"], {
-  cwd: serverPath
+  cwd: serverPath,
+  stdio: "inherit"
 });
 
 if (res.code) {
