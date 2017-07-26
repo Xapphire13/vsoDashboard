@@ -16,7 +16,12 @@ export class ClientOAuthHelper {
     });
   }
 
-  public async refreshAccessToken(refreshToken: string): Promise<IAccessToken> {
-    return await $.get(`/token?refreshToken=${refreshToken}`);
+  public refreshAccessToken(refreshToken: string): Promise<IAccessToken> {
+    return new Promise((resolve, reject) => {
+       $.get(`/token?refreshToken=${refreshToken}`).then(
+         resolve,
+         reject
+       );
+    });
   }
 }
