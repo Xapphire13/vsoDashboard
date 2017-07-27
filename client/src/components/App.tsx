@@ -3,6 +3,7 @@ import "../styles/app.less";
 import * as ClientOAuthHelpers from "../ClientOAuthHelpers";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
+import * as Preferences from "../api/Preferences";
 
 import {Header} from "./Header";
 import {IAccessToken} from "../../../server/src/IAccessToken"
@@ -22,8 +23,6 @@ declare type State = {
 };
 
 export class App extends React.Component<{}, State> {
-    private _preferenceUrl = "/preferences";
-
     constructor() {
         super();
 
@@ -47,24 +46,12 @@ export class App extends React.Component<{}, State> {
 
     public async componentDidMount(): Promise<any> {
         if (this.state.accessToken != null) {
-          const getPrefs = () => {
-            return new Promise<IPreferences>((resolve, reject) => {
-                $.ajax({
-                    url: this._preferenceUrl,
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${this.state.accessToken && this.state.accessToken.access_token}`
-                    }
-                }).then(resolve, reject);
-            });
-          }
-
           let preferences: IPreferences;
           try{
-            preferences = await getPrefs();
+            preferences = await Preferences.getPreferences();
           } catch (err) {
             await this.resetAccessToken();
-            preferences = await getPrefs();
+            preferences = await Preferences.getPreferences();
           }
 
             this.setState({
@@ -78,19 +65,19 @@ export class App extends React.Component<{}, State> {
         let content: JSX.Element[] = [];
 
         if (this.state.isLoggedIn && this.state.accessToken != null) {
-            content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} userProfile={this.state.userProfile} />);
+            content.push(<Header key="Header" onSelectedChanged={this._onMenuSelectionChanged} userProfile={this.state.userProfile} />);
 
             if (this.state.selectedArea === "pullRequests") {
-                content.push(<PullRequestArea preferences={this.state.preferences} userProfile={this.state.userProfile} />);
+                content.push(<PullRequestArea key="PullRequestArea" preferences={this.state.preferences} userProfile={this.state.userProfile} />);
             } else if (this.state.selectedArea === "workItems") {
-                content.push(<WorkItemsArea />);
+                content.push(<WorkItemsArea key="WorkItemsArea" />);
             } else if (this.state.selectedArea === "settings") {
-                content.push(<SettingsArea />);
+                content.push(<SettingsArea key="SettingsArea" />);
             } else {
-                content.push(<div />);
+                content.push(<div key="NoArea" />);
             }
         } else {
-            content.push(<Login />);
+            content.push(<Login key="Login" />);
         }
 
         return <div className="app">

@@ -66,6 +66,10 @@ export function setAccessToken(newAccessToken: IAccessToken): void {
   accessToken = newAccessToken;
 }
 
+export function getAccessToken(): IAccessToken | null {
+    return accessToken;
+}
+
 export function setRefreshFunction(newRefreshFunction: () => Promise<void>): void {
     refreshFunction = newRefreshFunction;
 }
