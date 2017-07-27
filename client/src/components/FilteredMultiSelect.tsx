@@ -43,7 +43,7 @@ declare type Props = {
     className?: any,
     disabled?: boolean,
     placeholder?: string,
-    size?: any,
+    size?: number,
     textProp: string,
     valueProp?: any,
     buttonText?: string,

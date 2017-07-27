@@ -34,7 +34,7 @@ export class SettingsArea extends React.Component<Props, State> {
   public async componentDidMount(): Promise<void> {
     const repos: IRepository[] = await VsoApi.listRepositories();
     const selectedRepos: IRepository[] = [];
-    if (this.state.preferences && this.state.preferences.repositoryPreferences.length > 0) {
+    if (this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.length > 0) {
       this.state.preferences.repositoryPreferences.forEach(p => {
         const foundRepo: IRepository | undefined = repos.find(r => r.id === p.repositoryId);
         if (foundRepo) {
@@ -81,7 +81,7 @@ export class SettingsArea extends React.Component<Props, State> {
           defaultFilter=""
           textProp="name"
           valueProp="name"
-          size="15"
+          size={15}
           options={this.state.availableRepos}
           selectedOptions={this.state.selectedRepos}
           onChange={this._handleSelectionChange} />
