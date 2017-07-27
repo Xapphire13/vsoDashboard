@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
     entry: {
       app: "./src/index.tsx",
@@ -5,7 +7,7 @@ module.exports = {
     },
     output: {
         filename: "[name].js",
-        path: __dirname + "/dist"
+        path: path.join(__dirname, "../release/client")
     },
 
     // Enable sourcemaps for debugging webpack's output.

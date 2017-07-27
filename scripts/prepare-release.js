@@ -16,7 +16,6 @@ if (res.code) {
   process.exit(res.code);
 }
 
-copy(`${path.join(clientPath, "dist")}/**`, path.join(releasePath, "client"), (err, files) => {});
 copy(`${path.join(clientPath,"*.html")}`, path.join(releasePath, "client"), (err, files) => {});
 copy(`${path.join(clientPath,"package.json")}`, path.join(releasePath, "client/.."), (err, files) => {});
 

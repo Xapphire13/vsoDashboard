@@ -2,6 +2,7 @@ const child_process = require("child_process");
 const path = require("path");
 
 const releasePath = path.resolve(__dirname, "../release");
+const clientSrcPath = path.resolve(__dirname, "../client");
 const clientPath = path.join(releasePath, "client");
 const serverPath = path.join(releasePath, "server");
 
@@ -12,6 +13,11 @@ let res = child_process.spawnSync("cmd", ["/C", "npm install"], {
 
 res = child_process.spawnSync("cmd", ["/C", "npm install"], {
   cwd: serverPath,
+  stdio: "inherit"
+});
+
+child_process.spawn("cmd", ["/C", "webpack -w"], {
+  cwd: clientSrcPath,
   stdio: "inherit"
 });
 
