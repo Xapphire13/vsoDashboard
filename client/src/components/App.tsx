@@ -1,5 +1,6 @@
 import "../styles/app.less";
 
+import * as ClientOAuthHelpers from "../ClientOAuthHelpers";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
@@ -12,8 +13,6 @@ import {SettingsArea} from "./SettingsArea";
 import {WorkItemsArea} from "./WorkItemsArea";
 import {IProfile} from "../api/models/IProfile";
 
-// import {ClientOAuthHelper} from "../ClientOAuthHelper";
-
 declare type State = {
   isLoggedIn: boolean,
   selectedArea: string,
@@ -23,12 +22,12 @@ declare type State = {
 };
 
 export class App extends React.Component<{}, State> {
-    // private _oAuthHelper = new ClientOAuthHelper();
     private _preferenceUrl = "/preferences";
 
     constructor() {
         super();
 
+        VsoApi.setRefreshFunction(this.resetAccessToken);
         let accessTokenString = localStorage.getItem("accessToken");
         let accessToken: IAccessToken | null = null;
 
@@ -57,6 +56,15 @@ export class App extends React.Component<{}, State> {
                     }
                 }).then(resolve, reject);
             });
+
+            preferences.repositoryPrefrences = [
+              {
+                isMinimised: false,
+                justMine: false,
+                repositoryId: "125a2cc3-8f27-43e5-aaa1-8e4cab32b56c",
+                sortPreferences: []
+              }
+            ];
 
             this.setState({
               preferences,
@@ -93,31 +101,31 @@ export class App extends React.Component<{}, State> {
         this.setState({ selectedArea: s });
     }
 
-    // private async resetAccessToken(): Promise<void> {
-    //     if (this.state.accessToken != undefined) {
-    //         let newToken = await this._oAuthHelper.refreshAccessToken(this.state.accessToken.refresh_token);
-    //         if (newToken != undefined) {
-    //             localStorage.setItem("accessToken", JSON.stringify(newToken));
-    //             this.setState({
-    //                 accessToken: newToken,
-    //                 isLoggedIn: true,
-    //             });
-    //
-    //             VsoApi.setAccessToken(newToken);
-    //         } else {
-    //             this.logOut();
-    //         }
-    //     } else {
-    //         this.logOut();
-    //     }
-    // }
+    private async resetAccessToken(err: JQuery.jqXHR): Promise<void> {
+        if (this.state.accessToken != undefined) {
+            let newToken = await ClientOAuthHelpers.refreshAccessToken(this.state.accessToken.refresh_token);
+            if (newToken != undefined) {
+                localStorage.setItem("accessToken", JSON.stringify(newToken));
+                this.setState({
+                    accessToken: newToken,
+                    isLoggedIn: true,
+                });
 
-    // private logOut(): void {
-    //     this.setState({
-    //         accessToken: null,
-    //         isLoggedIn: false,
-    //     });
-    //     localStorage.removeItem("accessToken");
-    //     this.render();
-    // }
+                VsoApi.setAccessToken(newToken);
+            } else {
+                this.logOut();
+            }
+        } else {
+            this.logOut();
+        }
+    }
+
+    private logOut(): void {
+        this.setState({
+            accessToken: null,
+            isLoggedIn: false,
+        });
+        localStorage.removeItem("accessToken");
+        this.render();
+    }
 }

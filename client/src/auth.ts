@@ -1,4 +1,4 @@
-import {ClientOAuthHelper} from "./ClientOAuthHelper";
+import * as ClientOAuthHelpers from "./ClientOAuthHelpers";
 
 $(document).ready(() => {
   let codeArr = window.location.href.match(/code=([^&]*)/i);
@@ -14,10 +14,8 @@ $(document).ready(() => {
       state = stateArr[1];
   }
 
-  let oAuthHelper = new ClientOAuthHelper();
-
   if(code != undefined && code != "" && state != undefined && state != "") {
-    oAuthHelper.getAccessToken(code, state).then(accessToken => {
+    ClientOAuthHelpers.getAccessToken(code, state).then(accessToken => {
       localStorage.setItem("accessToken", JSON.stringify(accessToken));
       window.location.assign("/");
     });

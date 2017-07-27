@@ -13,13 +13,14 @@ import {PullRequestVote} from "./models/PullRequestVote";
 const apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis";
 const apiVersion = "3.0";
 let accessToken: IAccessToken | null = null;
+let refreshFunction: ((err: JQuery.jqXHR) => Promise<void>) | null = null;
 
 async function _makeCall<T>(options: {
   url: string,
   method?: string,
   contentType?: string,
   data?: any
-}): Promise<T> {
+}, isRetry: boolean = false): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     $.ajax({
       url: options.url,
@@ -29,12 +30,44 @@ async function _makeCall<T>(options: {
       headers: {
         "Authorization": `Bearer ${accessToken && accessToken.access_token}`
       }
-    }).then(resolve, reject);
+  }).then(async (result, textStatus, jqXHR) => {
+      if(refreshFunction && jqXHR.status === 203) { // Edge/IE will get a 203 when we need a new token
+          if(!isRetry) {
+              await refreshFunction(jqXHR);
+              try {
+                  resolve(await _makeCall<T>(options, true));
+              } catch (err) {
+                  reject(jqXHR);
+              }
+          }
+          reject(jqXHR);
+      } else {
+          resolve(result);
+      }
+  }, async err => {
+      if (refreshFunction && (err.status === 401 || err.status === 0)) {
+          if(!isRetry) {
+              await refreshFunction(err);
+              try {
+                  resolve(await _makeCall<T>(options, true));
+              } catch (err) {
+                  reject(err);
+              }
+          }
+          reject(err);
+      } else {
+          reject(err);
+      }
+    });
   })
 }
 
 export function setAccessToken(newAccessToken: IAccessToken): void {
   accessToken = newAccessToken;
+}
+
+export function setRefreshFunction(newRefreshFunction: (err: JQuery.jqXHR) => Promise<void>): void {
+    refreshFunction = newRefreshFunction;
 }
 
 export async function listPullRequests(repositoryId: string): Promise<IPullRequest[]> {

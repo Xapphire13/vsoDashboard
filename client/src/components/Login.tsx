@@ -1,10 +1,9 @@
 import "../styles/login.less";
 
 import * as React from "react";
-import {ClientOAuthHelper} from "../ClientOAuthHelper";
+import * as ClientOAuthHelpers from "../ClientOAuthHelpers";
 
 export class Login extends React.Component<{}> {
-  private _oAuthHelper = new ClientOAuthHelper();
   private _callbackUrl = "https://vsodash.azurewebsites.net/auth";
   private _clientId = "84958C8E-BA1F-4752-A102-6AD1005BDC1F";
   private _scopes = [
@@ -31,6 +30,6 @@ export class Login extends React.Component<{}> {
   private _handleClick = (event: React.FormEvent<HTMLButtonElement>): void => {
       event.preventDefault();
       const state = window.location.host === "127.0.0.1" ? "local" : "prod";
-      this._oAuthHelper.getAccessCode(this._clientId, state, this._scopes, this._callbackUrl); // This redirects the browser
+      ClientOAuthHelpers.getAccessCode(this._clientId, state, this._scopes, this._callbackUrl); // This redirects the browser
   }
 }
