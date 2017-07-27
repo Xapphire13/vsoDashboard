@@ -60,7 +60,11 @@ export class SettingsArea extends React.Component<Props, State> {
       <button className="primary" onClick={() => this.state.preferences && Preferences.savePreferences(this.state.preferences).then(() => alert("Saved!"))}>Save</button>
       <h3>Repositories</h3>
       <div>
-        <FilteredMultiSelect defaultFilter="" textProp="" options={this.state.availableRepos.map(r => r.name)} onChange={() => null}/>
+        <FilteredMultiSelect
+          defaultFilter=""
+          textProp="name"
+          valueProp="name"
+          options={this.state.availableRepos} onChange={() => null}/>
         {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)}
       </div>
     </div>;
