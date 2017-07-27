@@ -5,9 +5,11 @@ import * as React from "react";
 import {Repo} from "./Repo";
 import {IPreferences} from "../../../server/src/IPreferences";
 import {IRepositoryPreference} from "../../../server/src/IRepositoryPreference";
+import {IProfile} from "../api/models/IProfile";
 
 declare type Props = {
   preferences: IPreferences | null;
+  userProfile: IProfile | null;
 }
 
 declare type State = {
@@ -34,6 +36,7 @@ export class RepoList extends React.Component<Props, State> {
       <Repo
         key={repoPreference.repositoryId}
         id={repoPreference.repositoryId}
+        userProfile={this.props.userProfile}
         collapsed={repoPreference.isMinimised}
         onToggleCollapse={this._toggleCollapsed}
       />

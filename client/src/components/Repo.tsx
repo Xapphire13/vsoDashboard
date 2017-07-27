@@ -9,11 +9,13 @@ import {PullRequestList} from "./PullRequestList";
 import {RepoChartContainer} from "./RepoChartContainer";
 import {RepoHeader} from "./RepoHeader";
 import {IPullRequest} from "../api/models/IPullRequest";
+import {IProfile} from "../api/models/IProfile";
 
 declare type Props = {
   id: string;
   collapsed: boolean;
   onToggleCollapse: (id: string)=>void;
+  userProfile: IProfile | null
 }
 
 declare type State = {
@@ -81,7 +83,7 @@ export class Repo extends React.Component<Props, State> {
       {!this.props.collapsed &&
       <div className="repoContent" ref={(element) => this._repoContent = element}>
         <div className="pullRequestContainer">
-          <PullRequestList pullRequests={this.state.pullRequests} />
+          <PullRequestList pullRequests={this.state.pullRequests} userProfile={this.props.userProfile} />
           <RepoFilters
             currentFilter={this.state.filter}
             onFilterChanged={(filter: RepoFilter) => this.setState({filter})}/>

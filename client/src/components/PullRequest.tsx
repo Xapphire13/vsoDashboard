@@ -2,13 +2,13 @@ import "../styles/pullRequest.less";
 
 import * as React from "react";
 import * as moment from "moment";
-import * as VsoApi from "../api/VsoApi";
 
 import {getIcon, Icon} from "../icons";
 import {IUser} from "../api/models/IUser";
 import {IProfile} from "../api/models/IProfile";
 
 declare type Properties = {
+  userProfile: IProfile | null;
   id: number,
   repositoryId: string,
   title: string,
@@ -20,7 +20,7 @@ declare type Properties = {
   numberOfComments: number
 };
 
-export class PullRequest extends React.Component<Properties, { needsAttention: boolean, me?: IProfile}> {
+export class PullRequest extends React.Component<Properties, { needsAttention: boolean }> {
   constructor() {
     super();
 
@@ -31,8 +31,7 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
 
   public async componentDidMount(): Promise<void> {
     this.setState({
-      needsAttention: moment(moment.now()).diff(moment(this.props.updated), "h") > 3,
-      me: await VsoApi.fetchUserProfile()
+      needsAttention: moment(moment.now()).diff(moment(this.props.updated), "h") > 3
     });
   }
 
@@ -59,7 +58,7 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
         <div
           className="quickActions clickable"
           onClick={() => {
-            location.assign(`mailto:${this.props.createdBy.uniqueName}?subject=${encodeURIComponent(`Pull Request: ${this.props.title}`)}&body=${encodeURIComponent(`Hi ${this.props.createdBy.displayName.split(" ")[0]},\n\nI am emailing about the following pull request ${this._getVsoUrl()}\n\nThanks,\n${this.state.me && this.state.me.displayName.split(" ")[0]}`)}`);
+            location.assign(`mailto:${this.props.createdBy.uniqueName}?subject=${encodeURIComponent(`Pull Request: ${this.props.title}`)}&body=${encodeURIComponent(`Hi ${this.props.createdBy.displayName.split(" ")[0]},\n\nI am emailing about the following pull request ${this._getVsoUrl()}\n\nThanks,\n${this.props.userProfile && this.props.userProfile.displayName.split(" ")[0]}`)}`);
           }}>
           <span title="Send email">
             {getIcon(Icon.mail)}

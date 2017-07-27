@@ -10,15 +10,16 @@ import {Login} from "./Login";
 import {PullRequestArea} from "./PullRequestArea";
 import {SettingsArea} from "./SettingsArea";
 import {WorkItemsArea} from "./WorkItemsArea";
+import {IProfile} from "../api/models/IProfile";
 
 // import {ClientOAuthHelper} from "../ClientOAuthHelper";
-
 
 declare type State = {
   isLoggedIn: boolean,
   selectedArea: string,
   accessToken : IAccessToken | null,
-  preferences: IPreferences | null
+  preferences: IPreferences | null,
+  userProfile: IProfile | null
 };
 
 export class App extends React.Component<{}, State> {
@@ -40,7 +41,8 @@ export class App extends React.Component<{}, State> {
             isLoggedIn: accessToken != undefined,
             selectedArea: "pullRequests",
             accessToken: accessToken,
-            preferences: null
+            preferences: null,
+            userProfile: null
         };
     }
 
@@ -56,7 +58,10 @@ export class App extends React.Component<{}, State> {
                 }).then(resolve, reject);
             });
 
-            this.setState({ preferences });
+            this.setState({
+              preferences,
+              userProfile: await VsoApi.fetchUserProfile()
+            });
         }
     }
 
@@ -64,10 +69,10 @@ export class App extends React.Component<{}, State> {
         let content: JSX.Element[] = [];
 
         if (this.state.isLoggedIn && this.state.accessToken != null) {
-            content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} />);
+            content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} userProfile={this.state.userProfile} />);
 
             if (this.state.selectedArea === "pullRequests") {
-                content.push(<PullRequestArea preferences={this.state.preferences} />);
+                content.push(<PullRequestArea preferences={this.state.preferences} userProfile={this.state.userProfile} />);
             } else if (this.state.selectedArea === "workItems") {
                 content.push(<WorkItemsArea />);
             } else if (this.state.selectedArea === "settings") {

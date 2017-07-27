@@ -4,8 +4,9 @@ import * as React from "react";
 
 import { MainMenu } from "./MainMenu";
 import { UserInfo } from "./UserInfo";
+import {IProfile} from "../api/models/IProfile";
 
-export class Header extends React.Component<{ onSelectedChanged(item: string): void }, {}> {
+export class Header extends React.Component<{ onSelectedChanged(item: string): void, userProfile: IProfile | null}, {}> {
   public render(): JSX.Element {
     return <div className="header">
       <div className="logo"></div>
@@ -15,7 +16,7 @@ export class Header extends React.Component<{ onSelectedChanged(item: string): v
         </div>
         <MainMenu onSelectedChanged={this.props.onSelectedChanged} />
       </div>
-      <UserInfo />
+      <UserInfo userProfile={this.props.userProfile}/>
     </div>;
   }
 }
