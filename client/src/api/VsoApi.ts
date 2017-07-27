@@ -13,7 +13,7 @@ import {PullRequestVote} from "./models/PullRequestVote";
 const apiUri = "https://msazure.visualstudio.com/DefaultCollection/One/_apis";
 const apiVersion = "3.0";
 let accessToken: IAccessToken | null = null;
-let refreshFunction: ((err: JQuery.jqXHR) => Promise<void>) | null = null;
+let refreshFunction: (() => Promise<void>) | null = null;
 
 async function _makeCall<T>(options: {
   url: string,
@@ -33,7 +33,7 @@ async function _makeCall<T>(options: {
   }).then(async (result, textStatus, jqXHR) => {
       if(refreshFunction && jqXHR.status === 203) { // Edge/IE will get a 203 when we need a new token
           if(!isRetry) {
-              await refreshFunction(jqXHR);
+              await refreshFunction();
               try {
                   resolve(await _makeCall<T>(options, true));
               } catch (err) {
@@ -47,7 +47,7 @@ async function _makeCall<T>(options: {
   }, async err => {
       if (refreshFunction && (err.status === 401 || err.status === 0)) {
           if(!isRetry) {
-              await refreshFunction(err);
+              await refreshFunction();
               try {
                   resolve(await _makeCall<T>(options, true));
               } catch (err) {
@@ -66,7 +66,7 @@ export function setAccessToken(newAccessToken: IAccessToken): void {
   accessToken = newAccessToken;
 }
 
-export function setRefreshFunction(newRefreshFunction: (err: JQuery.jqXHR) => Promise<void>): void {
+export function setRefreshFunction(newRefreshFunction: () => Promise<void>): void {
     refreshFunction = newRefreshFunction;
 }
 

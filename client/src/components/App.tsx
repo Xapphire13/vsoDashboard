@@ -47,7 +47,8 @@ export class App extends React.Component<{}, State> {
 
     public async componentDidMount(): Promise<any> {
         if (this.state.accessToken != null) {
-            let preferences = await new Promise<IPreferences>((resolve, reject) => {
+          const getPrefs = () => {
+            return new Promise<IPreferences>((resolve, reject) => {
                 $.ajax({
                     url: this._preferenceUrl,
                     method: "GET",
@@ -56,6 +57,15 @@ export class App extends React.Component<{}, State> {
                     }
                 }).then(resolve, reject);
             });
+          }
+
+          let preferences: IPreferences;
+          try{
+            preferences = await getPrefs();
+          } catch (err) {
+            await this.resetAccessToken();
+            preferences = await getPrefs();
+          }
 
             this.setState({
               preferences,
@@ -92,7 +102,7 @@ export class App extends React.Component<{}, State> {
         this.setState({ selectedArea: s });
     }
 
-    private async resetAccessToken(err: JQuery.jqXHR): Promise<void> {
+    private async resetAccessToken(): Promise<void> {
         if (this.state.accessToken != undefined) {
             let newToken = await ClientOAuthHelpers.refreshAccessToken(this.state.accessToken.refresh_token);
             if (newToken != undefined) {
