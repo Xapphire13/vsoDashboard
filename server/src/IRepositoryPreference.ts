@@ -5,5 +5,5 @@ export interface IRepositoryPreference
     repositoryId: string;
     justMine: boolean;
     isMinimised: boolean;
-    sortPreferences: Array<ISortPreference>;
+    sortPreferences: ISortPreference[];
 }

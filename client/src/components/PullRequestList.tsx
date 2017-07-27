@@ -3,8 +3,9 @@ import "../styles/pullRequestList.less";
 import * as React from "react";
 
 import {PullRequest} from "./PullRequest";
+import {IPullRequest} from "../api/models/IPullRequest";
 
-export class PullRequestList extends React.Component<{pullRequests: any[]}> {
+export class PullRequestList extends React.Component<{pullRequests: IPullRequest[]}> {
   public render(): JSX.Element {
     return <table className="pullRequestList">
       <thead>
@@ -22,14 +23,16 @@ export class PullRequestList extends React.Component<{pullRequests: any[]}> {
       </thead>
       <tbody>
         {this.props.pullRequests.map(pullRequest => <PullRequest
-          key={pullRequest.title}
+          key={pullRequest.pullRequestId}
+          repositoryId={pullRequest.repository.id}
+          id={pullRequest.pullRequestId}
           title={pullRequest.title}
-          myStatus={pullRequest.myStatus}
+          myStatus="Assigned"
           status={pullRequest.status}
           createdBy={pullRequest.createdBy}
-          created={pullRequest.created}
+          created={pullRequest.creationDate}
           updated={pullRequest.updated}
-          numberOfComments={pullRequest.numberOfComments}
+          numberOfComments={5}
           />)}
       </tbody>
     </table>;

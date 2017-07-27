@@ -1,21 +1,29 @@
 import "../styles/repo.less";
 
 import * as React from "react";
+import * as VsoApi from "../api/VsoApi";
 
 import {RepoFilter, RepoFilters} from "./RepoFilters";
 
 import {PullRequestList} from "./PullRequestList";
 import {RepoChartContainer} from "./RepoChartContainer";
 import {RepoHeader} from "./RepoHeader";
+import {IPullRequest} from "../api/models/IPullRequest";
 
-interface IProps {
+declare type Props = {
   id: string;
-  name: string;
   collapsed: boolean;
   onToggleCollapse: (id: string)=>void;
 }
 
-export class Repo extends React.Component<IProps, {chartsMinimized: boolean, pullRequests: any[], filter: RepoFilter}> {
+declare type State = {
+  chartsMinimized: boolean,
+  pullRequests: IPullRequest[],
+  filter: RepoFilter,
+  name: string
+}
+
+export class Repo extends React.Component<Props, State> {
   private _repoContent: HTMLDivElement | null;
 
   constructor() {
@@ -23,96 +31,48 @@ export class Repo extends React.Component<IProps, {chartsMinimized: boolean, pul
 
     this.state = {
       chartsMinimized: true,
+      name: "",
       filter: RepoFilter.mine,
-      pullRequests: [
-        {
-          title: "Test PR",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2012-04-23T18:00:00.000Z",
-          updated: "2017-04-24T18:00:00.000Z",
-          numberOfComments: 10
-        },
-        {
-          title: "Test PR 2",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2017-04-23T18:00:00.000Z",
-          updated: (new Date(Date.now())).toJSON(),
-          numberOfComments: 12
-        },
-        {
-          title: "Test PR 3",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2010-04-23T18:00:00.000Z",
-          updated: (new Date(Date.now())).toJSON(),
-          numberOfComments: 0
-        },
-        {
-          title: "Test PR 4",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2012-04-23T18:00:00.000Z",
-          updated: "2017-04-24T18:00:00.000Z",
-          numberOfComments: 10
-        },
-        {
-          title: "Test PR 5",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2017-04-23T18:00:00.000Z",
-          updated: (new Date(Date.now())).toJSON(),
-          numberOfComments: 12
-        },
-        {
-          title: "Test PR 6",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2010-04-23T18:00:00.000Z",
-          updated: (new Date(Date.now())).toJSON(),
-          numberOfComments: 0
-        },
-        {
-          title: "Test PR 7",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2012-04-23T18:00:00.000Z",
-          updated: "2017-04-24T18:00:00.000Z",
-          numberOfComments: 10
-        },
-        {
-          title: "Test PR 8",
-          myStatus: "Assigned",
-          status: "Active",
-          createdBy: "Joe Bloggs",
-          created: "2017-04-23T18:00:00.000Z",
-          updated: (new Date(Date.now())).toJSON(),
-          numberOfComments: 12
-        }
-      ]
+      pullRequests: []
     };
   }
 
-  public componentDidMount(): void {
+  public async componentDidMount(): Promise<void> {
     if(this._repoContent) {
+      const [repo, pullRequests] = await Promise.all([
+        VsoApi.fetchRepository(this.props.id),
+        VsoApi.listPullRequests(this.props.id)
+      ]);
+
       this.setState({
-        chartsMinimized: this._repoContent.clientHeight < 330
+        chartsMinimized: this._repoContent.clientHeight < 330,
+        name: repo.name,
+        pullRequests: pullRequests.sort((left, right) =>
+          left.updated < right.updated ?
+            1 :
+            left.updated === right.updated ?
+              0 :
+              -1
+        )
       });
+    }
+  }
+
+  public componentDidUpdate(prevProps: Props, prevState: State): void {
+    if(this._repoContent) {
+      const isMinimized = this._repoContent.clientHeight < 330;
+      if(isMinimized != prevState.chartsMinimized) {
+        this.setState({
+          chartsMinimized: isMinimized,
+        });
+      }
     }
   }
 
   public render(): JSX.Element {
     return <div className={`repo ${this.props.collapsed && "collapsed"}`}>
       <RepoHeader
-        name={this.props.name}
+        name={this.state.name}
         onToggleVisibility={this.onToggleVisibility}
         collapsed={this.props.collapsed}
         pullRequestCount={this.state.pullRequests.length}

@@ -20,7 +20,7 @@ export class SqlLiteHelper {
         }
     }
 
-    public async getList<T, TId>(tableName: string, coulmnName: string, id: TId) : Promise<Array<T>> {
+    public async getList<T, TId>(tableName: string, coulmnName: string, id: TId) : Promise<T[]> {
         return await this.theDB.all(`SELECT * FROM ${tableName} WHERE ${coulmnName} = '${id}'`);
     }
 

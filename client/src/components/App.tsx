@@ -54,7 +54,7 @@ export class App extends React.Component<{}, State> {
                 }).then(resolve, reject);
             });
 
-            this._onPreferenceUpdate(preferences);
+            this.setState({ preferences });
         }
     }
 
@@ -65,7 +65,7 @@ export class App extends React.Component<{}, State> {
             content.push(<Header onSelectedChanged={this._onMenuSelectionChanged} />);
 
             if (this.state.selectedArea === "pullRequests") {
-                content.push(<PullRequestArea />);
+                content.push(<PullRequestArea preferences={this.state.preferences} />);
             } else if (this.state.selectedArea === "workItems") {
                 content.push(<WorkItemsArea />);
             } else if (this.state.selectedArea === "settings") {
@@ -84,10 +84,6 @@ export class App extends React.Component<{}, State> {
 
     private _onMenuSelectionChanged = (s: string): void => {
         this.setState({ selectedArea: s });
-    }
-
-    private _onPreferenceUpdate = (p: IPreferences): void => {
-        this.setState({ preferences: p });
     }
 
     // private async resetAccessToken(): Promise<void> {
