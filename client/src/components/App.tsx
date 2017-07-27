@@ -4,13 +4,15 @@ import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
 import {Header} from "./Header";
+import {IAccessToken} from "../../../server/src/IAccessToken"
+import {IPreferences} from "../../../server/src/IPreferences";
 import {Login} from "./Login";
 import {PullRequestArea} from "./PullRequestArea";
 import {SettingsArea} from "./SettingsArea";
 import {WorkItemsArea} from "./WorkItemsArea";
-import {IAccessToken} from "../../../server/src/IAccessToken"
+
 // import {ClientOAuthHelper} from "../ClientOAuthHelper";
-import {IPreferences} from "../../../server/src/IPreferences";
+
 
 declare type State = {
   isLoggedIn: boolean,

@@ -1,5 +1,6 @@
 import "../styles/userInfo.less";
 
+import * as NameParser from "another-name-parser";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
@@ -24,7 +25,7 @@ export class UserInfo extends React.Component<{}, {userName: string, imageUrl: s
 
   public render(): JSX.Element {
     return <div className="userInfo">
-      <div className="userName">Welcome {this.state.userName}</div>
+      <div className="userName">Welcome {(NameParser as any)(this.state.userName).first}</div>
       <div className="imagebox">
         <img className="img-circle" height="50" width="50" src={this.state.imageUrl} />
       </div>
