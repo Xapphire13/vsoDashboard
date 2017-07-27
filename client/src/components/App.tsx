@@ -72,7 +72,7 @@ export class App extends React.Component<{}, State> {
             } else if (this.state.selectedArea === "workItems") {
                 content.push(<WorkItemsArea key="WorkItemsArea" />);
             } else if (this.state.selectedArea === "settings") {
-                content.push(<SettingsArea key="SettingsArea" />);
+                content.push(<SettingsArea key="SettingsArea" preferences={this.state.preferences} />);
             } else {
                 content.push(<div key="NoArea" />);
             }

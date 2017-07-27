@@ -18,3 +18,19 @@ export function getPreferences(): Promise<IPreferences> {
         }).then(resolve, reject);
     });
 }
+
+export function savePreferences(preferences: IPreferences): Promise<IPreferences> {
+    const accessToken = VsoApi.getAccessToken()
+
+    return new Promise<IPreferences>((resolve, reject) => {
+        $.ajax({
+            url: preferencesUrl,
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${accessToken && accessToken.access_token}`
+            },
+            contentType: "application/json",
+            data: JSON.stringify(preferences),
+        }).then(resolve, reject);
+    });
+}
