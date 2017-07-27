@@ -21,13 +21,13 @@ export class RepoList extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      repos: this.props.preferences ? this.props.preferences.repositoryPrefrences : []
+      repos: this.props.preferences ? this.props.preferences.repositoryPreferences : []
     };
   }
 
   public componentWillReceiveProps(props: Props): void {
     this.setState({
-      repos: props.preferences ? props.preferences.repositoryPrefrences : []
+      repos: props.preferences ? props.preferences.repositoryPreferences : []
     });
   }
 

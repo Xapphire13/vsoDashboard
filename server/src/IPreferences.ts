@@ -2,7 +2,7 @@ import {IRepositoryPreference} from "./IRepositoryPreference";
 
 export interface IPreferences {
     emailOverride?: string;
-    repositoryPrefrences: IRepositoryPreference[];
+    repositoryPreferences: Array<IRepositoryPreference>;
     pollIntervalInSeconds: number;
     staleThresholdInMinutes: number;
 }
