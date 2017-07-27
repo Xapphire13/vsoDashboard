@@ -33,10 +33,22 @@ export class SettingsArea extends React.Component<Props, State> {
 
   public async componentDidMount(): Promise<void> {
     const repos: IRepository[] = await VsoApi.listRepositories();
+    const selectedRepos: IRepository[] = [];
+    if (this.state.preferences && this.state.preferences.repositoryPreferences.length > 0) {
+      this.state.preferences.repositoryPreferences.forEach(p => {
+        const foundRepo: IRepository | undefined = repos.find(r => r.id === p.repositoryId);
+        if (foundRepo) {
+          selectedRepos.push(foundRepo);
+        }
+      });
+    }
 
-    this.setState({ availableRepos: repos.sort((a: IRepository, b: IRepository) => {
-            return a.name > b.name ? 1 : -1;
-          }) });
+    this.setState({
+      availableRepos: repos.sort((a: IRepository, b: IRepository) => {
+        return a.name > b.name ? 1 : -1;
+      }),
+      selectedRepos: selectedRepos
+    });
   }
 
   public componentWillReceiveProps(nextProps: Props): void {
@@ -73,7 +85,7 @@ export class SettingsArea extends React.Component<Props, State> {
           options={this.state.availableRepos}
           selectedOptions={this.state.selectedRepos}
           onChange={this._handleSelectionChange} />
-        {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)}
+        {/* {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)} */}
       </div>
       <div>
         <h3>Selected Repositories</h3>
@@ -87,9 +99,12 @@ export class SettingsArea extends React.Component<Props, State> {
     </div>;
   }
 
-  private _onSave = ():void => {
+  private _onSave = (): void => {
     if (this.state.preferences) {
-      Preferences.savePreferences(this.state.preferences).then(() => alert("Saved!"));
+      const preferences: IPreferences = this.state.preferences;
+      preferences.repositoryPreferences = this.state.selectedRepos.map(this._convertToRepositoryPreference);
+      Preferences.savePreferences(preferences).then(() => alert("Saved!"));
+      this.setState({ preferences: preferences });
     }
   }
 
@@ -115,11 +130,12 @@ export class SettingsArea extends React.Component<Props, State> {
     this.setState({ selectedRepos: selections });
   }
 
-  private _covertToRepositoryPreference(repo: IRepository): IRepositoryPreference {
+  private _convertToRepositoryPreference(repo: IRepository): IRepositoryPreference {
     return {
       repositoryId: repo.id,
       justMine: true,
       isMinimised: false,
-      sortPreferences: [{column: SortColumns.title, isAssending: true, presidence: 0}]};
+      sortPreferences: [{ column: SortColumns.title, isAssending: true, presidence: 0 }]
+    };
   }
 }
