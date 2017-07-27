@@ -57,15 +57,6 @@ export class App extends React.Component<{}, State> {
                 }).then(resolve, reject);
             });
 
-            preferences.repositoryPrefrences = [
-              {
-                isMinimised: false,
-                justMine: false,
-                repositoryId: "125a2cc3-8f27-43e5-aaa1-8e4cab32b56c",
-                sortPreferences: []
-              }
-            ];
-
             this.setState({
               preferences,
               userProfile: await VsoApi.fetchUserProfile()
