@@ -64,9 +64,9 @@ export class UserDBHelper {
         let repositoryPrefsToDelete: number[] = [];
         if (dbUserRepoPrefs != undefined && dbUserRepoPrefs.length > 0) {
             if (prefs.repositoryPreferences != undefined) {
-                repositoryPrefsToDelete.concat(dbUserRepoPrefs.filter(x => !prefs.repositoryPreferences.some(y => y.repositoryId === x.vsoRepositoryId)).map(x => x.id));
+                repositoryPrefsToDelete = repositoryPrefsToDelete.concat(dbUserRepoPrefs.filter(x => !prefs.repositoryPreferences.some(y => y.repositoryId === x.vsoRepositoryId)).map(x => x.id));
             } else {
-                repositoryPrefsToDelete.concat(dbUserRepoPrefs.map(x => x.id));
+                repositoryPrefsToDelete = repositoryPrefsToDelete.concat(dbUserRepoPrefs.map(x => x.id));
             }
         }
 
