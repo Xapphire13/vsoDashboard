@@ -1,3 +1,5 @@
+import "../styles/FilteredMultiSelect.less";
+
 import * as PropTypes from "prop-types";
 import * as React from "react";
 
@@ -235,7 +237,7 @@ export class FilteredMultiSelect extends React.Component<Props, State> {
                 })}
             </select>
             <button type="button"
-                className={this._getClassName("button", hasSelectedOptions && "buttonActive")}
+                className="primary"
                 disabled={!hasSelectedOptions}
                 onClick={this._addSelectedToSelection}>
                 {this.props.buttonText}

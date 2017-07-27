@@ -7,7 +7,8 @@ import * as React from "react";
 export enum Icon {
   mail,
   message,
-  warning
+  warning,
+  trash
 }
 
 export function getIcon(icon: Icon): JSX.Element {

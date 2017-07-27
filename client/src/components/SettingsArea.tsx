@@ -4,6 +4,8 @@ import * as Preferences from "../api/Preferences";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
+import {Icon, getIcon} from "../icons";
+
 import { FilteredMultiSelect } from "./FilteredMultiSelect";
 import { IPreferences } from "../../../server/src/IPreferences";
 import { IRepository } from "../api/models/IRepository";
@@ -81,6 +83,7 @@ export class SettingsArea extends React.Component<Props, State> {
           defaultFilter=""
           textProp="name"
           valueProp="name"
+          placeholder="Search for a repo..."
           size={15}
           options={this.state.availableRepos}
           selectedOptions={this.state.selectedRepos}
@@ -91,9 +94,12 @@ export class SettingsArea extends React.Component<Props, State> {
         <h3>Selected Repositories</h3>
         {this.state.selectedRepos.length === 0 && "No repositories selected"}
         {this.state.selectedRepos.length > 0 &&
-          this.state.selectedRepos.map((r, i) => <ul>{r.name}<span style={{ cursor: "pointer" }} onClick={() => this._handleDeselect(i)}>
-            &times;
-            </span></ul>)}
+          this.state.selectedRepos.map((r, i) => <ul>
+            {r.name}
+            <span className="clickable" onClick={() => this._handleDeselect(i)} title="Delete">
+              {getIcon(Icon.trash)}
+            </span>
+          </ul>)}
       </div>
       <button className="primary" onClick={this._onSave}>Save</button>
     </div>;
