@@ -7,6 +7,8 @@ import * as VsoApi from "../api/VsoApi";
 import { FilteredMultiSelect } from "./FilteredMultiSelect";
 import { IPreferences } from "../../../server/src/IPreferences";
 import { IRepository } from "../api/models/IRepository";
+import { IRepositoryPreference } from "../../../server/src/IRepositoryPreference";
+import { SortColumns } from "../../../server/src/SortColumns";
 
 declare type Props = {
   preferences: IPreferences | null
@@ -32,7 +34,9 @@ export class SettingsArea extends React.Component<Props, State> {
   public async componentDidMount(): Promise<void> {
     const repos: IRepository[] = await VsoApi.listRepositories();
 
-    this.setState({ availableRepos: repos });
+    this.setState({ availableRepos: repos.sort((a: IRepository, b: IRepository) => {
+            return a.name > b.name ? 1 : -1;
+          }) });
   }
 
   public componentWillReceiveProps(nextProps: Props): void {
@@ -59,7 +63,6 @@ export class SettingsArea extends React.Component<Props, State> {
           value={this.state.preferences ? this.state.preferences.staleThresholdInMinutes : NaN}
           onChange={(e) => this._handleInput("staleThresholdInMinutes", e)} />
       </label>
-      <button className="primary" onClick={() => this.state.preferences && Preferences.savePreferences(this.state.preferences).then(() => alert("Saved!"))}>Save</button>
       <h2>Repositories</h2>
       <div>
         <FilteredMultiSelect
@@ -67,9 +70,7 @@ export class SettingsArea extends React.Component<Props, State> {
           textProp="name"
           valueProp="name"
           size="15"
-          options={this.state.availableRepos.sort((a: IRepository, b: IRepository) => {
-            return a.name > b.name ? 1 : -1;
-          })}
+          options={this.state.availableRepos}
           selectedOptions={this.state.selectedRepos}
           onChange={this._handleSelectionChange} />
         {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)}
@@ -82,7 +83,14 @@ export class SettingsArea extends React.Component<Props, State> {
             &times;
             </span></ul>)}
       </div>
+      <button className="primary" onClick={this._onSave}>Save</button>
     </div>;
+  }
+
+  private _onSave = ():void => {
+    if (this.state.preferences) {
+      Preferences.savePreferences(this.state.preferences).then(() => alert("Saved!"));
+    }
   }
 
   private _handleInput = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,5 +113,13 @@ export class SettingsArea extends React.Component<Props, State> {
   private _handleSelectionChange = (selections: IRepository[]) => {
     selections.sort((a, b) => a.name > b.name ? 1 : -1);
     this.setState({ selectedRepos: selections });
+  }
+
+  private _covertToRepositoryPreference(repo: IRepository): IRepositoryPreference {
+    return {
+      repositoryId: repo.id,
+      justMine: true,
+      isMinimised: false,
+      sortPreferences: [{column: SortColumns.title, isAssending: true, presidence: 0}]};
   }
 }
