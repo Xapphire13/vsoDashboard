@@ -60,7 +60,7 @@ export class SettingsArea extends React.Component<Props, State> {
           onChange={(e) => this._handleInput("staleThresholdInMinutes", e)} />
       </label>
       <button className="primary" onClick={() => this.state.preferences && Preferences.savePreferences(this.state.preferences).then(() => alert("Saved!"))}>Save</button>
-      <h3>Repositories</h3>
+      <h2>Repositories</h2>
       <div>
         <FilteredMultiSelect
           defaultFilter=""
@@ -75,8 +75,12 @@ export class SettingsArea extends React.Component<Props, State> {
         {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)}
       </div>
       <div>
+        <h3>Selected Repositories</h3>
         {this.state.selectedRepos.length === 0 && "No repositories selected"}
-        {this.state.selectedRepos.length > 0 && this.state.selectedRepos.map(r => <ul>{r.name}</ul>)}
+        {this.state.selectedRepos.length > 0 &&
+          this.state.selectedRepos.map((r, i) => <ul>{r.name}<span style={{ cursor: "pointer" }} onClick={() => this._handleDeselect(i)}>
+            &times;
+            </span></ul>)}
       </div>
     </div>;
   }
@@ -90,6 +94,12 @@ export class SettingsArea extends React.Component<Props, State> {
         preferences
       });
     }
+  }
+
+  private _handleDeselect(index: number): void {
+    let selectedRepos: IRepository[] = this.state.selectedRepos.slice();
+    selectedRepos.splice(index, 1);
+    this.setState({ selectedRepos: selectedRepos });
   }
 
   private _handleSelectionChange = (selections: IRepository[]) => {
