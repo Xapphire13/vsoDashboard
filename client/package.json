@@ -28,9 +28,10 @@
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
-    "@types/jquery": "^3.2.9",
     "@types/chart.js": "^2.6.1",
+    "@types/jquery": "^3.2.9",
     "@types/moment": "^2.13.0",
+    "@types/prop-types": "^15.5.1",
     "awesome-typescript-loader": "^3.2.1",
     "css-loader": "^0.28.4",
     "eslint": "^4.3.0",

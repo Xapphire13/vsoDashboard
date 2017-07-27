@@ -1,9 +1,12 @@
 import "../styles/settingsArea.less";
 
-import * as React from "react";
 import * as Preferences from "../api/Preferences";
+import * as React from "react";
+import * as VsoApi from "../api/VsoApi";
 
+import {FilteredMultiSelect} from "./FilteredMultiSelect";
 import {IPreferences} from "../../../server/src/IPreferences";
+import {IRepository} from "../api/models/IRepository";
 
 declare type Props = {
   preferences: IPreferences | null
@@ -11,15 +14,23 @@ declare type Props = {
 
 declare type State = {
   preferences: IPreferences | null
-}
+  availableRepos: IRepository[]
+};
 
 export class SettingsArea extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      preferences: props.preferences
-    }
+      preferences: props.preferences,
+      availableRepos: []
+    };
+  }
+
+  public async componentDidMount(): Promise<void> {
+    const repos: IRepository[] = await VsoApi.listRepositories();
+
+    this.setState({availableRepos: repos});
   }
 
   public componentWillReceiveProps(nextProps: Props): void {
@@ -49,6 +60,7 @@ export class SettingsArea extends React.Component<Props, State> {
       <button className="primary" onClick={() => this.state.preferences && Preferences.savePreferences(this.state.preferences).then(() => alert("Saved!"))}>Save</button>
       <h3>Repositories</h3>
       <div>
+        <FilteredMultiSelect defaultFilter="" textProp="" options={this.state.availableRepos.map(r => r.name)} onChange={() => null}/>
         {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)}
       </div>
     </div>;
@@ -61,7 +73,7 @@ export class SettingsArea extends React.Component<Props, State> {
 
       this.setState({
         preferences
-      })
+      });
     }
   }
 }
