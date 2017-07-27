@@ -25,16 +25,8 @@ export class PullRequestList extends React.Component<{pullRequests: IPullRequest
       <tbody>
         {this.props.pullRequests.map(pullRequest => <PullRequest
           key={pullRequest.pullRequestId}
-          repositoryId={pullRequest.repository.id}
-          id={pullRequest.pullRequestId}
-          title={pullRequest.title}
-          myStatus="Assigned"
-          status={pullRequest.status}
-          createdBy={pullRequest.createdBy}
-          created={pullRequest.creationDate}
-          updated={pullRequest.updated}
-          numberOfComments={5}
           userProfile={this.props.userProfile}
+          pullRequest={pullRequest}
           />)}
       </tbody>
     </table>;

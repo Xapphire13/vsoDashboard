@@ -21,6 +21,7 @@ export interface IPullRequest {
   supportsIterations: boolean;
   targetRefName: string;
   title: string;
-  updated: string;
+  updated: string; // Calculated in the UI
   url: string;
+  commentCount: number; // Calculated in the UI
 }

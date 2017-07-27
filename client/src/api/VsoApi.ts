@@ -78,8 +78,17 @@ export async function listPullRequests(repositoryId: string): Promise<IPullReque
   let pullRequests = results.value;
 
   return Promise.all(pullRequests.map(async (pullRequest) => {
-    // Fetch last updated time
-    const iterations = await fetchIterations(pullRequest);
+    const [iterations, threads] = await Promise.all([
+        fetchIterations(pullRequest),
+        fetchThreads(pullRequest)
+    ]);
+
+    let commentCount = 0;
+    threads.filter(thread => thread.properties != undefined && thread.properties.CodeReviewThreadType == undefined).forEach(thread => {
+      commentCount += thread.comments.length;
+    });
+    pullRequest.commentCount = commentCount;
+
     pullRequest.updated = iterations[iterations.length - 1].updatedDate;
     return pullRequest;
   }));
