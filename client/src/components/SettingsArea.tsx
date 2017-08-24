@@ -140,8 +140,8 @@ export class SettingsArea extends React.Component<Props, State> {
     return {
       repositoryId: repo.id,
       justMine: true,
-      isMinimised: false,
-      sortPreferences: [{ column: SortColumns.title, isAssending: true, presidence: 0 }]
+      isMinimized: false,
+      sortPreferences: [{ column: SortColumns.title, isAscending: true, precedence: 0 }]
     };
   }
 }

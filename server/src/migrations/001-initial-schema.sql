@@ -1,4 +1,4 @@
--- up
+-- UP
 CREATE TABLE UserStore (
   id integer PRIMARY KEY,
   oAuthId text UNIQUE,
@@ -10,7 +10,7 @@ CREATE TABLE UserPreference (
   userId INTEGER,
   vsoRepositoryId TEXT,
   justMine INTEGER,
-  isMinimised INTEGER,
+  isMinimized INTEGER,
 CONSTRAINT UserPreference_fk_userId FOREIGN KEY (userId)
 REFERENCES UserStore (id) ON UPDATE CASCADE ON DELETE CASCADE);
 CREATE TABLE UserSortPreference(
@@ -18,8 +18,8 @@ CREATE TABLE UserSortPreference(
   preferenceId INTEGER,
   userId INTEGER,
   sortColumn INTEGER,
-  isAssending INTEGER,
-  presidence INTEGER,
+  isAscending INTEGER,
+  precedence INTEGER,
 CONSTRAINT UserSortPreference_fk_preferenceId FOREIGN KEY (preferenceId)
 REFERENCES UserPreference (id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT UserSortPreference_fk_userId FOREIGN KEY (userId)

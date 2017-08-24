@@ -1,8 +1,11 @@
 import {ISortPreference} from "./ISortPreference";
 
+/**
+ * Per repository preference
+ */
 export interface IRepositoryPreference {
     repositoryId: string;
     justMine: boolean;
-    isMinimised: boolean;
+    isMinimized: boolean;
     sortPreferences: ISortPreference[];
 }

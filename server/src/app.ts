@@ -1,24 +1,23 @@
-import "babel-polyfill";
-
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-import {ServerOAuthHelper} from "./ServerOAuthHelper";
+
 import {IPreferences} from "./IPreferences"
+import {ServerOAuthHelper} from "./ServerOAuthHelper";
 import {SqlLiteHelper} from "./SqlLiteHelper"
 import {UserDBHelper} from "./UserDBHelper"
 import {VsoUserHelper} from "./VSO/VsoUserHelper"
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-let clientSecret = JSON.parse(fs.readFileSync(path.join(__dirname, './secrets/clientSecret.json'), 'utf8'))["clientSecret"];
-let redirectUri = "https://vsodash.azurewebsites.net/auth";
-let app = express();
-let dbHelper = new SqlLiteHelper();
-dbHelper.init();
-let userDbHelper = new UserDBHelper();
-let userHelper = new VsoUserHelper();
+
+const clientSecret = JSON.parse(fs.readFileSync(path.join(__dirname, './secrets/clientSecret.json'), 'utf8'))["clientSecret"];
+const redirectUri = "https://vsodash.azurewebsites.net/auth";
+const app = express();
+const dbHelper = new SqlLiteHelper();
+const userDbHelper = new UserDBHelper();
+const userHelper = new VsoUserHelper();
 
 app.set('port', process.env.PORT || 80);
 
@@ -47,31 +46,29 @@ app.get("/auth", (req, res) => {
     }
 });
 
-app.get("/token", (req, res) => {
-  let oAuthHelper = new ServerOAuthHelper(clientSecret, redirectUri);
+app.get("/token", async (req, res) => {
+  const oAuthHelper = new ServerOAuthHelper(clientSecret, redirectUri);
 
-  let accessCode = req.query["accessCode"];
-  let refreshToken = req.query["refreshToken"];
+  const accessCode = req.query["accessCode"];
+  const refreshToken = req.query["refreshToken"];
 
-  if(accessCode != undefined && accessCode != "") {
+  if(accessCode && accessCode != "") {
     console.log("Getting Access Token");
-    oAuthHelper.getAccessToken(accessCode).then(accessToken => {
-      console.log("Got access token");
-      res.setHeader("Content-Type", "application/json");
-      res.statusCode = 200;
-      res.send(accessToken);
-    });
-  } else if(refreshToken != undefined && refreshToken != "") {
+    const accessToken = await oAuthHelper.getAccessToken(accessCode);
+    console.log("Got access token");
+    res.setHeader("Content-Type", "application/json");
+    res.statusCode = 200;
+    res.send(accessToken);
+  } else if(refreshToken && refreshToken != "") {
     console.log("Refreshing Access Token");
-    oAuthHelper.refreshAccessToken(refreshToken).then(accessToken => {
-      console.log("Got access token");
-      res.setHeader("Content-Type", "application/json");
-      res.statusCode = 200;
-      res.send(accessToken);
-    });
-  } else{
+    const accessToken = await oAuthHelper.refreshAccessToken(refreshToken);
+    console.log("Got access token");
+    res.setHeader("Content-Type", "application/json");
+    res.statusCode = 200;
+    res.send(accessToken);
+  } else {
     res.statusCode = 400;
-    res.send();
+    res.send("No access code or refresh token given");
   }
 });
 
@@ -96,33 +93,41 @@ app.get("/preferences", async (req, res) => {
 });
 
 app.post("/preferences", async (req, res) => {
-  let body = <IPreferences>req.body;
-  if (body == null) {
+  const body = <IPreferences>req.body;
+  if (!body) {
     res.statusCode = 400;
     res.send();
+
     return;
   }
 
-  let token = req.headers["authorization"];
-  if (token == null) {
+  const token = req.headers["authorization"];
+  if (!token) {
       res.statusCode = 401;
       res.send();
+
       return;
   }
 
-  let userId = await userHelper.getUserId(token.toString());
-  if (userId == null) {
+  const userId = await userHelper.getUserId(token.toString());
+  if (!userId) {
       res.statusCode = 401;
       res.send();
+
       return;
   }
+
   await userDbHelper.updateUserPreference(dbHelper, body, userId);
 
   res.statusCode = 200;
   res.send(body);
 });
 
-// Start server
-let server = app.listen(app.get('port'), () => {
-  console.log("Listening on port " + server.address().port);
+// Initialize database and start server
+dbHelper.init().then(() => {
+  const server = app.listen(app.get('port'), () => {
+    console.log("Listening on port " + server.address().port);
+  });
+}, err => {
+  console.error("Couldn't initialize database");
 });

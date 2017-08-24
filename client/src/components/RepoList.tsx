@@ -37,7 +37,7 @@ export class RepoList extends React.Component<Props, State> {
         key={repoPreference.repositoryId}
         id={repoPreference.repositoryId}
         userProfile={this.props.userProfile}
-        collapsed={repoPreference.isMinimised}
+        collapsed={repoPreference.isMinimized}
         onToggleCollapse={this._toggleCollapsed}
       />
     );
@@ -60,7 +60,7 @@ export class RepoList extends React.Component<Props, State> {
     event.preventDefault();
     // const newRepos: IRepo[] = this.state.repos.map(r => { return { id: r.id, name: r.name, collapsed: collapse}; });
     // this.setState({repos: newRepos});
-    this.state.repos.forEach(repo => repo.isMinimised = collapse)
+    this.state.repos.forEach(repo => repo.isMinimized = collapse)
     this.setState({});
   }
 
@@ -68,7 +68,7 @@ export class RepoList extends React.Component<Props, State> {
     const repo = this.state.repos.find(repo => repo.repositoryId === id);
 
     if (repo) {
-      repo.isMinimised = !repo.isMinimised;
+      repo.isMinimized = !repo.isMinimized;
       this.setState({});
     }
   }

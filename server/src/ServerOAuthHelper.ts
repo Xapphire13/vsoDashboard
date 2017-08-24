@@ -1,5 +1,5 @@
-import * as https from "https";
 import * as format from "string-format-obj";
+import * as https from "https";
 
 import {IAccessToken} from "./IAccessToken";
 
@@ -9,65 +9,57 @@ export class ServerOAuthHelper {
   public static tokenHost: string = "app.vssps.visualstudio.com";
   public static tokenPath: string = "/oauth2/token";
 
-  private _clientSecret: string;
-  private _redirectUri: string;
-
-  constructor(clientSecret: string, redirectUri: string) {
-    this._clientSecret = clientSecret;
-    this._redirectUri = redirectUri;
-  }
+  constructor(private clientSecret: string, private redirectUri: string) {}
 
   public getAccessToken(clientCode: string): Promise<IAccessToken> {
-
     return new Promise((resolve, reject) => {
-      let post = https.request({
-      method: "POST",
-      host: ServerOAuthHelper.tokenHost,
-      path: ServerOAuthHelper.tokenPath,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    }, (res) => {
-      res.setEncoding("utf8");
-      res.on('data', data => {
-        resolve(JSON.parse(data as any));
+      const post = https.request({
+        method: "POST",
+        host: ServerOAuthHelper.tokenHost,
+        path: ServerOAuthHelper.tokenPath,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }, res => {
+        res.setEncoding("utf8");
+        res.on('data', data => {
+          resolve(JSON.parse(data as any));
+        });
       });
-    });
 
-    post.write(format(ServerOAuthHelper.tokenDataTemplate, {
-      0: this._clientSecret,
-      1: clientCode,
-      2: this._redirectUri
-    }));
+      post.write(format(ServerOAuthHelper.tokenDataTemplate, {
+        0: this.clientSecret,
+        1: clientCode,
+        2: this.redirectUri
+      }));
 
-    post.end();
+      post.end();
     });
   }
 
   public refreshAccessToken(refreshToken: string): Promise<IAccessToken> {
-
     return new Promise((resolve, reject) => {
-    let post = https.request({
-      method: "POST",
-      host: ServerOAuthHelper.tokenHost,
-      path: ServerOAuthHelper.tokenPath,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    }, (res) => {
-      res.setEncoding("utf8");
-      res.on('data', data => {
-        resolve(JSON.parse(data as any));
+      const post = https.request({
+        method: "POST",
+        host: ServerOAuthHelper.tokenHost,
+        path: ServerOAuthHelper.tokenPath,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }, res => {
+        res.setEncoding("utf8");
+        res.on('data', data => {
+          resolve(JSON.parse(data as any));
+        });
       });
-    });
 
-    post.write(format(ServerOAuthHelper.refreshTokenDataTemplate,
-      {
-        0: this._clientSecret,
+      post.write(format(ServerOAuthHelper.refreshTokenDataTemplate, {
+        0: this.clientSecret,
         1: refreshToken,
-        2: this._redirectUri
+        2: this.redirectUri
       }));
-    post.end();
+      
+      post.end();
     });
   }
 }

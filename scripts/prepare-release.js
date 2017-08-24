@@ -30,7 +30,6 @@ if (res.code) {
   process.exit(res.code);
 }
 
-copy(`${path.join(serverPath, "dist")}/**`, path.join(releasePath, "server"), (err, files) => {});
 copy(`${path.join(serverPath, "src/migrations/**")}`, path.join(releasePath, "server/migrations"), (err, files) => {});
 copy(`${path.join(serverPath, "package.json")}`, path.join(releasePath, "server/.."), (err, files) => {});
-copy(`${path.resolve(__dirname, "../clientSecret.json")}`, path.join(releasePath, "server/secrets"), (err, files) => { if(err) {console.error(err);}});
+copy(`${path.resolve(__dirname, "../clientSecret.json")}`, path.join(releasePath, "server/secrets"), (err, files) => { if(err) {console.error(err); }});

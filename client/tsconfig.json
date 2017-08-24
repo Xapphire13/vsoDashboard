@@ -1,27 +1,27 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist",
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "module": "commonjs",
-        "target": "es6",
-        "jsx": "react",
-        "removeComments": true,
-        "strict": true,
-        "strictNullChecks": true,
-        "noImplicitThis": true,
-        "alwaysStrict": true,
-        "noUnusedLocals": true,
-        "noImplicitReturns": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-    },
-    "include": [
-      "./src/**/*.ts",
-      "./src/**/*.tsx",
-      "../typings/index.d.ts"
-    ],
-    "exclude": [
-      "**/*.d.ts"
-    ]
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es6"
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "../typings/index.d.ts"
+  ],
+  "exclude": [
+    "**/*.d.ts"
+  ]
 }

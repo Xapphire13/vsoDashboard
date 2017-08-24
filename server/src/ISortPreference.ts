@@ -1,7 +1,10 @@
 import {SortColumns} from "./SortColumns";
 
+/**
+ * Sort preference for a repository list
+ */
 export interface ISortPreference {
     column : SortColumns;
-    isAssending : boolean;
-    presidence : number;
+    isAscending : boolean;
+    precedence : number;
 }
