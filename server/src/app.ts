@@ -23,6 +23,7 @@ app.set('port', process.env.PORT || 80);
 
 // Static files
 app.use(express.static(path.join(__dirname, "../client")));
+app.use("/node_modules", express.static(path.join(__dirname, "../../node_modules")));
 app.use(bodyParser.json());
 app.use("/authorized", express.static(path.join(__dirname, "../client/auth.html")), () => {
   console.log("Auth redirect");
