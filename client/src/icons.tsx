@@ -13,7 +13,7 @@ export enum Icon {
 
 export function getIcon(icon: Icon): JSX.Element {
   const node = document.createElement("svg");
-  node.innerHTML = require("../node_modules/entypo/dist/sprite.svg");
+  node.innerHTML = require("entypo/dist/sprite.svg");
   const svgNode = node.querySelector(`[id=entypo-${Icon[icon]}]`);
 
   return <div className={`icon ${Icon[icon]}`}>
