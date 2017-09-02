@@ -1,29 +1,37 @@
+import * as WebSocket from "ws";
 import * as bodyParser from "body-parser";
 import * as express from "express";
+import * as findUp from "find-up";
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
 
-import {IPreferences} from "./IPreferences"
+import {IPreferences} from "./IPreferences";
 import {ServerOAuthHelper} from "./ServerOAuthHelper";
-import {SqlLiteHelper} from "./SqlLiteHelper"
-import {UserDBHelper} from "./UserDBHelper"
-import {VsoUserHelper} from "./VSO/VsoUserHelper"
+import {SqlLiteHelper} from "./SqlLiteHelper";
+import {UserDBHelper} from "./UserDBHelper";
+import {VsoUserHelper} from "./VSO/VsoUserHelper";
+
+interface WsExpress extends express.Express {
+    ws(path: string, handler: (ws: WebSocket, req: express.Request) => void): WsExpress;
+}
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 const clientSecret = JSON.parse(fs.readFileSync(path.join(__dirname, './secrets/clientSecret.json'), 'utf8'))["clientSecret"];
 const redirectUri = "https://vsodash.azurewebsites.net/auth";
-const app = express();
+const app: WsExpress = <any>express();
+require("express-ws")(app);
 const dbHelper = new SqlLiteHelper();
 const userDbHelper = new UserDBHelper();
 const userHelper = new VsoUserHelper();
+let websockets: WebSocket[] = [];
 
 app.set('port', process.env.PORT || 80);
 
 // Static files
 app.use(express.static(path.join(__dirname, "../client")));
-app.use("/node_modules", express.static(path.join(__dirname, "../../node_modules")));
+app.use("/node_modules", express.static(path.join(__dirname, findUp.sync("node_modules", { cwd: __dirname }))));
 app.use(bodyParser.json());
 app.use("/authorized", express.static(path.join(__dirname, "../client/auth.html")), () => {
   console.log("Auth redirect");
@@ -122,6 +130,24 @@ app.post("/preferences", async (req, res) => {
 
   res.statusCode = 200;
   res.send(body);
+});
+
+app.post("/webhooks", (req, res) => {
+    res.statusCode = 200;
+    res.send();
+
+    websockets.forEach(ws => {
+        ws.send(JSON.stringify(req.body), err => {
+            err && console.error(err);
+        });
+    });
+});
+
+app.ws("/subscribe", (ws, req) => {
+    websockets.push(ws);
+    ws.on("close", () => {
+        websockets = websockets.filter(socket => socket === ws);
+    });
 });
 
 // Initialize database and start server
