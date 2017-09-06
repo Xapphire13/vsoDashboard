@@ -21,11 +21,10 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 const clientSecret = JSON.parse(fs.readFileSync(path.join(__dirname, './secrets/clientSecret.json'), 'utf8'))["clientSecret"];
 const redirectUri = "https://vsodash.azurewebsites.net/auth";
 const app: WsExpress = <any>express();
-require("express-ws")(app);
+const wsExpress: {getWss(): WebSocket.Server} = require("express-ws")(app);
 const dbHelper = new SqlLiteHelper();
 const userDbHelper = new UserDBHelper();
 const userHelper = new VsoUserHelper();
-let websockets: WebSocket[] = [];
 
 app.set('port', process.env.PORT || 80);
 
@@ -136,19 +135,28 @@ app.post("/webhooks", (req, res) => {
     res.statusCode = 200;
     res.send();
 
-    websockets.forEach(ws => {
+    wsExpress.getWss().clients.forEach(ws => {
         ws.send(JSON.stringify(req.body), err => {
             err && console.error(err);
         });
     });
 });
 
-app.ws("/subscribe", (ws, req) => {
-    websockets.push(ws);
-    ws.on("close", () => {
-        websockets = websockets.filter(socket => socket === ws);
-    });
+app.ws("/subscribe", (ws: WebSocket & {isAlive: boolean}, req) => {
+    ws.isAlive = true;
+    ws.on("pong", () => ws.isAlive = true);
 });
+
+setInterval(() => {
+    wsExpress.getWss().clients.forEach((ws: WebSocket & {isAlive: boolean}) => {
+        if (!ws.isAlive) {
+            return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        ws.ping("", false, true);
+    });
+}, 30000);
 
 // Initialize database and start server
 dbHelper.init().then(() => {
