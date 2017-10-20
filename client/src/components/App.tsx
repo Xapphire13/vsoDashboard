@@ -5,7 +5,7 @@ import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 import * as Preferences from "../api/Preferences";
 
-import {Fabric, loadTheme, DefaultPalette} from 'office-ui-fabric-react';
+import {DefaultPalette, Fabric, loadTheme} from 'office-ui-fabric-react';
 import {Header} from "./Header";
 import {IAccessToken} from "../../../server/src/IAccessToken"
 import {IPreferences} from "../../../server/src/IPreferences";
