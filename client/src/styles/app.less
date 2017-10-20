@@ -1,25 +1,5 @@
 .app {
   background-color: #242424;
-  color: white;
-  font-family: "Segoe UI", sans-serif;
-
-  button {
-    background-color: #242424;
-    border: none;
-    padding: 5px 10px;
-    color: inherit;
-    min-width: 75px;
-    cursor: pointer;
-  }
-
-  button.selected, button.primary {
-    background-color: #0078d7;
-    cursor: default;
-  }
-
-  button + button {
-    margin-left: 5px;
-  }
 
   .icon {
     height: 20px;
@@ -34,5 +14,23 @@
 
   .clickable {
     cursor: pointer;
+  }
+
+  .ms-TextField-field {
+    color: black !important;
+  }
+
+  .ms-MessageBar {
+    color: white !important;
+  }
+
+  .ms-Checkbox:hover {
+    .ms-Checkbox-text {
+      color: #0078d7;
+    }
+  }
+
+  .ms-Toggle-thumb.thumb-45 {
+    background-color: black;
   }
 }

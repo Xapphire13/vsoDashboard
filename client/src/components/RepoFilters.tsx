@@ -2,6 +2,8 @@ import "../styles/repoFilters.less";
 
 import * as React from "react";
 
+import { Toggle } from 'office-ui-fabric-react';
+
 export enum RepoFilter {
   mine,
   everyones
@@ -10,13 +12,12 @@ export enum RepoFilter {
 export class RepoFilters extends React.Component<{currentFilter: RepoFilter, onFilterChanged: (newFilter: RepoFilter) => void}> {
   public render(): JSX.Element {
     return <div className="repoFilters">
-      Filter by:
-      <button
-        className={this.props.currentFilter === RepoFilter.mine ? "selected" : ""}
-        onClick={() => this.props.onFilterChanged(RepoFilter.mine)}>Mine</button>
-      <button
-        className={this.props.currentFilter === RepoFilter.everyones ? "selected" : ""}
-        onClick={() => this.props.onFilterChanged(RepoFilter.everyones)}>Everyones</button>
+      <Toggle
+        defaultChecked={this.props.currentFilter === RepoFilter.mine}
+        onText="mine"
+        offText="everyones"
+        onChanged={(mine) => this.props.onFilterChanged(mine ? RepoFilter.mine : RepoFilter.everyones)}
+      />
     </div>;
   }
 }

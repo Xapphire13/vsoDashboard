@@ -5,6 +5,7 @@ import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 import * as Preferences from "../api/Preferences";
 
+import {Fabric, loadTheme, DefaultPalette} from 'office-ui-fabric-react';
 import {Header} from "./Header";
 import {IAccessToken} from "../../../server/src/IAccessToken"
 import {IPreferences} from "../../../server/src/IPreferences";
@@ -25,6 +26,12 @@ declare type State = {
 export class App extends React.Component<{}, State> {
     constructor() {
         super();
+
+        loadTheme({
+          palette: {
+            neutralPrimary: DefaultPalette.white
+          }
+        });
 
         VsoApi.setRefreshFunction(this.resetAccessToken);
         let accessTokenString = localStorage.getItem("accessToken");
@@ -80,9 +87,9 @@ export class App extends React.Component<{}, State> {
             content.push(<Login key="Login" />);
         }
 
-        return <div className="app">
+        return <Fabric className="app">
             {content}
-        </div>;
+        </Fabric>;
     }
 
     private _onMenuSelectionChanged = (s: string): void => {

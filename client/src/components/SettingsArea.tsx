@@ -1,12 +1,13 @@
 import "../styles/settingsArea.less";
 
+const debounce: <A extends Function>(f: A, interval?: number, immediate?: boolean) => A & { clear(): void; }  = require("debounce");
+
 import * as Preferences from "../api/Preferences";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
-import {Icon, getIcon} from "../icons";
+import { Checkbox, Label, List, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 
-import { FilteredMultiSelect } from "./FilteredMultiSelect";
 import { IPreferences } from "../../../server/src/IPreferences";
 import { IRepository } from "../api/models/IRepository";
 import { IRepositoryPreference } from "../../../server/src/IRepositoryPreference";
@@ -19,7 +20,9 @@ declare type Props = {
 declare type State = {
   preferences: IPreferences | null
   availableRepos: IRepository[],
-  selectedRepos: IRepository[]
+  selectedRepos: Set<IRepository>,
+  filteredRepos: IRepository[],
+  statusMessage?: {text: string, messageType: MessageBarType } | null
 };
 
 export class SettingsArea extends React.Component<Props, State> {
@@ -29,27 +32,28 @@ export class SettingsArea extends React.Component<Props, State> {
     this.state = {
       preferences: props.preferences,
       availableRepos: [],
-      selectedRepos: []
+      selectedRepos: new Set(),
+      filteredRepos: []
     };
   }
 
   public async componentDidMount(): Promise<void> {
     const repos: IRepository[] = await VsoApi.listRepositories();
-    const selectedRepos: IRepository[] = [];
+    const selectedRepos = new Set<IRepository>();
     if (this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.length > 0) {
       this.state.preferences.repositoryPreferences.forEach(p => {
         const foundRepo: IRepository | undefined = repos.find(r => r.id === p.repositoryId);
         if (foundRepo) {
-          selectedRepos.push(foundRepo);
+          selectedRepos.add(foundRepo)
         }
       });
     }
 
+    const availableRepos = repos.sort((left, right) => this.compareRepos(left, right, selectedRepos));
     this.setState({
-      availableRepos: repos.sort((a: IRepository, b: IRepository) => {
-        return a.name > b.name ? 1 : -1;
-      }),
-      selectedRepos: selectedRepos
+      availableRepos,
+      selectedRepos,
+      filteredRepos: availableRepos
     });
   }
 
@@ -61,79 +65,102 @@ export class SettingsArea extends React.Component<Props, State> {
 
   public render(): JSX.Element {
     return <div className="settingsArea">
-      <h2>Settings</h2>
-      <label className="setting">
-        Refresh Interval (seconds)
-        <input
-          type="number"
-          min="1" value={this.state.preferences ? this.state.preferences.pollIntervalInSeconds : NaN}
-          onChange={(e) => this._handleInput("pollIntervalInSeconds", e)} />
-      </label>
-      <label className="setting">
-        Stale threshold (minutes)
-        <input
-          type="number"
-          min="1"
-          value={this.state.preferences ? this.state.preferences.staleThresholdInMinutes : NaN}
-          onChange={(e) => this._handleInput("staleThresholdInMinutes", e)} />
-      </label>
-      <h2>Repositories</h2>
-      <div>
-        <FilteredMultiSelect
-          defaultFilter=""
-          textProp="name"
-          valueProp="name"
-          placeholder="Search for a repo..."
-          size={15}
-          options={this.state.availableRepos}
-          selectedOptions={this.state.selectedRepos}
-          onChange={this._handleSelectionChange} />
-        {/* {this.state.preferences && this.state.preferences.repositoryPreferences && this.state.preferences.repositoryPreferences.map(repo => <div key={repo.repositoryId}>{JSON.stringify(repo)}</div>)} */}
+      {this.state.statusMessage && <MessageBar messageBarType={this.state.statusMessage.messageType}>
+        {this.state.statusMessage.text}
+      </MessageBar>}
+      <div className="settingsArea-content">
+        <TextField
+          label="Refresh Interval (seconds)"
+          value={this.state.preferences ? `${this.state.preferences.pollIntervalInSeconds}` : ""}
+          onChanged={(val) => this._handleInput("pollIntervalInSeconds", +val)}
+        />
+        <TextField
+          label="Stale threshold (minutes)"
+          value={this.state.preferences ? `${this.state.preferences.staleThresholdInMinutes}` : ""}
+          onChanged={(val) => this._handleInput("staleThresholdInMinutes", +val)}
+        />
+        <Label>Repositories</Label>
+        <div>
+          <TextField
+            placeholder="Search for a repo..."
+            iconProps={{
+              iconName: "Clear",
+              onClick: () => alert("Clear!")
+            }}
+            onChanged={(value) => {
+              const filteredRepos = this.state.availableRepos
+              .filter(repo => repo.name.toLowerCase().match(value))
+              .sort((left, right) => this.compareRepos(left, right, this.state.selectedRepos));
+
+              this.setState({filteredRepos});
+            }}
+          />
+          <div className="listContainer">
+            <List
+              items={this.state.filteredRepos}
+              getKey={(item) => item.id}
+              onRenderCell={(item) => this.renderRepo(item)}
+            />
+          </div>
+        </div>
       </div>
-      <div>
-        <h3>Selected Repositories</h3>
-        {this.state.selectedRepos.length === 0 && "No repositories selected"}
-        {this.state.selectedRepos.length > 0 &&
-          this.state.selectedRepos.map((r, i) => <ul>
-            {r.name}
-            <span className="clickable" onClick={() => this._handleDeselect(i)} title="Delete">
-              {getIcon(Icon.trash)}
-            </span>
-          </ul>)}
-      </div>
-      <button className="primary" onClick={this._onSave}>Save</button>
     </div>;
   }
 
-  private _onSave = (): void => {
-    if (this.state.preferences) {
-      const preferences: IPreferences = this.state.preferences;
-      preferences.repositoryPreferences = this.state.selectedRepos.map(this._convertToRepositoryPreference);
-      Preferences.savePreferences(preferences).then(() => alert("Saved!"));
-      this.setState({ preferences: preferences });
-    }
+  private renderRepo = (repo: IRepository): JSX.Element => {
+    return <div>
+      <Checkbox
+        label={repo.name}
+        defaultChecked={this.state.selectedRepos.has(repo)}
+        onChange={(_, isChecked) => {
+          if (isChecked) {
+            this.state.selectedRepos.add(repo);
+          } else {
+            this.state.selectedRepos.delete(repo);
+          }
+
+          this.setState({
+            filteredRepos: this.state.filteredRepos.sort((left, right) => this.compareRepos(left, right, this.state.selectedRepos))
+          });
+
+          this.savePreferences();
+        }}
+      />
+    </div>
   }
 
-  private _handleInput = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  private savePreferences = debounce((): void => {
     if (this.state.preferences) {
+      const preferences: IPreferences = this.state.preferences;
+      preferences.repositoryPreferences = [...this.state.selectedRepos].map(this._convertToRepositoryPreference);
+      Preferences.savePreferences(preferences).then(() => {
+        this.setState({
+          statusMessage: {
+            text: "Saved!",
+            messageType: MessageBarType.success
+          }
+        });
+
+        setTimeout(() => {
+          this.setState({
+            statusMessage: null
+          });
+        }, 3000);
+      });
+    }
+  }, 2000);
+
+  private _handleInput = (key: string, value: number) => {
+    if (!isNaN(value) && value > 0 && this.state.preferences) {
       const preferences: IPreferences & { [key: string]: any } = this.state.preferences;
-      preferences[key] = +event.target.value;
+      preferences[key] = value;
 
       this.setState({
         preferences
       });
+
+      this.savePreferences();
     }
-  }
-
-  private _handleDeselect(index: number): void {
-    let selectedRepos: IRepository[] = this.state.selectedRepos.slice();
-    selectedRepos.splice(index, 1);
-    this.setState({ selectedRepos: selectedRepos });
-  }
-
-  private _handleSelectionChange = (selections: IRepository[]) => {
-    selections.sort((a, b) => a.name > b.name ? 1 : -1);
-    this.setState({ selectedRepos: selections });
   }
 
   private _convertToRepositoryPreference(repo: IRepository): IRepositoryPreference {
@@ -143,5 +170,17 @@ export class SettingsArea extends React.Component<Props, State> {
       isMinimized: false,
       sortPreferences: [{ column: SortColumns.title, isAscending: true, precedence: 0 }]
     };
+  }
+
+  private compareRepos = (left: IRepository, right: IRepository, selectedRepos: Set<IRepository>): number => {
+    const leftIsSelected = selectedRepos.has(left);
+    const rightIsSelected = selectedRepos.has(right);
+
+    // selected takes precedence, so if they differ we don't need to compare name
+    if (leftIsSelected !== rightIsSelected) {
+      return leftIsSelected ? -1 : 1;
+    }
+
+    return left.name > right.name ? 1 : -1;
   }
 }
