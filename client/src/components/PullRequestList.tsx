@@ -1,4 +1,4 @@
-import "../PullRequestList.less";
+import "./PullRequestList.less";
 
 import * as React from "react";
 

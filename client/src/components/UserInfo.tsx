@@ -1,4 +1,4 @@
-import "../UserInfo.less";
+import "./UserInfo.less";
 
 import * as NameParser from "another-name-parser";
 import * as React from "react";

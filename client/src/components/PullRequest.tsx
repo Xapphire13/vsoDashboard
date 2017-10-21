@@ -1,4 +1,4 @@
-import "../PullRequest.less";
+import "./PullRequest.less";
 
 import * as React from "react";
 import * as moment from "moment";

@@ -1,4 +1,4 @@
-import "../Repo.less";
+import "./Repo.less";
 
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";

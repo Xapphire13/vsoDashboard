@@ -1,4 +1,4 @@
-import "../App.less";
+import "./App.less";
 
 import * as ClientOAuthHelpers from "../ClientOAuthHelpers";
 import * as React from "react";

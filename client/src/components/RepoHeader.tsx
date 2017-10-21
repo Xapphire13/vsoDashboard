@@ -1,4 +1,4 @@
-import "../RepoHeader.less";
+import "./RepoHeader.less";
 
 import * as React from "react";
 

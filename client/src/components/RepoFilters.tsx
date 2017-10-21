@@ -1,4 +1,4 @@
-import "../RepoFilters.less";
+import "./RepoFilters.less";
 
 import * as React from "react";
 
