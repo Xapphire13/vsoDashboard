@@ -1,4 +1,4 @@
-import "../styles/mainMenu.less";
+import "../MainMenu.less";
 
 import * as React from "react";
 

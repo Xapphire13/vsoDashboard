@@ -1,4 +1,4 @@
-import "../styles/repoChartContainer.less";
+import "../RepoChartContainer.less";
 
 import * as React from "react";
 import * as moment from "moment";

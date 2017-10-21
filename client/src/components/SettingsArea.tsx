@@ -1,4 +1,4 @@
-import "../styles/settingsArea.less";
+import "../SettingsArea.less";
 
 const debounce: <A extends Function>(f: A, interval?: number, immediate?: boolean) => A & { clear(): void; }  = require("debounce");
 

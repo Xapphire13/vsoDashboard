@@ -1,4 +1,4 @@
-import "../styles/header.less";
+import "../Header.less";
 
 import * as React from "react";
 

@@ -1,4 +1,4 @@
-import "../styles/repoList.less";
+import "../RepoList.less";
 
 import * as React from "react";
 
