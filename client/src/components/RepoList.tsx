@@ -39,6 +39,7 @@ export class RepoList extends React.Component<Props, State> {
         userProfile={this.props.userProfile}
         collapsed={repoPreference.isMinimized}
         onToggleCollapse={this._toggleCollapsed}
+        preferences={this.props.preferences}
       />
     );
 
