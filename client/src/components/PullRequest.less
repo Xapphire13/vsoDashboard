@@ -1,31 +1,14 @@
 .pullRequest {
   position: relative;
-  height: 20px;
+  height: 50px;
+  overflow-x: hidden;
 
-  .comments {
-    display: flex;
-    flex-direction: row-reverse;
-
-    .icon {
-      margin-left: 5px;
-
-      svg {
-        fill: transparent;
-        stroke: white;
-      }
-    }
-  }
-
-  .quickActions {
-    display: none;
-  }
-
-  .clickable {
-    cursor: pointer;
+  &.needsAttention {
+    background-color: #582E30;
   }
 
   &:hover {
-    background-color: #777777;
+    background-color: #444;
 
     &.needsAttention {
       background-color: #bc8184;
@@ -36,7 +19,63 @@
     }
   }
 
-  &.needsAttention {
-    background-color: #582E30;
+  a {
+    text-decoration: none;
+
+    &:hover {
+      color: #0078d7;
+    }
+  }
+
+  .pullRequest-comments {
+    display: inline-block;
+    margin-right: 5px;
+    width: 50px;
+
+    .icon {
+      margin-left: 5px;
+      position: relative;
+      top: -5px;
+      display: inline-block;
+
+      svg {
+        fill: transparent;
+        stroke: white;
+      }
+    }
+
+    span {
+      position: relative;
+      top: -7px;
+      margin-left: 5px;
+    }
+  }
+
+  .pullRequest-info {
+    display: inline-block;
+  }
+
+  .pullRequest-repoName {
+    color: #a6a6a6;
+    margin-right: 5px;
+  }
+
+  .pullRequest-title {
+    color: white;
+    text-overflow: ellipsis;
+  }
+
+  .pullRequest-repoName, .pullRequest-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    white-space: nowrap;
+  }
+
+  .quickActions {
+    display: none;
+  }
+
+  .clickable {
+    cursor: pointer;
   }
 }

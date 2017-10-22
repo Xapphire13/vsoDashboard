@@ -5,17 +5,20 @@ import * as VsoApi from "../api/VsoApi";
 
 import {RepoFilter, RepoFilters} from "./RepoFilters";
 
-import {PullRequestList} from "./PullRequestList";
+import {IPreferences} from "../../../server/src/IPreferences";
+import {IProfile} from "../api/models/IProfile";
+import {IPullRequest} from "../api/models/IPullRequest";
+import {List} from 'office-ui-fabric-react';
+import {PullRequest} from "./PullRequest";
 import {RepoChartContainer} from "./RepoChartContainer";
 import {RepoHeader} from "./RepoHeader";
-import {IPullRequest} from "../api/models/IPullRequest";
-import {IProfile} from "../api/models/IProfile";
 
 declare type Props = {
   id: string;
   collapsed: boolean;
   onToggleCollapse: (id: string)=>void;
-  userProfile: IProfile | null
+  userProfile: IProfile | null;
+  preferences: IPreferences | null;
 }
 
 declare type State = {
@@ -83,7 +86,17 @@ export class Repo extends React.Component<Props, State> {
       {!this.props.collapsed &&
       <div className="repoContent" ref={(element) => this._repoContent = element}>
         <div className="pullRequestContainer">
-          <PullRequestList pullRequests={this.state.pullRequests} userProfile={this.props.userProfile} />
+          <List
+            items={this.state.pullRequests}
+            getKey={(pullRequest: IPullRequest) => `${pullRequest.pullRequestId}`}
+            onRenderCell={(pullRequest: IPullRequest) => <PullRequest
+              key={pullRequest.pullRequestId}
+              userProfile={this.props.userProfile}
+              pullRequest={pullRequest}
+              preferences={this.props.preferences}
+              />
+            }
+          />
           <RepoFilters
             currentFilter={this.state.filter}
             onFilterChanged={(filter: RepoFilter) => this.setState({filter})}/>
