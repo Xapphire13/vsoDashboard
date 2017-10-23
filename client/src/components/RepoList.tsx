@@ -2,6 +2,8 @@ import "./RepoList.less";
 
 import * as React from "react";
 
+import autobind from "autobind-decorator";
+
 import {Repo} from "./Repo";
 import {IPreferences} from "../../../server/src/IPreferences";
 import {IRepositoryPreference} from "../../../server/src/IRepositoryPreference";
@@ -38,26 +40,28 @@ export class RepoList extends React.Component<Props, State> {
         id={repoPreference.repositoryId}
         userProfile={this.props.userProfile}
         collapsed={repoPreference.isMinimized}
-        onToggleCollapse={this._toggleCollapsed}
+        onToggleCollapse={this.toggleCollapsed}
         preferences={this.props.preferences}
       />
     );
 
     return <div className="repoList">
-      <div className="expandCollapse"><a className="expandCollapseLink" onClick={this._expandAll}>Expand all</a> | <a className="expandCollapseLink" onClick={this._collapseAll}>Collapse All</a></div>
+      <div className="expandCollapse"><a className="expandCollapseLink" onClick={this.expandAll}>Expand all</a> | <a className="expandCollapseLink" onClick={this.collapseAll}>Collapse All</a></div>
       {repos}
     </div>;
   }
 
-  private _expandAll = (event: React.MouseEvent<HTMLAnchorElement>): void => {
-    this._setCollapsed(event, false);
+  @autobind
+  private expandAll(event: React.MouseEvent<HTMLAnchorElement>): void {
+    this.setCollapsed(event, false);
   }
 
-  private _collapseAll = (event: React.MouseEvent<HTMLAnchorElement>): void => {
-    this._setCollapsed(event, true);
+  @autobind
+  private collapseAll(event: React.MouseEvent<HTMLAnchorElement>): void {
+    this.setCollapsed(event, true);
   }
 
-  private _setCollapsed = (event: React.MouseEvent<HTMLAnchorElement>, collapse: boolean): void => {
+  private setCollapsed(event: React.MouseEvent<HTMLAnchorElement>, collapse: boolean): void {
     event.preventDefault();
     // const newRepos: IRepo[] = this.state.repos.map(r => { return { id: r.id, name: r.name, collapsed: collapse}; });
     // this.setState({repos: newRepos});
@@ -65,7 +69,8 @@ export class RepoList extends React.Component<Props, State> {
     this.setState({});
   }
 
-  private _toggleCollapsed = (id: string) => {
+  @autobind
+  private toggleCollapsed(id: string) {
     const repo = this.state.repos.find(repo => repo.repositoryId === id);
 
     if (repo) {

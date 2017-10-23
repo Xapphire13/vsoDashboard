@@ -2,6 +2,8 @@ import "./MainMenu.less";
 
 import * as React from "react";
 
+import autobind from "autobind-decorator";
+
 export class MainMenu extends React.Component<{ onSelectedChanged(item: string): void }, { selectedItem: string }> {
   private _menuItems: { [key: string]: string } = {
     "pullRequests": "Pull Requests",
@@ -29,7 +31,7 @@ export class MainMenu extends React.Component<{ onSelectedChanged(item: string):
           </defs>
       </svg>
       {Object.keys(this._menuItems).map((item, index) => <li key={index}>
-        <a className={item === this.state.selectedItem ? "selected" : ""} onClick={(e) => { this._handleClick(e); this._processMenuChange(item); }}>
+        <a className={item === this.state.selectedItem ? "selected" : ""} onClick={(e) => { this.handleClick(e); this.processMenuChange(item); }}>
           {this._menuItems[item]}
         </a>
         <svg className={`caret ${item === this.state.selectedItem ? "selected" : ""}`}>
@@ -42,11 +44,13 @@ export class MainMenu extends React.Component<{ onSelectedChanged(item: string):
     </ul>;
   }
 
-  private _handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
+  @autobind
+  private handleClick(event: React.MouseEvent<HTMLAnchorElement>): void {
     event.preventDefault();
   }
 
-  private _processMenuChange(item: string): void {
+  @autobind
+  private processMenuChange(item: string): void {
     if (this.state.selectedItem !== item) {
       this.setState({ selectedItem: item });
       this.props.onSelectedChanged(item);

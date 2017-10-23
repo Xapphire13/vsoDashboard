@@ -6,6 +6,8 @@ import * as Preferences from "../api/Preferences";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
+import autobind from "autobind-decorator";
+
 import { Checkbox, Label, List, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 
 import { IPreferences } from "../../../server/src/IPreferences";
@@ -72,12 +74,12 @@ export class SettingsArea extends React.Component<Props, State> {
         <TextField
           label="Refresh Interval (seconds)"
           value={this.state.preferences ? `${this.state.preferences.pollIntervalInSeconds}` : ""}
-          onChanged={(val) => this._handleInput("pollIntervalInSeconds", +val)}
+          onChanged={(val) => this.handleInput("pollIntervalInSeconds", +val)}
         />
         <TextField
           label="Stale threshold (minutes)"
           value={this.state.preferences ? `${this.state.preferences.staleThresholdInMinutes}` : ""}
-          onChanged={(val) => this._handleInput("staleThresholdInMinutes", +val)}
+          onChanged={(val) => this.handleInput("staleThresholdInMinutes", +val)}
         />
         <Label>Repositories</Label>
         <div>
@@ -107,7 +109,8 @@ export class SettingsArea extends React.Component<Props, State> {
     </div>;
   }
 
-  private renderRepo = (repo: IRepository): JSX.Element => {
+  @autobind
+  private renderRepo(repo: IRepository): JSX.Element {
     return <div>
       <Checkbox
         label={repo.name}
@@ -132,7 +135,7 @@ export class SettingsArea extends React.Component<Props, State> {
   private savePreferences = debounce((): void => {
     if (this.state.preferences) {
       const preferences: IPreferences = this.state.preferences;
-      preferences.repositoryPreferences = [...this.state.selectedRepos].map(this._convertToRepositoryPreference);
+      preferences.repositoryPreferences = [...this.state.selectedRepos].map(this.convertToRepositoryPreference);
       Preferences.savePreferences(preferences).then(() => {
         this.setState({
           statusMessage: {
@@ -150,7 +153,8 @@ export class SettingsArea extends React.Component<Props, State> {
     }
   }, 2000);
 
-  private _handleInput = (key: string, value: number) => {
+  @autobind
+  private handleInput(key: string, value: number) {
     if (!isNaN(value) && value > 0 && this.state.preferences) {
       const preferences: IPreferences & { [key: string]: any } = this.state.preferences;
       preferences[key] = value;
@@ -163,7 +167,7 @@ export class SettingsArea extends React.Component<Props, State> {
     }
   }
 
-  private _convertToRepositoryPreference(repo: IRepository): IRepositoryPreference {
+  private convertToRepositoryPreference(repo: IRepository): IRepositoryPreference {
     return {
       repositoryId: repo.id,
       justMine: true,
@@ -172,7 +176,7 @@ export class SettingsArea extends React.Component<Props, State> {
     };
   }
 
-  private compareRepos = (left: IRepository, right: IRepository, selectedRepos: Set<IRepository>): number => {
+  private compareRepos(left: IRepository, right: IRepository, selectedRepos: Set<IRepository>): number {
     const leftIsSelected = selectedRepos.has(left);
     const rightIsSelected = selectedRepos.has(right);
 

@@ -3,6 +3,8 @@ import "./Repo.less";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
+import autobind from "autobind-decorator";
+
 import {RepoFilter, RepoFilters} from "./RepoFilters";
 
 import {IPreferences} from "../../../server/src/IPreferences";
@@ -109,11 +111,13 @@ export class Repo extends React.Component<Props, State> {
     </div>;
   }
 
-  public onToggleVisibility = (): void => {
+  @autobind
+  public onToggleVisibility(): void {
     this.props.onToggleCollapse(this.props.id);
   }
 
-  private fetchPullRequests = async (): Promise<void> => {
+  @autobind
+  private async fetchPullRequests(): Promise<void> {
     const pullRequests = (await VsoApi.listPullRequests(this.props.id)).sort((left, right) =>
       left.updated < right.updated ?
         1 :

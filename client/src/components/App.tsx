@@ -5,6 +5,8 @@ import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 import * as Preferences from "../api/Preferences";
 
+import autobind from "autobind-decorator";
+
 import {DefaultPalette, Fabric, loadTheme} from 'office-ui-fabric-react';
 import {Header} from "./Header";
 import {IAccessToken} from "../../../server/src/IAccessToken"
@@ -96,6 +98,7 @@ export class App extends React.Component<{}, State> {
         this.setState({ selectedArea: s });
     }
 
+    @autobind
     private async resetAccessToken(): Promise<void> {
         if (this.state.accessToken != undefined) {
             let newToken = await ClientOAuthHelpers.refreshAccessToken(this.state.accessToken.refresh_token);
@@ -115,6 +118,7 @@ export class App extends React.Component<{}, State> {
         }
     }
 
+    @autobind
     private logOut(): void {
         this.setState({
             accessToken: null,

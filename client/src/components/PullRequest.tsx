@@ -3,6 +3,8 @@ import "./PullRequest.less";
 import * as React from "react";
 import * as moment from "moment";
 
+import autobind from "autobind-decorator";
+
 import {IPreferences} from "../../../server/src/IPreferences";
 import {IProfile} from "../api/models/IProfile";
 import {IPullRequest} from "../api/models/IPullRequest";
@@ -60,6 +62,7 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
     return `https://msazure.visualstudio.com/One/_git/${this.props.pullRequest.repository.id}`;
   }
 
+  @autobind
   private getPrUrl(): string {
     return `${this.getRepoUrl()}/pullrequest/${this.props.pullRequest.pullRequestId}`;
   }
