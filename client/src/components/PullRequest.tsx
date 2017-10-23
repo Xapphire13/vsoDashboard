@@ -3,10 +3,10 @@ import "./PullRequest.less";
 import * as React from "react";
 import * as moment from "moment";
 
-import {getIcon, Icon} from "../icons";
 import {IPreferences} from "../../../server/src/IPreferences";
 import {IProfile} from "../api/models/IProfile";
 import {IPullRequest} from "../api/models/IPullRequest";
+import {Icon} from 'office-ui-fabric-react';
 
 declare type Properties = {
   userProfile: IProfile | null;
@@ -34,7 +34,7 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
 
     return <div className={`pullRequest ${this.state.needsAttention && "needsAttention"}`}>
       <div className="pullRequest-comments">
-        {getIcon(Icon.message)}
+        <Icon className="pullRequest-commentIcon" iconName="Comment"/>
         <span>{this.props.pullRequest.commentCount}</span>
       </div>
       <div className="pullRequest-info">
@@ -44,17 +44,16 @@ export class PullRequest extends React.Component<Properties, { needsAttention: b
         </div>
         <div>{`#${pullRequest.pullRequestId} ${pullRequest.creationDate === pullRequest.updated ? "opened" : "updated"} ${moment(this.props.pullRequest.updated).fromNow()} by ${pullRequest.createdBy.displayName}`}</div>
       </div>
+      <div className="pullRequest-actions">
+        <Icon
+          className="pullRequest-mailIcon"
+          iconName="Mail"
+          onClick={() => {
+            location.assign(`mailto:${this.props.pullRequest.createdBy.uniqueName}?subject=${encodeURIComponent(`Pull Request: ${this.props.pullRequest.title}`)}&body=${encodeURIComponent(`Hi ${this.props.pullRequest.createdBy.displayName.split(" ")[0]},\n\nI am emailing about the following pull request ${this.getPrUrl()}\n\nThanks,\n${this.props.userProfile && this.props.userProfile.displayName.split(" ")[0]}`)}`);
+          }}
+        />
+      </div>
     </div>;
-
-//     <div
-//       className="quickActions clickable"
-//       onClick={() => {
-//         location.assign(`mailto:${this.props.pullRequest.createdBy.uniqueName}?subject=${encodeURIComponent(`Pull Request: ${this.props.pullRequest.title}`)}&body=${encodeURIComponent(`Hi ${this.props.pullRequest.createdBy.displayName.split(" ")[0]},\n\nI am emailing about the following pull request ${this._getVsoUrl()}\n\nThanks,\n${this.props.userProfile && this.props.userProfile.displayName.split(" ")[0]}`)}`);
-//       }}>
-//       <span title="Send email">
-//         {getIcon(Icon.mail)}
-//       </span>
-//     </div>
   }
 
   private getRepoUrl(): string {

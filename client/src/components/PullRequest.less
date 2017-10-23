@@ -2,6 +2,8 @@
   position: relative;
   height: 50px;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: row;
 
   &.needsAttention {
     background-color: #582E30;
@@ -14,7 +16,7 @@
       background-color: #bc8184;
     }
 
-    .quickActions {
+    .pullRequest-actions {
       display: block;
     }
   }
@@ -28,31 +30,26 @@
   }
 
   .pullRequest-comments {
-    display: inline-block;
+    margin-left: 5px;
     margin-right: 5px;
     width: 50px;
+    flex: 0 0 auto;
 
-    .icon {
-      margin-left: 5px;
+    .pullRequest-commentIcon {
       position: relative;
-      top: -5px;
-      display: inline-block;
-
-      svg {
-        fill: transparent;
-        stroke: white;
-      }
+      top: 14px;
+      font-size: 20px;
     }
 
     span {
       position: relative;
-      top: -7px;
+      top: 7px;
       margin-left: 5px;
     }
   }
 
   .pullRequest-info {
-    display: inline-block;
+    flex: 1 0 auto;
   }
 
   .pullRequest-repoName {
@@ -71,11 +68,19 @@
     white-space: nowrap;
   }
 
-  .quickActions {
+  .pullRequest-actions {
+    margin-right: 5px;
     display: none;
-  }
 
-  .clickable {
-    cursor: pointer;
+    .pullRequest-mailIcon {
+      position: relative;
+      top: 14px;
+      font-size: 20px;
+
+      &:hover {
+        cursor: pointer;
+        color: #0078d7;
+      }
+    }
   }
 }
