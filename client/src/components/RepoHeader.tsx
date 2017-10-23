@@ -2,7 +2,7 @@ import "./RepoHeader.less";
 
 import * as React from "react";
 
-import { Icon, getIcon } from "../icons";
+import {Icon} from 'office-ui-fabric-react';
 
 declare type Properties = {
   name: string,
@@ -20,8 +20,8 @@ export class RepoHeader extends React.Component<Properties, {}> {
       </span>
       <h4>{this.props.name}</h4>
       {this.props.collapsed && <div className="repoStats">
-        {this.props.needsAttention && [<span>{getIcon(Icon.warning)}</span>, <h4 className="needsAttention">Needs Attention</h4>]}
-        <h4 className="pullRequestCount">{`${this.props.pullRequestCount} Total PR${this.props.pullRequestCount === 1 ? "" : "s"}`}</h4>
+        {this.props.needsAttention && [<Icon className="repoHeader-icon" iconName="Warning"/>, <h4 className="needsAttention">Needs Attention</h4>]}
+        <h4 className="repoHeader-pullRequestCount">{`${this.props.pullRequestCount} Total PR${this.props.pullRequestCount === 1 ? "" : "s"}`}</h4>
       </div>}
     </div>;
   }
