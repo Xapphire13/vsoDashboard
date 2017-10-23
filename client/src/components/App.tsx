@@ -13,7 +13,6 @@ import {IAccessToken} from "../../../server/src/IAccessToken"
 import {IPreferences} from "../../../server/src/IPreferences";
 import {Login} from "./Login";
 import {PullRequestArea} from "./PullRequestArea";
-import {SettingsArea} from "./SettingsArea";
 import {WorkItemsArea} from "./WorkItemsArea";
 import {IProfile} from "../api/models/IProfile";
 
@@ -74,14 +73,22 @@ export class App extends React.Component<{}, State> {
         let content: JSX.Element[] = [];
 
         if (this.state.isLoggedIn && this.state.accessToken != null) {
-            content.push(<Header key="Header" onSelectedChanged={this._onMenuSelectionChanged} userProfile={this.state.userProfile} />);
+            content.push(<Header
+              key="Header"
+              onSelectedChanged={this._onMenuSelectionChanged}
+              userProfile={this.state.userProfile}
+              preferences={this.state.preferences}
+              onPreferencesSaved={async (preferences) => {
+                this.setState({
+                  preferences: await Preferences.savePreferences(preferences)
+                });
+              }}
+            />);
 
             if (this.state.selectedArea === "pullRequests") {
                 content.push(<PullRequestArea key="PullRequestArea" preferences={this.state.preferences} userProfile={this.state.userProfile} />);
             } else if (this.state.selectedArea === "workItems") {
                 content.push(<WorkItemsArea key="WorkItemsArea" />);
-            } else if (this.state.selectedArea === "settings") {
-                content.push(<SettingsArea key="SettingsArea" preferences={this.state.preferences} />);
             } else {
                 content.push(<div key="NoArea" />);
             }

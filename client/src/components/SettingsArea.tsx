@@ -1,14 +1,11 @@
 import "./SettingsArea.less";
 
-const debounce: <A extends Function>(f: A, interval?: number, immediate?: boolean) => A & { clear(): void; }  = require("debounce");
-
-import * as Preferences from "../api/Preferences";
 import * as React from "react";
 import * as VsoApi from "../api/VsoApi";
 
 import autobind from "autobind-decorator";
 
-import { Checkbox, Label, List, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
+import { Checkbox, Label, List, PrimaryButton, Spinner, SpinnerType, TextField } from 'office-ui-fabric-react';
 
 import { IPreferences } from "../../../server/src/IPreferences";
 import { IRepository } from "../api/models/IRepository";
@@ -17,6 +14,7 @@ import { SortColumns } from "../../../server/src/SortColumns";
 
 declare type Props = {
   preferences: IPreferences | null
+  onSaved: (preferences: IPreferences) => void;
 };
 
 declare type State = {
@@ -24,7 +22,7 @@ declare type State = {
   availableRepos: IRepository[],
   selectedRepos: Set<IRepository>,
   filteredRepos: IRepository[],
-  statusMessage?: {text: string, messageType: MessageBarType } | null
+  loading: boolean
 };
 
 export class SettingsArea extends React.Component<Props, State> {
@@ -35,7 +33,8 @@ export class SettingsArea extends React.Component<Props, State> {
       preferences: props.preferences,
       availableRepos: [],
       selectedRepos: new Set(),
-      filteredRepos: []
+      filteredRepos: [],
+      loading: true
     };
   }
 
@@ -55,7 +54,8 @@ export class SettingsArea extends React.Component<Props, State> {
     this.setState({
       availableRepos,
       selectedRepos,
-      filteredRepos: availableRepos
+      filteredRepos: availableRepos,
+      loading: false
     });
   }
 
@@ -66,47 +66,47 @@ export class SettingsArea extends React.Component<Props, State> {
   }
 
   public render(): JSX.Element {
-    return <div className="settingsArea">
-      {this.state.statusMessage && <MessageBar messageBarType={this.state.statusMessage.messageType}>
-        {this.state.statusMessage.text}
-      </MessageBar>}
-      <div className="settingsArea-content">
-        <TextField
-          label="Refresh Interval (seconds)"
-          value={this.state.preferences ? `${this.state.preferences.pollIntervalInSeconds}` : ""}
-          onChanged={(val) => this.handleInput("pollIntervalInSeconds", +val)}
-        />
-        <TextField
-          label="Stale threshold (minutes)"
-          value={this.state.preferences ? `${this.state.preferences.staleThresholdInMinutes}` : ""}
-          onChanged={(val) => this.handleInput("staleThresholdInMinutes", +val)}
-        />
-        <Label>Repositories</Label>
-        <div>
+    return this.state.loading ?
+      <Spinner type={SpinnerType.large} /> :
+      <div className="settingsArea">
+        <div className="settingsArea-content">
           <TextField
-            placeholder="Search for a repo..."
-            iconProps={{
-              iconName: "Clear",
-              onClick: () => alert("Clear!")
-            }}
-            onChanged={(value) => {
-              const filteredRepos = this.state.availableRepos
-              .filter(repo => repo.name.toLowerCase().match(value))
-              .sort((left, right) => this.compareRepos(left, right, this.state.selectedRepos));
-
-              this.setState({filteredRepos});
-            }}
+            label="Refresh Interval (seconds)"
+            value={this.state.preferences ? `${this.state.preferences.pollIntervalInSeconds}` : ""}
+            onChanged={(val) => this.handleInput("pollIntervalInSeconds", +val)}
           />
-          <div className="listContainer">
-            <List
-              items={this.state.filteredRepos}
-              getKey={(item) => item.id}
-              onRenderCell={(item) => this.renderRepo(item)}
+          <TextField
+            label="Stale threshold (minutes)"
+            value={this.state.preferences ? `${this.state.preferences.staleThresholdInMinutes}` : ""}
+            onChanged={(val) => this.handleInput("staleThresholdInMinutes", +val)}
+          />
+          <Label>Repositories</Label>
+          <div>
+            <TextField
+              placeholder="Search for a repo..."
+              iconProps={{
+                iconName: "Clear",
+                onClick: () => alert("Clear!")
+              }}
+              onChanged={(value) => {
+                const filteredRepos = this.state.availableRepos
+                .filter(repo => repo.name.toLowerCase().match(value))
+                .sort((left, right) => this.compareRepos(left, right, this.state.selectedRepos));
+
+                this.setState({filteredRepos});
+              }}
             />
+            <div className="listContainer">
+              <List
+                items={this.state.filteredRepos}
+                getKey={(item) => item.id}
+                onRenderCell={(item) => this.renderRepo(item)}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </div>;
+        <PrimaryButton text="Save" onClick={this.savePreferences} />
+      </div>;
   }
 
   @autobind
@@ -125,33 +125,19 @@ export class SettingsArea extends React.Component<Props, State> {
           this.setState({
             filteredRepos: this.state.filteredRepos.sort((left, right) => this.compareRepos(left, right, this.state.selectedRepos))
           });
-
-          this.savePreferences();
         }}
       />
     </div>
   }
 
-  private savePreferences = debounce((): void => {
+  @autobind
+  private async savePreferences(): Promise<void> {
     if (this.state.preferences) {
       const preferences: IPreferences = this.state.preferences;
       preferences.repositoryPreferences = [...this.state.selectedRepos].map(this.convertToRepositoryPreference);
-      Preferences.savePreferences(preferences).then(() => {
-        this.setState({
-          statusMessage: {
-            text: "Saved!",
-            messageType: MessageBarType.success
-          }
-        });
-
-        setTimeout(() => {
-          this.setState({
-            statusMessage: null
-          });
-        }, 3000);
-      });
+      this.props.onSaved(preferences);
     }
-  }, 2000);
+  }
 
   @autobind
   private handleInput(key: string, value: number) {
@@ -162,8 +148,6 @@ export class SettingsArea extends React.Component<Props, State> {
       this.setState({
         preferences
       });
-
-      this.savePreferences();
     }
   }
 

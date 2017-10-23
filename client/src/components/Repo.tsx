@@ -6,6 +6,7 @@ import * as VsoApi from "../api/VsoApi";
 import autobind from "autobind-decorator";
 
 import {RepoFilter, RepoFilters} from "./RepoFilters";
+import {Spinner, SpinnerType} from 'office-ui-fabric-react';
 
 import {IPreferences} from "../../../server/src/IPreferences";
 import {IProfile} from "../api/models/IProfile";
@@ -27,7 +28,8 @@ declare type State = {
   chartsMinimized: boolean,
   pullRequests: IPullRequest[],
   filter: RepoFilter,
-  name: string
+  name: string,
+  loading: boolean
 }
 
 export class Repo extends React.Component<Props, State> {
@@ -41,7 +43,8 @@ export class Repo extends React.Component<Props, State> {
       chartsMinimized: true,
       name: "",
       filter: RepoFilter.mine,
-      pullRequests: []
+      pullRequests: [],
+      loading: true
     };
   }
 
@@ -54,10 +57,17 @@ export class Repo extends React.Component<Props, State> {
 
       this.setState({
         chartsMinimized: this._repoContent.clientHeight < 330,
-        name: repo.name
+        name: repo.name,
+        loading: false
       });
 
-      this.refreshTimer = window.setInterval(() => this.fetchPullRequests(), this.props.preferences!.pollIntervalInSeconds * 1000);
+      this.startPolling(this.props.preferences!.pollIntervalInSeconds * 1000);
+    }
+  }
+
+  public componentWillReceiveProps(nextProps: Props): void {
+    if (this.props.preferences!.pollIntervalInSeconds !== nextProps.preferences!.pollIntervalInSeconds) {
+      this.startPolling(nextProps.preferences!.pollIntervalInSeconds);
     }
   }
 
@@ -86,28 +96,32 @@ export class Repo extends React.Component<Props, State> {
         needsAttention={true}
       />
       {!this.props.collapsed &&
-      <div className="repoContent" ref={(element) => this._repoContent = element}>
-        <div className="pullRequestContainer">
-          <List
-            items={this.state.pullRequests}
-            getKey={(pullRequest: IPullRequest) => `${pullRequest.pullRequestId}`}
-            onRenderCell={(pullRequest: IPullRequest) => <PullRequest
-              key={pullRequest.pullRequestId}
-              userProfile={this.props.userProfile}
-              pullRequest={pullRequest}
-              preferences={this.props.preferences}
+        <div className="repoContent" ref={(element) => this._repoContent = element}>
+          <div className="pullRequestContainer">
+            {this.state.loading ?
+              <Spinner type={SpinnerType.large} /> :
+              <List
+                items={this.state.pullRequests}
+                getKey={(pullRequest: IPullRequest) => `${pullRequest.pullRequestId}`}
+                onRenderCell={(pullRequest: IPullRequest) => <PullRequest
+                  key={pullRequest.pullRequestId}
+                  userProfile={this.props.userProfile}
+                  pullRequest={pullRequest}
+                  preferences={this.props.preferences}
+                  />
+                }
               />
             }
+            <RepoFilters
+              currentFilter={this.state.filter}
+              onFilterChanged={(filter: RepoFilter) => this.setState({filter})}/>
+          </div>
+          <RepoChartContainer
+            isMinimized={this.state.chartsMinimized}
+            numberOfPullRequests={this.state.pullRequests.length}
           />
-          <RepoFilters
-            currentFilter={this.state.filter}
-            onFilterChanged={(filter: RepoFilter) => this.setState({filter})}/>
         </div>
-        <RepoChartContainer
-          isMinimized={this.state.chartsMinimized}
-          numberOfPullRequests={this.state.pullRequests.length}
-        />
-      </div>}
+      }
     </div>;
   }
 
@@ -127,5 +141,11 @@ export class Repo extends React.Component<Props, State> {
     );
 
     this.setState({pullRequests});
+  }
+
+  @autobind
+  private startPolling(timeout: number): void {
+    window.clearInterval(this.refreshTimer);
+    this.refreshTimer = window.setInterval(() => this.fetchPullRequests(), timeout);
   }
 }
