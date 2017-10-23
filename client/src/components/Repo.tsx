@@ -30,6 +30,7 @@ declare type State = {
 
 export class Repo extends React.Component<Props, State> {
   private _repoContent: HTMLDivElement | null;
+  private refreshTimer: number;
 
   constructor() {
     super();
@@ -44,22 +45,17 @@ export class Repo extends React.Component<Props, State> {
 
   public async componentDidMount(): Promise<void> {
     if(this._repoContent) {
-      const [repo, pullRequests] = await Promise.all([
+      const [repo] = await Promise.all([
         VsoApi.fetchRepository(this.props.id),
-        VsoApi.listPullRequests(this.props.id)
+        this.fetchPullRequests()
       ]);
 
       this.setState({
         chartsMinimized: this._repoContent.clientHeight < 330,
-        name: repo.name,
-        pullRequests: pullRequests.sort((left, right) =>
-          left.updated < right.updated ?
-            1 :
-            left.updated === right.updated ?
-              0 :
-              -1
-        )
+        name: repo.name
       });
+
+      this.refreshTimer = window.setInterval(() => this.fetchPullRequests(), this.props.preferences!.pollIntervalInSeconds * 1000);
     }
   }
 
@@ -72,6 +68,10 @@ export class Repo extends React.Component<Props, State> {
         });
       }
     }
+  }
+
+  public componentWillUnmount(): void {
+    window.clearInterval(this.refreshTimer);
   }
 
   public render(): JSX.Element {
@@ -111,5 +111,17 @@ export class Repo extends React.Component<Props, State> {
 
   public onToggleVisibility = (): void => {
     this.props.onToggleCollapse(this.props.id);
+  }
+
+  private fetchPullRequests = async (): Promise<void> => {
+    const pullRequests = (await VsoApi.listPullRequests(this.props.id)).sort((left, right) =>
+      left.updated < right.updated ?
+        1 :
+        left.updated === right.updated ?
+          0 :
+          -1
+    );
+
+    this.setState({pullRequests});
   }
 }
