@@ -22,6 +22,8 @@ export function getPreferences(): Promise<IPreferences> {
 export function savePreferences(preferences: IPreferences): Promise<IPreferences> {
     const accessToken = VsoApi.getAccessToken()
 
+    preferences.emailOverride = undefined; // TODO temp fix
+
     return new Promise<IPreferences>((resolve, reject) => {
         $.ajax({
             url: preferencesUrl,
