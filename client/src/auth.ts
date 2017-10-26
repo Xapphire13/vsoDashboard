@@ -1,6 +1,10 @@
 import * as ClientOAuthHelpers from "./ClientOAuthHelpers";
 
-$(document).ready(() => {
+function ready(fn: () => void): void {
+  /in/.test(document.readyState) ? setTimeout(() => ready(fn), 10) : fn();
+}
+
+ready(() => {
   let codeArr = window.location.href.match(/code=([^&]*)/i);
   let stateArr = location.href.match(/state=([^&]*)/i);
 

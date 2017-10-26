@@ -21,45 +21,26 @@ async function _makeCall<T>(options: {
   contentType?: string,
   data?: any
 }, isRetry: boolean = false): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    $.ajax({
-      url: options.url,
-      method: options.method || "GET",
-      contentType: options.contentType,
-      data: options.data,
-      headers: {
-        "Authorization": `Bearer ${accessToken && accessToken.access_token}`
-      }
-  }).then(async (result, textStatus, jqXHR) => {
-      if(refreshFunction && jqXHR.status === 203) { // Edge/IE will get a 203 when we need a new token
-          if(!isRetry) {
-              await refreshFunction();
-              try {
-                  resolve(await _makeCall<T>(options, true));
-              } catch (err) {
-                  reject(jqXHR);
-              }
-          }
-          reject(jqXHR);
-      } else {
-          resolve(result);
-      }
-  }, async err => {
-      if (refreshFunction && (err.status === 401 || err.status === 0)) {
-          if(!isRetry) {
-              await refreshFunction();
-              try {
-                  resolve(await _makeCall<T>(options, true));
-              } catch (err) {
-                  reject(err);
-              }
-          }
-          reject(err);
-      } else {
-          reject(err);
-      }
-    });
-  })
+  const response = await fetch(options.url, {
+    method: options.method || "GET",
+    body: JSON.stringify(options.data),
+    headers: {
+      Authorization: `Bearer ${accessToken && accessToken.access_token}`,
+      "Content-Type": options.contentType
+    }
+  });
+
+  // Edge/IE will get a 203 when we need a new token
+  if (refreshFunction && (response.status === 203 || response.status === 401 || response.status === 0)) {
+    if(!isRetry) {
+        await refreshFunction();
+        return await _makeCall<T>(options, true);
+    } else {
+      throw new Error("Couldn't make web call. Status 203");
+    }
+  }
+
+  return await response.json();
 }
 
 export function setAccessToken(newAccessToken: IAccessToken): void {
