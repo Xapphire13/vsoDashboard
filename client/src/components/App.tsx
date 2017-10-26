@@ -7,7 +7,7 @@ import * as Preferences from "../api/Preferences";
 
 import autobind from "autobind-decorator";
 
-import {DefaultPalette, Fabric, loadTheme} from 'office-ui-fabric-react';
+import {DefaultPalette, Fabric, Spinner, SpinnerType, loadTheme} from 'office-ui-fabric-react';
 import {Header} from "./Header";
 import {IAccessToken} from "../../../server/src/IAccessToken"
 import {IPreferences} from "../../../server/src/IPreferences";
@@ -71,6 +71,12 @@ export class App extends React.Component<{}, State> {
 
     public render(): JSX.Element {
         let content: JSX.Element[] = [];
+
+        if(this.state.preferences == undefined) {
+          return <Fabric className="app">
+            <Spinner type={SpinnerType.large} />
+          </Fabric>;
+        }
 
         if (this.state.isLoggedIn && this.state.accessToken != null) {
             content.push(<Header
